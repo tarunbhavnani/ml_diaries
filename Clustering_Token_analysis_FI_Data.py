@@ -105,7 +105,7 @@ num_clusters = 3
 
 km = KMeans(n_clusters=num_clusters)
 
-km.fit(tfidf_matrix)
+%time km.fit(tfidf_matrix)
 
 clusters = km.labels_.tolist()
 
