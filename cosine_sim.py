@@ -6,6 +6,8 @@ Created on Fri Dec 14 12:41:19 2018
 @author: tarun.bhavnani@dev.smecorner.com
 """
 
+#a.b=b*acosTheta. Its as projection on B. if theta is 90 then cos theta is 0 hence dot product is 0.
+
 documents = (
 "The sky is blue",
 "The sun is bright",
