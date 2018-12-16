@@ -3,7 +3,7 @@
 """
 Created on Sun Dec 16 14:59:08 2018
 
-@author: tarun
+@author: tarun from https://github.com/chrisjmccormick/LSA_Classification
 """
 
 #!/usr/bin/env python
