@@ -160,7 +160,25 @@ for index, score in sorted(lda_model_tfidf[bow_corpus[4310]], key=lambda tup: -1
 #testingon unseen
 
 unseen_document = 'How a Pentagon deal became an identity crisis for Google'
+preprocess(unseen_document)
 bow_vector = dictionary.doc2bow(preprocess(unseen_document))
+bow_vector
+lda_model[bow_vector]
+#lda model has ten topics, here it assigns the probability of the statement gping to
+#each of the topics
+
+#clearly it says thet topic 6 is the most probable.
+lda_model.print_topic(6, 5)#5 is the number of top 5 terms that define the topic
+
+
+"""
+st=[]
+for i in bow_vector:
+    #print(i)
+    st1=dictionary[i[0]]
+    st.append(st1)
+print(st)
+"""
 for index, score in sorted(lda_model[bow_vector], key=lambda tup: -1*tup[1]):
     print("Score: {}\t Topic: {}".format(score, lda_model.print_topic(index, 5)))
     
