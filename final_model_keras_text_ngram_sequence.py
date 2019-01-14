@@ -77,6 +77,36 @@ Counter(test_labels)
 #import numpy as np
 import matplotlib.pyplot as plt
 
+
+def get_num_classes(labels):
+    """Gets the total number of classes.
+    # Arguments
+        labels: list, label values.
+            There should be at lease one sample for values in the
+            range (0, num_classes -1)
+    # Returns
+        int, total number of classes.
+    # Raises
+        ValueError: if any label value in the range(0, num_classes - 1)
+            is missing or if number of classes is <= 1.
+    """
+    num_classes = max(labels) + 1
+    missing_classes = [i for i in range(num_classes) if i not in labels]
+    if len(missing_classes):
+        raise ValueError('Missing samples with label value(s) '
+                         '{missing_classes}. Please make sure you have '
+                         'at least one sample for every label value '
+                         'in the range(0, {max_class})'.format(
+                            missing_classes=missing_classes,
+                            max_class=num_classes - 1))
+
+    if num_classes <= 1:
+        raise ValueError('Invalid number of labels: {num_classes}.'
+                         'Please make sure there are at least two classes '
+                         'of samples'.format(num_classes=num_classes))
+    return num_classes
+
+
 def get_num_words_per_sample(sample_texts):
     """Returns the median number of words per sample given corpus.
 
@@ -452,7 +482,7 @@ def train_ngram_model(data,
     (train_texts, train_labels), (val_texts, val_labels) = data
 
     # Verify that validation labels are in the same range as training labels.
-    num_classes = explore_data.get_num_classes(train_labels)
+    num_classes = get_num_classes(train_labels)
     unexpected_labels = [v for v in val_labels if v not in range(num_classes)]
     if len(unexpected_labels):
         raise ValueError('Unexpected label values found in the validation set:'
@@ -462,22 +492,23 @@ def train_ngram_model(data,
                              unexpected_labels=unexpected_labels))
 
     # Vectorize texts.
-    x_train, x_val = vectorize_data.ngram_vectorize(
+    x_train, x_val = ngram_vectorize(
         train_texts, train_labels, val_texts)
 
     # Create model instance.
-    model = build_model.mlp_model(layers=layers,
+    model = mlp_model(layers=layers,
                                   units=units,
                                   dropout_rate=dropout_rate,
-                                  input_shape=x_train.shape[1:],
+                                  input_shape=x_train.shape[1:],#input shape is the num_words
                                   num_classes=num_classes)
-
+    import tensorflow as tf
+    from keras import optimizers
     # Compile model with learning parameters.
     if num_classes == 2:
         loss = 'binary_crossentropy'
     else:
         loss = 'sparse_categorical_crossentropy'
-    optimizer = tf.keras.optimizers.Adam(lr=learning_rate)
+    optimizer = optimizers.Adam(lr=learning_rate)
     model.compile(optimizer=optimizer, loss=loss, metrics=['acc'])
 
     # Create callback for early stopping on validation loss. If the loss does
@@ -520,7 +551,11 @@ def train_ngram_model(data,
   #word embeddings—i.e., the size of each word vector. Recommended values: 50–300.
 
 
-
+md=train_ngram_model(data=((train_texts, train_labels), (test_texts, test_labels)),
+                     learning_rate=1e-3,
+                     epochs=10, batch_size=128,layers=2,
+                     units=64, dropout_rate=.2)
+md
 
 
 
