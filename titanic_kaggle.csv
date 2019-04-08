@@ -1,0 +1,6 @@
+PassengerId,	Survived,	Age,	SibSp,	Parch,	Fare,	Pclass_1,	Pclass_2,	Pclass_3,	Sex_female,	Sex_male,	Embarked_C,	Embarked_Q,	Embarked_S
+1,	0,	22.0,	1,	0,	7.2500,	0,	0,	1,	0,	1,	0,	0,	1
+2,	1,	38.0,	1,	0,	71.2833,	1,	0,	0,	1,	0,	1,	0,	0
+3,	1,	26.0,	0,	0,	7.9250,	0,	0,	1,	1,	0,	0,	0,	1
+4,	1,	35.0,	1,	0,	53.1000,	1,	0,	0,	1,	0,	0,	0,	1
+5,	0,	35.0,	0,	0,	8.0500,	0,	0,	1,	0,	1,	0,	0,	1
