@@ -69,7 +69,7 @@ t0 = time()
 #param_grid = {'kernel' : ['linear', 'rbf', 'poly'],'gamma' : [0.1, 1, 10, 100],'C' : [0.1, 1, 10, 100,1000],'degree' : [0, 1, 2, 3, 4, 5, 6] }
 #with kernel in param_grid, it took a lot longer.
 param_grid = {'gamma' : [0.1, 1, 10, 100],'C' : [0.1, 1, 10, 100,1000],'degree' : [0, 1, 2, 3, 4, 5, 6] }
-clf = GridSearchCV(SVC(class_weight='balanced'),
+clf = GridSearchCV(SVC(kernel="rbf",class_weight='balanced'),
                    param_grid, cv=5)
 clf = clf.fit(X, y)
 print("done in %0.3fs" % (time() - t0))
