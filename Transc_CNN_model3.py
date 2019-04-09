@@ -3,7 +3,7 @@
 """
 Created on Mon Apr  1 11:50:22 2019
 
-@author: tarun.bhavnani@dev.smecorner.com
+@Author: tarun.bhavnani@dev.smecorner.com
 """
 
 #data prep
@@ -46,7 +46,8 @@ X_tt=pad_sequences(X_tt, maxlen=10)
 
 #X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
 
-Y=pd.get_dummies(y_train.values)
+Y_tr=pd.get_dummies(y_train.values)
+Y_tt=pd.get_dummies(y_test.values)
 
 #Model!!
 
@@ -54,11 +55,10 @@ Y=pd.get_dummies(y_train.values)
 op_units, op_activation = len(set(dat["labels"])), "softmax"
     
 from keras.models import Sequential
-from keras.layers import Embedding, Dropout, Dense, MaxPooling1D, GlobalAveragePooling1D, SeparableConv1D    
+from keras.layers import Embedding, Dropout, Dense, MaxPooling1D, GlobalAveragePooling1D, SeparableConv1D, Flatten
 
 model = Sequential()
-model.add(Embedding(input_dim=2000, output_dim= 128,
-                        input_length= X_tr.shape[1]))
+model.add(Embedding(input_dim=2000, output_dim= 128,input_length= X_tr.shape[1]))
 model.add(Dropout(rate=.2))
 model.add(SeparableConv1D(filters=32, kernel_size=3, padding="same", dilation_rate=1,
                               activation="relu", bias_initializer="random_uniform",
@@ -75,8 +75,11 @@ model.add(SeparableConv1D(filters=64, kernel_size=3, padding="same", dilation_ra
 model.add(SeparableConv1D(filters=64, kernel_size=3, padding="same", dilation_rate=1,
                               activation="relu", bias_initializer="random_uniform",
                               depthwise_initializer="random_uniform"))
+
 model.add(GlobalAveragePooling1D())
+#GAP does this: (None, 5, 64)    ---->(None, 64)    
 #model.add(Flatten())
+#flatten does this: (None, 5, 64) --->(None, 320) 
 model.add(Dropout(rate=.2))
 model.add(Dense(op_units, activation=op_activation))
 model.summary()
@@ -84,7 +87,12 @@ model.summary()
 
 model.compile(loss="categorical_crossentropy", metrics=["acc"], optimizer= "adam")
 
-history= model.fit(X_tr,Y, epochs=10, batch_size=32, validation_split=.33)
+from time import time
+
+t0 = time()
+history= model.fit(X_tr,Y_tr, epochs=10, batch_size=32, validation_split=.33)
+print("done in %0.3fs" % (time() - t0))
+
 hist = history.history
 print('Validation accuracy: {acc}, loss: {loss}'.format(
             acc=hist['val_acc'][-1], loss=hist['val_loss'][-1]))
@@ -123,5 +131,10 @@ from sklearn.metrics import confusion_matrix
 
 confusion_matrix(y_true=X_test["classification"], y_pred=X_test["predict"])
 
+X_test.to_csv("testdf.csv")
+
+from sklearn.metrics import classification_report
+print(classification_report(X_test["classification"],X_test["predict"]))
+print(confusion_matrix(X_test["classification"],X_test["predict"]))
 
 
