@@ -7,6 +7,11 @@ Created on Mon Apr  1 11:50:22 2019
 """
 
 #data prep
+import pandas as pd
+import os
+import re
+os.chdir("/home/tarun.bhavnani@dev.smecorner.com/Desktop/ocr_trans")
+
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.models import Sequential
@@ -14,20 +19,29 @@ from keras.layers import Dense, Dropout, Embedding, MaxPooling1D, GlobalAverageP
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 import pandas as pd
+from transc_function import clean_transc
+from transc_function import pattern
+from keras.callbacks import EarlyStopping
 
-
+fdf=pd.read_csv("finaldf8.csv")
+#from transc_function import clean_transc 
+fdf=clean_transc(fdf)
 
 
 #tok.fit_on_texts(fdf.Des.values)
 dat= fdf[fdf["classification"]!="Not_Tagged"]
+#dat["labels"]
+
 #newdf["Des"]=[str(i) for i in newdf["Des"]]
 
 #######
 le = LabelEncoder()
 dat["labels"]=le.fit_transform(dat.classification)
+#jk= dat.pop("labels")
 ####
+Y=pd.get_dummies(dat["labels"])
 
-X_train, X_test, y_train, y_test = train_test_split(dat,dat["labels"], test_size=0.15, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(dat,Y, test_size=0.15, random_state=43)
 
 #Initiate the tokenizer with all the values
 
@@ -46,8 +60,8 @@ X_tt=pad_sequences(X_tt, maxlen=10)
 
 #X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
 
-Y_tr=pd.get_dummies(y_train.values)
-Y_tt=pd.get_dummies(y_test.values)
+Y_tr=y_train
+Y_tt=y_test
 
 #Model!!
 
@@ -90,12 +104,18 @@ model.compile(loss="categorical_crossentropy", metrics=["acc"], optimizer= "adam
 from time import time
 
 t0 = time()
-history= model.fit(X_tr,Y_tr, epochs=10, batch_size=32, validation_split=.33)
+early_stop = EarlyStopping(monitor='val_loss', patience=2, verbose=1)
+history= model.fit(X_tr,Y_tr, epochs=10, batch_size=32, validation_split=.33,callbacks=[early_stop])
 print("done in %0.3fs" % (time() - t0))
 
 hist = history.history
 print('Validation accuracy: {acc}, loss: {loss}'.format(
             acc=hist['val_acc'][-1], loss=hist['val_loss'][-1]))
+
+
+score = model.evaluate(X_tt, Y_tt, verbose=0)
+print("%s: %.2f%%" % (model.metrics_names[1], score[1]*100))
+
 #Validation accuracy: 0.996681720325677, loss: 0.021983623765626834
 
 #############Plotting#############3
@@ -134,7 +154,40 @@ confusion_matrix(y_true=X_test["classification"], y_pred=X_test["predict"])
 X_test.to_csv("testdf.csv")
 
 from sklearn.metrics import classification_report
-print(classification_report(X_test["classification"],X_test["predict"]))
+print(classification_report(X_test["final_tag3"],X_test["predict"]))
 print(confusion_matrix(X_test["classification"],X_test["predict"]))
 
+
+X_test["chk"]=[1 if i==j else 0 for i,j in zip(X_test["final_tag3"], X_test["predict"])]
+
+
+
+########################################
+
+#Save Model
+
+# serialize model to JSON
+from keras.models import model_from_json
+model_json = model.to_json()
+with open("model.json", "w") as json_file:
+    json_file.write(model_json)
+# serialize weights to HDF5
+model.save_weights("model.h5")
+print("Saved model to disk")
+
+# later...
+
+# load json and create model
+json_file = open('model.json', 'r')
+loaded_model_json = json_file.read()
+json_file.close()
+loaded_model = model_from_json(loaded_model_json)
+# load weights into new model
+loaded_model.load_weights("model.h5")
+print("Loaded model from disk")
+
+# evaluate loaded model on test data
+loaded_model.compile(loss="categorical_crossentropy", metrics=["acc"], optimizer= "adam")
+score = loaded_model.evaluate(X_tt, Y_tt, verbose=0)
+print("%s: %.2f%%" % (loaded_model.metrics_names[1], score[1]*100))
 
