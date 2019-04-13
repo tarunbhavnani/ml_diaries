@@ -18,6 +18,8 @@ from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
 
 fdf["counter"].value_counts()
+#fdf["counter"].value_counts()
+
 dat=fdf[fdf["counter"]==338]
 
 #Debit transactions
