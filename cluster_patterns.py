@@ -21,6 +21,7 @@ fdf["counter"].value_counts()
 #fdf["counter"].value_counts()
 
 dat=fdf[fdf["counter"]==338]
+#dat=fdf[fdf["counter"]==338]
 
 #Debit transactions
 
