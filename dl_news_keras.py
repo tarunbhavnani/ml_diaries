@@ -11,6 +11,7 @@ import sys
 texts = []  # list of text samples
 labels_index = {}  # dictionary mapping label name to numeric id
 labels = []  # list of label ids
+#labels = []  # list of label ids
 TEXT_DATA_DIR = "C:\\Users\\tarun.bhavnani\\Desktop\\keras\\news20\\20_newsgroup"
 for name in sorted(os.listdir(TEXT_DATA_DIR)):
     path = os.path.join(TEXT_DATA_DIR, name)
