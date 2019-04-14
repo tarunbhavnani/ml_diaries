@@ -1,13 +1,23 @@
+
+
+#here we will create a simple keras dl for text using bow and word2vec one by one.
+
+
+
 ##tfidf
 ##tdm
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 vectorizer = CountVectorizer()
 corpus = [
-'This is the first document.',
-'This is the second second document.',
-'And the third one.',
-'Is this the first document?']
+'This is good.',
+'This is the bad',
+'so good i like',
+'its okay',
+'so nice',
+'blah',
+'mind blowing',
+]
 
 X = vectorizer.fit_transform(corpus)
 dt=X.toarray()
@@ -19,10 +29,10 @@ df=pd.DataFrame(data=dt, columns=vectorizer.get_feature_names())
 import numpy as np
 dt=np.asarray(dt)
 dt.shape
-c1=[1,1,0,1]
+Y=["pos","neg","pos","neutral","pos","neg","pos"]#Y or the labels
 #get dummies for labels as that is what keras will understand
-c2 = pd.get_dummies(c1).values
-idx=pd.get_dummies(c1).columns
+c2 = pd.get_dummies(Y).values
+idx=pd.get_dummies(Y).columns
 #c2df=pd.DataFrame(data=c2, columns=idx)
 from keras.models import Sequential
 from keras.layers import Dense
@@ -30,7 +40,7 @@ from keras.layers import Dense
 model = Sequential()
 model.add(Dense(12, input_dim=dt.shape[1], activation='relu'))
 model.add(Dense(8, activation='relu'))
-model.add(Dense(2, activation='softmax'))
+model.add(Dense(3, activation='softmax'))
 # Compile model
 model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 # Fit the model
@@ -38,7 +48,7 @@ model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy']
 
 model.fit(x=dt,y=c2,epochs=5, validation_split=.25)
 model.predict(dt)
-prd=pd.DataFrame(data=np.round(model.predict(dt)),columns=idx)
+#prd=pd.DataFrame(data=np.round(model.predict(dt)),columns=idx)
 
 
 
@@ -48,9 +58,9 @@ prd=pd.DataFrame(data=np.round(model.predict(dt)),columns=idx)
 corpus
 
 w2i={}
-#w2i["-PAD-"]=0
-#w2i["-OOV-"]=1
-counter=0
+w2i["-PAD-"]=0
+w2i["-OOV-"]=1
+counter=2
 for i in corpus:
     for j in i.split():
         if j not in w2i:
@@ -86,13 +96,13 @@ model2.add(SpatialDropout1D(rate=.1))
 model2.summary()
 from keras.layers import LSTM
 model2.add(LSTM(units=300, dropout=.1, recurrent_dropout=.1))
-model2.add(Dense(2,activation='softmax'))
+model2.add(Dense(3,activation='softmax'))
 model2.compile(loss="binary_crossentropy", metrics=['accuracy'], optimizer='adam')
 
 model2.fit(x=w2v_pad,y=c2, epochs=5)
 
 model2.predict(w2v_pad)
-prd2=pd.DataFrame(data=np.round(model2.predict(w2v_pad)),columns=idx)
+#prd2=pd.DataFrame(data=np.round(model2.predict(w2v_pad)),columns=idx)
 """
 #notes
 dense=1 is for continous, then you dont hot encode the y.

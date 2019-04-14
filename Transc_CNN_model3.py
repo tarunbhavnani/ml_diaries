@@ -118,6 +118,9 @@ print("%s: %.2f%%" % (model.metrics_names[1], score[1]*100))
 
 #Validation accuracy: 0.996681720325677, loss: 0.021983623765626834
 
+model.save('Transc_mlp_model.h5')
+
+
 #############Plotting#############3
 # summarize history for accuracy
 import matplotlib.pyplot as plt
