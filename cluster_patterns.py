@@ -114,4 +114,19 @@ fgh= pattern(dat)
 
 
 
+"""
+#try this!
+while length>0:
+    length= len(narrations)
+    match_list = process.extract(narrations[0], narrations, scorer = fuzz.token_set_ratio, limit = len(narrations))     
+    match_list = [ele[0] for ele in match_list if ele[1] >80]
+    if len(match_list) > 5: #in list(range(2, 10)):
+          list_groups_credit.append(tuple((match_list, len(match_list), group_count)))
+          print(group_count)
+          group_count +=1
+          narrations=narrations[1:]
+          narrations=[j for j in narrations if j not in match_list]
+          [j for j in narrations if j not in match_list]
 
+
+"""
