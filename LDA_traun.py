@@ -12,6 +12,7 @@ https://towardsdatascience.com/topic-modeling-and-latent-dirichlet-allocation-in
 import os
 os.getcwd()
 os.chdir('/home/tarun/Desktop/LDA')
+#os.chdir("/home/tarun/Desktop/gitchkdir/ml_di")
 
 import pandas as pd
 data = pd.read_csv('abcnews-date-text.csv', error_bad_lines=False);

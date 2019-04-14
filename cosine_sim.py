@@ -22,7 +22,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 tfidf_vectorizer = TfidfVectorizer()
 tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
 print (tfidf_matrix.shape)
-
+tfidf_matrix.toarray()
 #calc cosine similarity of first statement with rest of them
 
 from sklearn.metrics.pairwise import cosine_similarity
