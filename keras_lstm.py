@@ -1,3 +1,8 @@
+
+#again a keras implementation, this time using keras batch generator!!
+
+
+
 from __future__ import print_function
 import collections
 import os
@@ -15,7 +20,7 @@ import argparse
     from here: http://www.fit.vutbr.cz/~imikolov/rnnlm/simple-examples.tgz. Change the
     data_path variable below to your local exraction path"""
 
-data_path = "C:\\Users\Andy\Documents\simple-examples\data"
+data_path = "/home/tarun.bhavnani@dev.smecorner.com/Desktop/simple-examples/data"
 
 parser = argparse.ArgumentParser()
 parser.add_argument('run_opt', type=int, default=1, help='An integer: 1 to train, 2 to test')
@@ -116,7 +121,7 @@ if use_dropout:
     model.add(Dropout(0.5))
 model.add(TimeDistributed(Dense(vocabulary)))
 model.add(Activation('softmax'))
-
+model.summary()
 optimizer = Adam()
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['categorical_accuracy'])
 

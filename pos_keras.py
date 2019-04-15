@@ -88,6 +88,8 @@ print(test_tags_y[0])
 
 
 #Keras can only deal with fixed size sequences. 
+import matplotlib.pyplot as plt
+plt.plot([len(i) for i in train_sentences_X])
 MAX_LENGTH = len(max(train_sentences_X, key=len))
 print(MAX_LENGTH)  # 271
 
@@ -226,6 +228,7 @@ model= Sequential()
 model.add(InputLayer(input_shape=(MAX_LENGTH,)))
 model.add(Embedding(len(word2index),128))
 model.add(Bidirectional(LSTM(256, return_sequences=True)))
+model.add(Bidirectional(LSTM(256, return_sequences=True)))#one more, where is dropout
 model.add(TimeDistributed(Dense(len(tag2index))))
 model.add(Activation('softmax'))
 
@@ -237,8 +240,18 @@ model.summary()
 
 
 
-model.fit(train_sentences_X, to_categorical(train_tags_y, len(tag2index)), batch_size=128, epochs=40, validation_split=0.2)
+model.fit(train_sentences_X, to_categorical(train_tags_y, len(tag2index)), batch_size=32, epochs=4, validation_split=0.2)
 
 predictions = model.predict(test_samples_X)
 print(logits_to_tokens(predictions, {i: t for t, i in tag2index.items()}))
- 
+
+index2tag = {value: key for (key, value) in tag2index.items()}
+
+[index2tag[i] for i in test_tags_y[0]][1:10]
+['NNP', 'VBD', 'IN', 'DT', 'NNP', 'VBZ', 'RB', 'VBN', 'IN']
+
+predictions = model.predict(test_sentences_X)
+print(logits_to_tokens(predictions, {i: t for t, i in tag2index.items()})[0][1:10])
+['NNP', 'VBD', 'IN', 'DT', 'NNP', 'VBZ', 'RB', 'JJ', 'IN']
+#pretty swell
+
