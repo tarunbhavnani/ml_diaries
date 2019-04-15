@@ -5,7 +5,8 @@ Created on Mon Apr 15 17:35:53 2019
 
 @author: tarun.bhavnani@dev.smecorner.com
 """
-
+ner-everything
+pos-everything, see qs extract
 lda
 lsa
 cnn
