@@ -28,3 +28,23 @@ nmt
 autoencoders
 
 dropout
+
+confusion matrix
+tpr fpr f1 score
+
+lift
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
