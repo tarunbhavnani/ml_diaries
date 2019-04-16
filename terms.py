@@ -5,7 +5,8 @@ Created on Mon Apr 15 17:35:53 2019
 
 @author: tarun.bhavnani@dev.smecorner.com
 """
-
+ner-everything
+pos-everything, see qs extract
 lda
 lsa
 cnn
@@ -33,6 +34,7 @@ confusion matrix
 tpr fpr f1 score
 
 lift
+<<<<<<< HEAD
 
 
 
@@ -48,3 +50,5 @@ lift
 
 
 
+=======
+>>>>>>> ec41d4ab311b413f8a935e12249b61f2fa468d4f
