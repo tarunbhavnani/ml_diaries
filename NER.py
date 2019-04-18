@@ -113,6 +113,8 @@ number_of_entities=len(article.ents)
 labels = [x.label_ for x in article.ents]
 pprint(Counter(labels))
 len(Counter(labels))
+[x for x in article.ents if x.label_ =="WORK_OF_ART"]
+[x for x in article.ents if x.label_ =="ORG"]
 
 "There are {} entites with a total of {} different unique labels".format(number_of_entities, len(Counter(labels)))
 

@@ -23,8 +23,18 @@ text summary
 text classification
 
 
-lda
-lsa
+lda-- is a generative probabilistic model, that assumes a Dirichlet prior over the latent topics..lda finds the latent topics in the documents. it tries to make a words*w, w*docs such a way 
+to minimize the error. we have different topics which are clusters of diff words and each document 
+has a propb of fallinf into each one of topics.
+
+lsa- its more like PCA.learns latent topics by performing a matrix decomposition (SVD) 
+on the term-document matrix.
+
+lsa is faster but lesser accuracy mostly.
+
+pca:Principal components analysis is a procedure for identifying a smaller number of uncorrelated variables, called “principal components”, from a large set of data. The goal of principal components analysis is to explain the maximum amount of variance with the fewest number of principal components.
+
+
 cnn
 lstm
 bilstm
