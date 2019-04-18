@@ -9,26 +9,30 @@ Created on Fri Mar  8 10:23:08 2019
 import pandas as pd
 import os
 import re
+from fuzzywuzzy import fuzz
+from fuzzywuzzy import process
+from time import time
 
-
+dat= pd.read_csv("dat_trans.csv")
 
 def clean_transc(dat):
-  
+  #have removed the spaces from imps and rtgs as in neft, see
+  t0= time()
   dat["Des"] = [str(i) for i in dat["Description"]]
   dat["Des"] = dat["Des"].apply(lambda x: x.lower())
   dat["Des"]=[re.sub("[i|1]/w"," inwards ",i) for i in dat["Des"]]
   dat["Des"]=[re.sub("[o|0]/w"," outwards ",i) for i in dat["Des"]]
   dat["Des"]=[re.sub("b/f"," brought_fwd ",i) for i in dat["Des"]]
-  dat["Des"]=[re.sub("neft"," neft ",i) for i in dat["Des"]]
-  dat["Des"]=[re.sub("[i|1]mp[s|5]"," imps ",i) for i in dat["Des"]]
-  dat["Des"]=[re.sub(r'r[i|t|1][g|8][s|5]'," rtgs ",i) for i in dat["Des"]]
+  #dat["Des"]=[re.sub("neft"," neft ",i) for i in dat["Des"]]
+  dat["Des"]=[re.sub("[i|1]mp[s|5]","imps",i) for i in dat["Des"]]
+  dat["Des"]=[re.sub(r'r[i|t|1][g|8][s|5]',"rtgs",i) for i in dat["Des"]]
   dat["Des"]=[re.sub("ecs"," ecs ",i) for i in dat["Des"]]
   dat["Des"]=[re.sub("cash"," cash ",i) for i in dat["Des"]]
-  dat["Des"]=[re.sub("nach"," nach ",i) for i in dat["Des"]]
-  dat["Des"]=[re.sub("ebank"," ebank ",i) for i in dat["Des"]]
+  dat["Des"]=[re.sub("nach","nach",i) for i in dat["Des"]]
+  dat["Des"]=[re.sub("ebank","ebank",i) for i in dat["Des"]]
   dat["Des"]=[re.sub(r"c[o|0][1|l][1|l]","coll",i) for i in dat["Des"]]# for int.co11
   dat["Des"]=[re.sub("vvdl","wdl",i) for i in dat["Des"]]
-  dat["Des"]=[re.sub("nfs"," nfs ",i) for i in dat["Des"]]
+  dat["Des"]=[re.sub("nfs","nfs",i) for i in dat["Des"]]
   dat["Des"]=[re.sub(r"[1|l][o|0]an","loan",i) for i in dat["Des"]]
   dat["Des"]=[re.sub("[\n]|[\r]"," ",i) for i in dat["Des"]]
 
@@ -52,7 +56,8 @@ def clean_transc(dat):
 
   dat["classification"]="Not_Tagged"
 
-
+  dat["classification"]=["si" if len(re.findall(r"\bsi\b",x))>0 else y for x,y in zip(dat["Des"], dat["classification"])]
+  dat["classification"]=["si" if len(re.findall(r"\bs i\b",x))>0 else y for x,y in zip(dat["Des"], dat["classification"])]
   dat["classification"]=["dd" if len(re.findall(r"\bdd\b",x))>0 else y for x,y in zip(dat["Des"], dat["classification"])]
   dat["classification"]=["ib" if len(re.findall(r"\bib\b",x))>0 else y for x,y in zip(dat["Des"], dat["classification"])]
 
@@ -106,7 +111,7 @@ def clean_transc(dat):
 
   dat["classification"]=["ecs" if len(re.findall("loan",x))>0 else y for x,y in zip(dat["Des_cl"], dat["classification"])]
 
-  dat["classification"]=["emi" if len(re.findall(r"\bemi\b",x))>0 else y for x,y in zip(dat["Des_cl"], dat["classification"])]
+  dat["classification"]=["emi" if len(re.findall(r"em[i|1|u]",x))>0 else y for x,y in zip(dat["Des_cl"], dat["classification"])]
 
   dat["classification"]=["nach" if len(re.findall("nach",x))>0 else y for x,y in zip(dat["Des_cl"], dat["classification"])]
 
@@ -114,8 +119,16 @@ def clean_transc(dat):
 
   dat["classification"]=["i/w" if len(re.findall("inward",x))>0 else y for x,y in zip(dat["Des_cl"], dat["classification"])]
   dat["classification"]=["o/w" if len(re.findall("outward",x))>0 else y for x,y in zip(dat["Des_cl"], dat["classification"])]
+  
+  #see if we need owclg as a clg or a ow 
+  #dat["classification"]=["i/w" if len(re.findall(r"\biw\b",x))>0 else y for x,y in zip(dat["Des_cl"], dat["classification"])]
+  #dat["classification"]=["o/w" if len(re.findall(r"\bow\b",x))>0 else y for x,y in zip(dat["Des_cl"], dat["classification"])]
+  
+  
   dat["classification"]=["int_coll" if len(re.findall("int coll",x))>0 else y for x,y in zip(dat["Des"], dat["classification"])]
-
+  
+  dat["classification"]=["upi" if len(re.findall(r"\bup[i|1]",x))>0 else y for x,y in zip(dat["Des_cl"], dat["classification"])]
+  
   #charges!
   dat["cl_cl"]="Not_Tagged"
   dat["cl_cl"]=["charges" if len(re.findall(r"charge?",x))>0 else y for x,y in zip(dat["Des_cl"], dat["cl_cl"])]
@@ -137,121 +150,260 @@ def clean_transc(dat):
   #if any alpha numerics are still left
 
   dat["Des"]= [re.sub("[\W_]+"," ",i) for i in dat["Des"]]
-
+  print("time taken:",time()-t0, "seconds")
   return(dat)
 
 
 
 
-fdf["classification"].value_counts()
-#dat["tt"].value_counts()
-#dat.to_csv("finaldf8.csv")
+#fdf=clean_transc(fdf)
+
+def pattern(dat):
+#  from fuzzywuzzy import fuzz
+#  from fuzzywuzzy import process
+
+  
+  def sortSecond(val): 
+      return val[1]  
+
+  
+  dfg=pd.DataFrame( columns =['Debits', 'Credits']) 
+  
+  narrations = list(dat["Des"][dat["Credit"]==0])
+  #jk=narrations
+  #remove stopwords, to improve results
+  stopwords= ["neft", "rtgs","imps","cash", "cheque", "tpt", "transfer", "to", "atm","dd","clg","atw","self"]
+  narrations=[" ".join([j for j in i.split() if j not in stopwords]) for i in narrations]
+  list_groups_debit = []
+  group_count = 0
+
+  for i,string in enumerate(narrations):
+    print(i)
+   #if group_count>1000:
+   #  break
+   #else:
+    #print(i,string)
+    try:
+    
+      match_list = process.extract(string, narrations, scorer = fuzz.token_set_ratio, limit = len(narrations))     
+      match_list = [ele[0] for ele in match_list if ele[1] >80]
+
+      if len(match_list) > 5: #in list(range(2, 10)):
+          list_groups_debit.append(tuple((match_list, len(match_list), group_count)))
+          print(group_count)
+          group_count +=1
 
 
-#fdf["Des"][350838]
+      #for ele in match_list:
+      #  narrations.remove(ele)
+      narrations=[i for i in narrations if i not in match_list]
+        #print("a")
+      #print("cccccccccccccc")
+    except:
+      print("skipping",i,string)
 
-#once classification via regex is done, we will chunk out the tagged.
-#for the rest of the Not_Tagged, we will create a model to predict
-# this will work on clean description the "Des" coloumn
-#we will sue sepcnn
+ 
+  list_groups_debit.sort(key = sortSecond,reverse = True)
+  
 
-os.chdir('/home/tarun.bhavnani@dev.smecorner.com/Desktop/ocr_trans/all mapped')
-fdf= pd.read_csv("finaldf.csv")
-
-list(fdf)
-fdf= fdf.drop(["classification", "Des"], axis=1)
-
-%time fdf= clean_transc(fdf)
-
-#timing: 350935 recorde 21.8 secsonds
-
-fdf["Des"]
-
-dat= fdf[fdf["classification"]=="Not_Tagged"]
-dat= dat[dat["cl_cl"]=="Not_Tagged"]
-dat= dat[dat["gst"]=="Not_Tagged"]
-dat.shape
-#or
-#dat= fdf[fdf["classification"]=="Not_Tagged"][fdf["cl_cl"]=="Not_Tagged"][[fdf["gst"]=="Not_Tagged"]]
-
-
-dat["Description"][350809]
-
-
-dropout_rate=.2
-input_shape=(None,256)
-units=128
-final_units=5
-from keras.models import Sequential
-from keras.layers import Dropout
-
-model= Sequential()
-model.add(Dropout(rate=dropout_rate, input_shape=input_shape))
-
-model.add(Dense(units, activation="relu"))
-model.add(Dropout(rate=dropout_rate))
-
-
-model.add(Dense(final_units, activation="softmax"))
-model.summary()
-
-
-
-###################################################################################
-
-from keras.models import Sequential
-from keras.layers import Dense, Dropout, Embedding, SeparableConv1D, MaxPooling1D,GlobalAveragePooling1D
-
-num_features=200
-embedding_dim=128
-input_shape=(None, 256)
-model= Sequential()
-filters=128
-kernel_size=3
-
-model.add(Embedding(input_dim=num_features,
-                    output_dim=embedding_dim,
-                    input_length=input_shape[0]))
-
-model.add(Dropout(rate= dropout_rate))
-model.add(SeparableConv1D(filters=filters,
-                          kernel_size=kernel_size,
-                          activation="relu",
-                          bias_initializer="random_uniform",
-                          depthwise_initializer="random_uniform",
-                          padding="same"))
-
-model.add(SeparableConv1D(filters=filters,
-                          kernel_size=kernel_size,
-                          activation="relu",
-                          bias_initializer="random_uniform",
-                          depthwise_initializer="random_uniform",
-                          padding="same"))
-
-model.add(MaxPooling1D(pool_size=pool_size))
-
-model.add(SeparableConv1D(filters=filters*2,
-                          kernel_size=kernel_size,
-                          activation="relu",
-                          bias_initializer="random_uniform",
-                          depthwise_initializer="random_uniform",
-                          padding="same"))
-
-model.add(SeparableConv1D(filters=filters*2,
-                          kernel_size=kernel_size,
-                          activation="relu",
-                          bias_initializer="random_uniform",
-                          depthwise_initializer="random_uniform",
-                          padding="same"))
-model.add(GlobalAveragePooling1D())
-
-model.add(Dropout(rate=dropout_rate))
-
-model.add(Dense(3, activation="softmax"))
-model.summary()
+  dfg["Debits"]=pd.Series([(i[0][1],i[1]) for i in list_groups_debit[0:10]])
+  #dfg["Debits-Counts"]=pd.Series([i[1] for i in list_groups_debit[0:10]])
 
 
 
+  narrations = list(dat["Des"][dat["Debit"]==0])
+  list_groups_credit = []
+  group_count = 0
+
+  
+  for i,string in enumerate(narrations):
+    try:
+    #print(i,string)
+      match_list = process.extract(string, narrations, scorer = fuzz.token_set_ratio, limit = len(narrations))     
+      match_list = [ele[0] for ele in match_list if ele[1] >80]
+      if len(match_list) > 5: #in list(range(2, 10)):
+          list_groups_credit.append(tuple((match_list, len(match_list), group_count)))
+          print(group_count)
+          group_count +=1
+
+
+      #for ele in match_list:
+      #  narrations.remove(ele)
+      narrations=[i for i in narrations if i not in match_list]
+      #print("a")
+      #print("cccccccccccccc")
+    except:
+      print("skipping",i,string)
+
+#  def sortSecond(val): 
+#      return val[1]  
+
+  list_groups_credit.sort(key = sortSecond,reverse = True)
+
+  #dfg["Credits"]=[i[0][1] for i in list_groups_credit[1:10]]
+  dfg["Credits"]=pd.Series([(i[0][1],i[1]) for i in list_groups_credit[0:10]])
+  #gh=[i[0][1] for i in list_groups_credit[1:10]]
+  #[y if y else i for i,y in zip(dfg["Credits"],gh)]
+  
+  return(dfg)
+  
+
+
+
+
+def round_entry(dat):
+ 
+ dat["roundiw"]=0
+ dat["roundow"]=0
+ print("Finding round entries...")
+
+ for i in range(0,len(dat)):
+   #print(i,"of", len(dat))
+   for j in range(i,i+5):
+#    print(j)
+     try:
+         #debit and then credit
+        
+         if dat.Debit.iloc[i]==dat.Credit.iloc[j] and dat.Debit.iloc[i]!=0 :
+           #print("check........ {}".format(i))
+           dat['roundiw'].iloc[i]="inward debit suspected {}".format(i)
+           dat['roundiw'].iloc[j]="inward credit suspected {}".format(i)
+           if dat["Date_new"].iloc[i]==dat["Date_new"].iloc[j]: #for bounce
+             dat['roundiw'].iloc[j]="inward credit suspected same date {}".format(i)
+
+         if dat.Credit.iloc[i]==dat.Debit.iloc[j] and dat.Credit.iloc[i]!=0 :
+           #print("check........ {}".format(i))
+           dat['roundow'].iloc[i]="outward credit suspected {}".format(i)
+           dat['roundow'].iloc[j]="outward debit suspected {}".format(i)
+           if dat["Date_new"].iloc[i]==dat["Date_new"].iloc[j]: #for bounce
+             dat['roundow'].iloc[j]="outward debit suspected same date{}".format(i)
+
+            
+     except:
+       print("NA")
+ print(dat['roundiw'].value_counts())
+ print(dat['roundow'].value_counts())
+   
+ return(dat)   
+
+
+
+
+
+
+
+fdf= pd.read_csv("df.csv")
+dat=fdf[fdf.counter==51]
+dat=dat.drop(["round","rt","Des","classification","cl_cl","gst"], axis=1)
+#from sklearn.pipeline import Pipeline
+
+#trns=  Pipeline([("clean",clean_transc(dat)),("pat",pattern(dat)),("round",round_entry(dat))])
+
+#trns=  Pipeline([])
+#needs class not def
+
+
+list(dat)
+dat= clean_transc(dat)
+dat= round_entry(dat)
+pat=pattern(dat)
+
+
+fdf["iw_see"]=""
+fdf["Description"]=[str(i).lower() for i in fdf["Description"]]
+fdf["iw_see"]=["iw" if len(re.findall(r"iw",x))>0 else y for x,y in zip(fdf["Description"], fdf["iw_see"])]
+fdf["iw_see"].value_counts()
+
+#pattern---->r"\biw\b"
+
+fdf["ow_see"]=""
+fdf["Description"]=[str(i).lower() for i in fdf["Description"]]
+fdf["ow_see"]=["ow" if len(re.findall(r"ow",x))>0 else y for x,y in zip(fdf["Description"], fdf["ow_see"])]
+fdf["ow_see"].value_counts()
+#pattern--> r"\bow\b"
+
+
+###############################################################################
+###############################################################################
+
+
+
+
+
+#import datetime
+from sklearn import preprocessing
+import matplotlib.pyplot as plt
+
+def plot_months(dat):
+  dat['DateTime'] = pd.to_datetime(dat['Date_new'])
+  #dat.DateTime.iloc[1].day
+  dat["day"]=dat.DateTime.apply(lambda x: x.day)
+  dat["month"]=dat.DateTime.apply(lambda x: x.month)
+  dat["year"]=dat.DateTime.apply(lambda x: x.year)
+
+  dat=dat[["day","month","year", "Balance"]]
+
+
+  df=pd.DataFrame()
+  mw=pd.DataFrame({'day': range(1,32)})
+
+  for i in set(dat["year"]):
+    dat1=dat[dat.year==i]
+    for j in set(dat["month"]):
+      dat2= dat1[dat1.month==j]
+      #df.sort_values('date').groupby('id').tail(1)
+      dat3=dat2.groupby('day').tail(1)
+      dat4=pd.merge(mw,dat3,on='day', how='left')
+      dat4.year=i
+      dat4.month=j
+      dat4=dat4.fillna(0)
+      #cant fill the 0 in bal now as we will need the values in initial days from the past month, if they are 0.    
+      df=df.append(dat4)
+
+#df["bal_cum"]=df.bal.cumsum()
+  print("Balance data takes a lil time...")
+  for k in range(1,len(df)):
+    #print("Balance data takes a lil time...")
+    print('.', end='', flush=True)
+    if df.Balance.iloc[k]==0:
+      df.Balance.iloc[k]=df.Balance.iloc[k-1]
+  
+  """df["bul"]= [i if i!=0 else i.shift(-1) for i in dat.Balance[1:]]"""
+    
+#df["bal_cum"]= [i-j for i,j in zip(df["Credit"], df["Debit"])]
+
+#df["bal_cum_norm2"]=preprocessing.scale(df.bal_cum)
+
+
+  for year in set(df.year):
+    print(year)
+    dfy=df[df.year==year]
+    # plot data
+    fig, ax = plt.subplots(figsize=(15,7))
+    # use unstack()
+    dfy.groupby(['day','month']).sum()['Balance'].unstack().plot(ax=ax) 
+  
+    plt.savefig('Month_day_Balance_{}.png'.format(year))
+
+
+plot_months(dat)
+
+###############################################################################
+###############################################################################
+#Variance
+def variance(dat):
+  dat["cum"]= dat.Balance.cumsum()
+  dfv=dat[dat["cum"]!=0]
+  for year in set(dfv.year):
+    dfy=dfv[dfv.year==year]
+    plt.plot(preprocessing.scale(dfy.groupby(['day','month']).sum()['Balance'].unstack().var()))
+    plt.title('Balance Variance across Months')
+    plt.ylabel('Variance')
+    plt.xlabel('Months')
+    plt.legend(list(set(dat.year)), loc='upper right')
+    plt.savefig('Variance_Balance.png'.format(year))
+
+variance(dat)
 
 
 
