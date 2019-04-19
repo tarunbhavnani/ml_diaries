@@ -13,8 +13,6 @@ from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
 from time import time
 
-dat= pd.read_csv("dat_trans.csv")
-
 def clean_transc(dat):
   #have removed the spaces from imps and rtgs as in neft, see
   t0= time()
@@ -55,13 +53,17 @@ def clean_transc(dat):
 
 
   dat["classification"]="Not_Tagged"
-
-  dat["classification"]=["si" if len(re.findall(r"\bsi\b",x))>0 else y for x,y in zip(dat["Des"], dat["classification"])]
-  dat["classification"]=["si" if len(re.findall(r"\bs i\b",x))>0 else y for x,y in zip(dat["Des"], dat["classification"])]
+  # si as transfer
+  dat["classification"]=["transfer" if len(re.findall(r"\bsi\b",x))>0 else y for x,y in zip(dat["Des"], dat["classification"])]
+  dat["classification"]=["transfer" if len(re.findall(r"\bs i\b",x))>0 else y for x,y in zip(dat["Des"], dat["classification"])]
+  
   dat["classification"]=["dd" if len(re.findall(r"\bdd\b",x))>0 else y for x,y in zip(dat["Des"], dat["classification"])]
+  
+  # ib also as transfer
   dat["classification"]=["ib" if len(re.findall(r"\bib\b",x))>0 else y for x,y in zip(dat["Des"], dat["classification"])]
-
-  dat["classification"]=["ft" if len(re.findall(r"\bft\b",x))>0 else y for x,y in zip(dat["Des"], dat["classification"])]
+  
+  #ft as transfer 
+  dat["classification"]=["transfer" if len(re.findall(r"\bft\b",x))>0 else y for x,y in zip(dat["Des"], dat["classification"])]
 
 
   dat["classification"]=["brought_fwd" if len(re.findall("brought_fwd",x))>0 else y for x,y in zip(dat["Des_cl"], dat["classification"])]
@@ -70,13 +72,16 @@ def clean_transc(dat):
 
 
   dat["classification"]=["transfer" if len(re.findall(r"\bdr\b",x))>0 else y for x,y in zip(dat["Des"], dat["classification"])]
-
-
+  dat["classification"]=["transfer" if len(re.findall(r"\bftr\b",x))>0 else y for x,y in zip(dat["Des"], dat["classification"])]
+  dat["classification"]=["transfer" if len(re.findall(r"\btpf[t|r]\b",x))>0 else y for x,y in zip(dat["Des"], dat["classification"])]
+  dat["classification"]=["transfer" if len(re.findall(r"\bfund[s]? trf\b",x))>0 else y for x,y in zip(dat["Des"], dat["classification"])]
+  dat["classification"]=["transfer" if len(re.findall(r"\bmob[\s]?tpft\b",x))>0 else y for x,y in zip(dat["Des"], dat["classification"])]  
+  dat["classification"]=["transfer" if len(re.findall(r"\btrf\b",x))>0 else y for x,y in zip(dat["Des"], dat["classification"])]    
   dat["classification"]=["transfer" if len(re.findall("tpt",x))>0 else y for x,y in zip(dat["Des_cl"], dat["classification"])]
-
-
   dat["classification"]=["transfer" if len(re.findall("transfer",x))>0 else y for x,y in zip(dat["Des_cl"], dat["classification"])]
 
+  
+  
   dat["classification"]=["neft" if len(re.findall("neft",x))>0 else y for x,y in zip(dat["Des_cl"], dat["classification"])]
 
   dat["classification"]=["rtgs" if len(re.findall("rtgs",x))>0 else y for x,y in zip(dat["Des_cl"], dat["classification"])]
@@ -96,30 +101,36 @@ def clean_transc(dat):
 
   dat["classification"]=["cheque" if len(re.findall(r"che?q",x))>0 else y for x,y in zip(dat["Des"], dat["classification"])]
 
-  dat["classification"]=["cheque" if len(re.findall("cl[g|q]",x))>0 else y for x,y in zip(dat["Des"], dat["classification"])]
+  dat["classification"]=["cheque" if len(re.findall("c[l|1][g|q]",x))>0 else y for x,y in zip(dat["Des"], dat["classification"])]
 
   dat["classification"]=["cheque" if len(re.findall(r"c[l|1]earing",x))>0 else y for x,y in zip(dat["Des_cl"], dat["classification"])]
 
   
+  #cheque for INF
+  dat["classification"]=["cheque" if len(re.findall(r"\b[i|1]nf\b",x))>0 else y for x,y in zip(dat["Des"], dat["classification"])]
   
-  dat["classification"]=["INF" if len(re.findall(r"\b[i|1]nf\b",x))>0 else y for x,y in zip(dat["Des"], dat["classification"])]
-  dat["classification"]=["MMT" if len(re.findall(r"\bmmt\b",x))>0 else y for x,y in zip(dat["Des"], dat["classification"])]
+  #cash for mmt
+  dat["classification"]=["cash" if len(re.findall(r"\bmmt\b",x))>0 else y for x,y in zip(dat["Des"], dat["classification"])]
   
   
+  #ecs, nach, emi, loan are all nach/emi
+  dat["classification"]=["nach/emi" if len(re.findall("ecs",x))>0 else y for x,y in zip(dat["Des_cl"], dat["classification"])]
+
+  dat["classification"]=["nach/emi" if len(re.findall("loan",x))>0 else y for x,y in zip(dat["Des_cl"], dat["classification"])]
+
+  dat["classification"]=["nach/emi" if len(re.findall(r"em[i|1|u]",x))>0 else y for x,y in zip(dat["Des_cl"], dat["classification"])]
+
+  dat["classification"]=["nach/emi" if len(re.findall("nach",x))>0 else y for x,y in zip(dat["Des_cl"], dat["classification"])]
+
+  dat["classification"]=["nach/emi" if len(re.findall(r"\bach\b",x))>0 else y for x,y in zip(dat["Des"], dat["classification"])]
+
   
-  dat["classification"]=["ecs" if len(re.findall("ecs",x))>0 else y for x,y in zip(dat["Des_cl"], dat["classification"])]
-
-  dat["classification"]=["ecs" if len(re.findall("loan",x))>0 else y for x,y in zip(dat["Des_cl"], dat["classification"])]
-
-  dat["classification"]=["emi" if len(re.findall(r"em[i|1|u]",x))>0 else y for x,y in zip(dat["Des_cl"], dat["classification"])]
-
-  dat["classification"]=["nach" if len(re.findall("nach",x))>0 else y for x,y in zip(dat["Des_cl"], dat["classification"])]
-
-  dat["classification"]=["nach" if len(re.findall(r"\bach\b",x))>0 else y for x,y in zip(dat["Des"], dat["classification"])]
-
   dat["classification"]=["i/w" if len(re.findall("inward",x))>0 else y for x,y in zip(dat["Des_cl"], dat["classification"])]
   dat["classification"]=["o/w" if len(re.findall("outward",x))>0 else y for x,y in zip(dat["Des_cl"], dat["classification"])]
   
+  dat["classification"]=["i/w" if len(re.findall(r"iwclg",x))>0 else y for x,y in zip(dat["Des_cl"], dat["classification"])]
+  dat["classification"]=["o/w" if len(re.findall(r"owclg",x))>0 else y for x,y in zip(dat["Des_cl"], dat["classification"])]
+
   #see if we need owclg as a clg or a ow 
   #dat["classification"]=["i/w" if len(re.findall(r"\biw\b",x))>0 else y for x,y in zip(dat["Des_cl"], dat["classification"])]
   #dat["classification"]=["o/w" if len(re.findall(r"\bow\b",x))>0 else y for x,y in zip(dat["Des_cl"], dat["classification"])]
@@ -127,26 +138,33 @@ def clean_transc(dat):
   
   dat["classification"]=["int_coll" if len(re.findall("int coll",x))>0 else y for x,y in zip(dat["Des"], dat["classification"])]
   
-  dat["classification"]=["upi" if len(re.findall(r"\bup[i|1]",x))>0 else y for x,y in zip(dat["Des_cl"], dat["classification"])]
+  dat["classification"]=["internet_banking" if len(re.findall(r"\bup[i|1]",x))>0 else y for x,y in zip(dat["Des_cl"], dat["classification"])]
   
+  dat["classification"]=["tax" if len(re.findall(r"tax",x))>0 else y for x,y in zip(dat["Des"], dat["classification"])]
+  dat["classification"]=["tax" if len(re.findall(r"\btds\b",x))>0 else y for x,y in zip(dat["Des"], dat["classification"])]
+  
+  dat["classification"]=["gst" if len(re.findall(r"[s|c]gst|\bgst",x))>0 else y for x,y in zip(dat["Des"], dat["classification"])]
   #charges!
   dat["cl_cl"]="Not_Tagged"
   dat["cl_cl"]=["charges" if len(re.findall(r"charge?",x))>0 else y for x,y in zip(dat["Des_cl"], dat["cl_cl"])]
   dat["cl_cl"]=["charges" if len(re.findall("chrg",x))>0 else y for x,y in zip(dat["Des_cl"], dat["cl_cl"])]
-  dat["cl_cl"]=["charges" if len(re.findall("chgs?",x))>0 else y for x,y in zip(dat["Des_cl"], dat["cl_cl"])]
+  dat["cl_cl"]=["charges" if len(re.findall(r"\bchgs?\b",x))>0 else y for x,y in zip(dat["Des_cl"], dat["cl_cl"])]
   dat["cl_cl"]=["charges" if len(re.findall("commission",x))>0 else y for x,y in zip(dat["Des_cl"], dat["cl_cl"])]
   dat["cl_cl"]=["charges" if len(re.findall(r"\bfee\b",x))>0 else y for x,y in zip(dat["Des"], dat["cl_cl"])]
+  dat["cl_cl"]=["charges" if len(re.findall(r"\bnftchg\b",x))>0 else y for x,y in zip(dat["Des"], dat["cl_cl"])]
+  dat["cl_cl"]=["charges" if len(re.findall(r"\bchg[s|\s]\b",x))>0 else y for x,y in zip(dat["Des"], dat["cl_cl"])]
   #return
   #dat["cl_ret"]="Not_Tagged"
   #dat["cl_cl"]=["return" if len(re.findall(r"\bretu?r?n?|return",x))>0 else y for x,y in zip(dat["Des"], dat["cl_cl"])]
   dat["cl_cl"]=["return" if len(re.findall(r"\bretu?r?n?\b|return",x))>0 else y for x,y in zip(dat["Des"], dat["cl_cl"])]
+  dat["cl_cl"]=["return" if len(re.findall(r"\brtn\b",x))>0 else y for x,y in zip(dat["Des"], dat["cl_cl"])]
+  #dat["gst"]="Not_Tagged"
+  #dat["classification"]=["gst" if len(re.findall(r"[s|c]gst|\bgst",x))>0 else y for x,y in zip(dat["Des"], dat["gst"])]
+  dat["Des"]=["".join([j for j in i if j.isdigit()==False ]) for i in fdf["Des"]]
 
-  dat["gst"]="Not_Tagged"
-  dat["gst"]=["gst" if len(re.findall(r"[s|c]gst|\bgst",x))>0 else y for x,y in zip(dat["Des"], dat["gst"])]
 
 
-
-  dat["Des"]=[" ".join([j for j in i.split() if not any(c.isdigit() for c in j)]) for i in dat["Des"]]
+  #dat["Des"]=[" ".join([j for j in i.split() if not any(c.isdigit() for c in j)]) for i in dat["Des"]]
   #if any alpha numerics are still left
 
   dat["Des"]= [re.sub("[\W_]+"," ",i) for i in dat["Des"]]
@@ -335,6 +353,7 @@ from sklearn import preprocessing
 import matplotlib.pyplot as plt
 
 def plot_months(dat):
+  
   dat['DateTime'] = pd.to_datetime(dat['Date_new'])
   #dat.DateTime.iloc[1].day
   dat["day"]=dat.DateTime.apply(lambda x: x.day)
@@ -386,7 +405,7 @@ def plot_months(dat):
     plt.savefig('Month_day_Balance_{}.png'.format(year))
 
 
-plot_months(dat)
+plot_months(fdf)
 
 ###############################################################################
 ###############################################################################
@@ -406,6 +425,7 @@ def variance(dat):
 variance(dat)
 
 
+dat=fdf[fdf.counter==39]
 
 
 
