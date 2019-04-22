@@ -203,6 +203,14 @@ $ docker run -p 8888:5000 tbhavnani/seecat
 
 
 
+#########################################################
+#########################################################
+#Running Ngrok in a container using docker
+https://technology.amis.nl/2019/01/06/expose-docker-container-services-on-the-internet-using-ngrok/
+https://github.com/gtriggiano/ngrok-tunnel
+
+#########################################################
+#########################################################
 
 
 
