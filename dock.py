@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Apr 22 10:31:56 2019
-
+git clone https://github.com/BretFisher/udemy-docker-mastery.git
 @author: tarun.bhavnani@dev.smecorner.com
 """
 
@@ -212,6 +212,31 @@ https://github.com/gtriggiano/ngrok-tunnel
 #########################################################
 #########################################################
 
+
+
+
+###################3
+
+
+sudo docker network ls
+sudo docker network create tarun
+
+sudo docker container run -d -p 80:80 --network tarun --name nginx nginx
+sudo docker container run -d -p 3306:3306 --network tarun --name mysql -e MYSQL_RANDOM_ROOT_PASSWORD=true mysql
+sudo docker container run -d -p 8080:80 --network tarun --name httpd httpd
+
+sudo docker network inspect tarun
+
+-d is for --detached
+-p is for port
+--name is name
+-e is environment
+--network is for network
+
+############################################3
+
+build images
+-f is for Dockerfile
 
 
 
