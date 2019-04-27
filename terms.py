@@ -152,7 +152,8 @@ RNN
 
 
 LSTM
-
+forget gate
+The portion of a Long Short-Term Memory cell that regulates the flow of information through the cell. Forget gates maintain context by deciding which information to discard from the cell state.
 
 CNN
 
@@ -160,28 +161,54 @@ CNN
 Autoencoder, encoder/decoder
 
 
-GAN
+generative adversarial network (GAN)
+A system to create new data in which a generator creates data and a discriminator determines whether that created data is valid or invalid.
 
+Attention
 
 Word Embedding
 
 
 Word2vec
 
-
+backpropagation
+The primary algorithm for performing gradient descent on neural networks. First, the output values of each node are calculated (and cached) in a forward pass. Then, the partial derivative of the error with respect to each parameter is calculated in a backward pass through the graph.
 Seq2Seq
 
+activation function
+
+A function (for example, ReLU or sigmoid) that takes in the weighted sum of all of the inputs from the previous layer and then generates and passes an output value (typically nonlinear) to the next layer.
 
 Optimizer
+
 
 Adam
 rmsprop
 
-Gradient Descent
+Gradient Descent: A technique to minimize loss by computing the gradients of loss with respect to the model's parameters, conditioned on training data. Informally, gradient descent iteratively adjusts parameters, gradually finding the best combination of weights and bias to minimize loss.
+Gradient:the gradient is the vector of partial derivatives of the model function. The gradient points in the direction of steepest ascent.
 
 SGD
+AdaGrad
+A sophisticated gradient descent algorithm that rescales the gradients of each parameter, effectively giving each parameter an independent learning rate.
+
+
+
+
+batch normalization
+Normalizing the input or output of the activation functions in a hidden layer. Batch normalization can provide the following benefits:
+
+Make neural networks more stable by protecting against outlier weights.
+Enable higher learning rates.
+Reduce overfitting.
+
+Maxpooling
+Flatten
+
+filters/kernels
 
 SVM
+SVC
 
 SVD
 
@@ -195,7 +222,10 @@ Linera Regression
 
 Decision Tree
 
+AUC (Area under the ROC Curve)
+An evaluation metric that considers all possible classification thresholds.
 
+The Area Under the ROC curve is the probability that a classifier will be more confident that a randomly chosen positive example is actually positive than that a randomly chosen negative example is positive.
 Clustering
 KNN
 
@@ -205,7 +235,102 @@ Kmeans
 Parametric/Non Parametric
 
 
-Supervided/Non Supervised
+Supervised/Non Supervised
+
+boosting
+A ML technique that iteratively combines a set of simple and not very accurate classifiers (referred to as "weak" classifiers) into a classifier with high accuracy (a "strong" classifier) by upweighting the examples that the model is currently misclassfying.
+
+
+collaborative filtering
+Making predictions about the interests of one user based on the interests of many other users. Collaborative filtering is often used in recommendation systems.
+
+
+confirmation bias
+#fairness
+The tendency to search for, interpret, favor, and recall information in a way that confirms one's preexisting beliefs or hypotheses. Machine learning developers may inadvertently collect or label data in ways that influence an outcome supporting their existing beliefs. Confirmation bias is a form of implicit bias.
+
+Experimenter's bias is a form of confirmation bias in which an experimenter continues training models until a preexisting hypothesis is confirmed.
+
+confusion matrix
+An NxN table that summarizes how successful a classification model's predictions were;
+
+
+convex function
+A function in which the region above the graph of the function is a convex set. The prototypical convex function is shaped something like the letter U.
+A strictly convex function has exactly one local minimum point, which is also the global minimum point. 
+ lot of the common loss functions, including the following, are convex functions:
+
+L2 loss
+Log Loss
+L1 regularization
+L2 regularization
+Many variations of gradient descent are guaranteed to find a point close to the minimum of a strictly convex function. 
+Deep models are never convex functions. Remarkably, algorithms designed for convex optimization tend to find reasonably good solutions on deep networks anyway, even though those solutions are not guaranteed to be a global minimum.
+
+
+convex optimization
+The process of using mathematical techniques such as gradient descent to find the minimum of a convex function.
+
+
+convolutions
+In machine learning, a convolution mixes the convolutional filter and the input matrix in order to train weights.For example, a machine learning algorithm training on 2K x 2K images would be forced to find 4M separate weights. Thanks to convolutions, a machine learning algorithm only has to find weights for every cell in the convolutional filter, dramatically reducing the memory needed to train the model. When the convolutional filter is applied, it is simply replicated across cells such that each is multiplied by the filter.
+
+convolutional filter
+One of the two actors in a convolutional operation. (The other actor is a slice of an input matrix.) A convolutional filter is a matrix having the same rank as the input matrix, but a smaller shape. For example, given a 28x28 input matrix, the filter could be any 2D matrix smaller than 28x28.
+
+
+cross-entropy
+A generalization of Log Loss to multi-class classification problems. Cross-entropy quantifies the difference between two probability distributions.
+
+dense layer
+Synonym for fully connected layer.
+fully connected layer
+A hidden layer in which each node is connected to every node in the subsequent hidden layer.
+
+depth
+The number of layers (including any embedding layers) in a neural network that learn weights. For example, a neural network with 5 hidden layers and 1 output layer has a depth of 6.
+
+
+depthwise separable convolutional neural network (sepCNN)
+A convolutional neural network architecture based on Inception, but where Inception modules are replaced with depthwise separable convolutions. Also known as Xception.
+
+A depthwise separable convolution (also abbreviated as separable convolution) factors a standard 3-D convolution into two separate convolution operations that are more computationally efficient: first, a depthwise convolution, with a depth of 1 (n ✕ n ✕ 1), and then second, a pointwise convolution, with length and width of 1 (1 ✕ 1 ✕ n).
+
+To learn more, see Xception: Deep Learning with Depthwise Separable Convolutions.
+
+dropout regularization
+A form of regularization useful in training neural networks. Dropout regularization works by removing a random selection of a fixed number of the units in a network layer for a single gradient step. 
+
+
+feature vector
+The list of feature values representing an example passed into a model.
+
+
+generalization curve
+A loss curve showing both the training set and the validation set. A generalization curve can help you detect possible overfitting. 
+
+
+
+heuristic
+A quick solution to a problem, which may or may not be the best solution.
+
+
+hidden layer
+A synthetic layer in a neural network between the input layer (that is, the features) and the output layer (the prediction). Hidden layers typically contain an activation function (such as ReLU) for training. A deep neural network contains more than one hidden layer.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
