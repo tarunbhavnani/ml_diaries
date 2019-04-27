@@ -140,9 +140,72 @@ affinity of user for f into affinity of movie for f
 
 
 
+#####################################################################################################################################
+#####################################################################################################################################
+#####################################################################################################################################
+
+Neural Network
+A neural network usually involves a large number of processors operating in parallel and arranged in tiers. The first tier receives the raw input information -- analogous to optic nerves in human visual processing. Each successive tier receives the output from the tier preceding it, rather than from the raw input -- in the same way neurons further from the optic nerve receive signals from those closer to it. The last tier produces the output of the system.
 
 
+RNN
 
+
+LSTM
+
+
+CNN
+
+
+Autoencoder, encoder/decoder
+
+
+GAN
+
+
+Word Embedding
+
+
+Word2vec
+
+
+Seq2Seq
+
+
+Optimizer
+
+Adam
+rmsprop
+
+Gradient Descent
+
+SGD
+
+SVM
+
+SVD
+
+PCA
+
+Random Forest
+
+Logistic Regression
+
+Linera Regression
+
+Decision Tree
+
+
+Clustering
+KNN
+
+Kmeans
+
+
+Parametric/Non Parametric
+
+
+Supervided/Non Supervised
 
 
 
