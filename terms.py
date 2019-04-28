@@ -411,6 +411,41 @@ f(x1,x2,x3)= sigmoid(w1x1+w2x2+w3x3)
 
 pooling
 Reducing a matrix (or matrices) created by an earlier convolutional layer to a smaller matrix. Pooling usually involves taking either the maximum or average value across the pooled area.
+A pooling operation, just like a convolutional operation, divides that matrix into slices and then slides that convolutional operation by strides. 
+
+
+
+
+precision
+A metric for classification models. Precision identifies the frequency with which a model was correct when predicting the positive class.
+tp/(tp+fp)
+
+
+
+random forest
+An ensemble approach to finding the decision tree that best fits the training data by creating many decision trees and then determining the "average" one. The "random" part of the term refers to building each of the decision trees from a random selection of features; the "forest" refers to the set of decision trees.
+more needed here...
+
+
+
+Recall:
+A metric for classification models that answers the following question: Out of all the possible positive labels, how many did the model correctly identify? That is:
+tp/(tp+fn)
+
+
+Rectified Linear Unit (ReLU)
+An activation function with the following rules:
+
+If input is negative or zero, output is 0.
+If input is positive, output is equal to input.
+
+
+
+
+
+
+
+
 
 
 
