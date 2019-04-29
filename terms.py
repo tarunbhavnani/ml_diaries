@@ -321,6 +321,132 @@ A synthetic layer in a neural network between the input layer (that is, the feat
 
 
 
+L1 loss
+Loss function based on the absolute value of the difference between the values that a model is predicting and the actual values of the labels. L1 loss is less sensitive to outliers than L2 loss.
+
+L1 regularization
+A type of regularization that penalizes weights in proportion to the sum of the absolute values of the weights. In models relying on sparse features, L1 regularization helps drive the weights of irrelevant or barely relevant features to exactly 0, which removes those features from the model. Contrast with L2 regularization.
+
+L2 loss
+See squared loss.
+
+
+L2 regularization
+A type of regularization that penalizes weights in proportion to the sum of the squares of the weights. L2 regularization helps drive outlier weights (those with high positive or low negative values) closer to 0 but not quite to 0. (Contrast with L1 regularization.) L2 regularization always improves generalization in linear models.
+
+
+layer
+A set of neurons in a neural network that process a set of input features, or the output of those neurons.
+
+Also, an abstraction in TensorFlow. Layers are Python functions that take Tensors and configuration options as input and produce other tensors as output. Once the necessary Tensors have been composed, the user can convert the result into an Estimator via a model function.
+
+learning rate
+A scalar used to train a model via gradient descent. During each iteration, the gradient descent algorithm multiplies the learning rate by the gradient. The resulting product is called the gradient step.
+
+
+
+linear regression
+A type of regression model that outputs a continuous value from a linear combination of input features.
+
+
+Logistic regression
+A model that generates a probability for each possible discrete label value in classification problems by applying a sigmoid function to a linear prediction. Although logistic regression is often used in binary classification problems, it can also be used in multi-class classification problems (where it becomes called multi-class logistic regression or multinomial regression).
+
+logits
+The vector of raw (non-normalized) predictions that a classification model generates, which is ordinarily then passed to a normalization function. If the model is solving a multi-class classification problem, logits typically become an input to the softmax function. The softmax function then generates a vector of (normalized) probabilities with one value for each possible class.
+
+In addition, logits sometimes refer to the element-wise inverse of the sigmoid function. For more information, see tf.nn.sigmoid_cross_entropy_with_logits.
+
+
+
+log-odds
+The logarithm of the odds of some event.
+
+If the event refers to a binary probability, then odds refers to the ratio of the probability of success (p) to the probability of failure (1-p). For example, suppose that a given event has a 90% probability of success and a 10% probability of failure. In this case, odds is 9
+
+The log-odds is simply the logarithm of the odds. By convention, "logarithm" refers to natural logarithm, but logarithm could actually be any base greater than 1. Sticking to convention, the log-odds of our example is therefore: ln(9)=2.2
+
+The log-odds are the inverse of the sigmoid function.
+
+Long Short-Term Memory (LSTM)
+A type of cell in a recurrent neural network used to process sequences of data in applications such as handwriting recognition, machine translation, and image captioning. LSTMs address the vanishing gradient problem that occurs when training RNNs due to long data sequences by maintaining history in an internal memory state based on new input and context from previous cells in the RNN.
+
+
+
+matrix factorization
+in recommender system we have sparse users vs movies, we want it dense.
+we find users*n matrix and n*movies matrix 
+suxh that the dot product is as close as the sparse users*movies matrix.
+
+
+Momentum
+A sophisticated gradient descent algorithm in which a learning step depends not only on the derivative in the current step, but also on the derivatives of the step(s) that immediately preceded it. Momentum involves computing an exponentially weighted moving average of the gradients over time, analogous to momentum in physics. Momentum sometimes prevents learning from getting stuck in local minima.
+
+
+Neural Network
+A model that, taking inspiration from the brain, is composed of layers (at least one of which is hidden) consisting of simple connected units or neurons followed by nonlinearities.
+
+normalization
+The process of converting an actual range of values into a standard range of values, typically -1 to +1 or 0 to 1. For example, suppose the natural range of a certain feature is 800 to 6,000. Through subtraction and division, you can normalize those values into the range -1 to +1.
+
+See also scaling.
+
+
+objective function
+The mathematical formula or metric that a model aims to optimize. For example, the objective function for linear regression is usually squared loss. Therefore, when training a linear regression model, the goal is to minimize squared loss.
+
+In some cases, the goal is to maximize the objective function. For example, if the objective function is accuracy, the goal is to maximize accuracy.
+
+
+
+optimizers
+
+
+
+
+perceptron
+A system (either hardware or software) that takes in one or more input values, runs a function on the weighted sum of the inputs, and computes a single output value. In machine learning, the function is typically nonlinear, such as ReLU, sigmoid, or tanh. For example, the following perceptron relies on the sigmoid function to process three input values:
+
+f(x1,x2,x3)= sigmoid(w1x1+w2x2+w3x3)
+
+pooling
+Reducing a matrix (or matrices) created by an earlier convolutional layer to a smaller matrix. Pooling usually involves taking either the maximum or average value across the pooled area.
+A pooling operation, just like a convolutional operation, divides that matrix into slices and then slides that convolutional operation by strides. 
+
+
+
+
+precision
+A metric for classification models. Precision identifies the frequency with which a model was correct when predicting the positive class.
+tp/(tp+fp)
+
+
+
+random forest
+An ensemble approach to finding the decision tree that best fits the training data by creating many decision trees and then determining the "average" one. The "random" part of the term refers to building each of the decision trees from a random selection of features; the "forest" refers to the set of decision trees.
+more needed here...
+
+
+
+Recall:
+A metric for classification models that answers the following question: Out of all the possible positive labels, how many did the model correctly identify? That is:
+tp/(tp+fn)
+
+
+Rectified Linear Unit (ReLU)
+An activation function with the following rules:
+
+If input is negative or zero, output is 0.
+If input is positive, output is equal to input.
+
+
+
+
+
+
+
+
+
 
 
 
