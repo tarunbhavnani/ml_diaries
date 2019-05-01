@@ -23,6 +23,7 @@ relation extraction-- same as above
 text summary
 text classification
 
+SVD(lsa/lsi) and LDA are two different things. The former is based on dimensionality reduction of the term-document matrix representing your corpus, while the latter is based on learning a generative model of term distributions over topics.
 
 lda-- is a generative probabilistic model, that assumes a Dirichlet prior over the latent topics..lda finds the latent topics in the documents. it tries to make a words*w, w*docs such a way 
 to minimize the error. we have different topics which are clusters of diff words and each document 
@@ -68,7 +69,7 @@ lift--The basic idea of lift analysis is as follows:
 group data based on the predicted churn probability (value between 0.0 and 1.0). Typically, you look at deciles, so you'd have 10 groups: 0.0 - 0.1, 0.1 - 0.2, ..., 0.9 - 1.0
 calculate the true churn rate per group. That is, you count how many people in each group churned and divide this by the total number of customers per group.
 
-
+lift analysis is done to pin pont the areas or instances of the data which are most affected by the event. we didvide the data in deciles and thus segregate the deciles with high pc of events,
 
 
 
@@ -113,12 +114,15 @@ https://towardsdatascience.com/multi-class-text-classification-with-scikit-learn
 
 
 
-precision: TP/TP+FP
-recall:    TP/TP+FN
+
+
+precision: TP/TP+FP: accuracy when predicting positive class
+recall:    TP/TP+FN: accuracy over all positive class
 f1: harmonic mean of precision and recall
 
 
-Imbalanced data: One of the tactics of combating imbalanced classes is using Decision Tree algorithms, so, we are using Random Forest classifier to learn imbalanced data and set class_weight=balanced 
+Imbalanced data: One of the tactics of combating imbalanced classes is using Decision Tree algorithms, so, we are using Random Forest classifier to learn imbalanced data and set class_weight=balanced
+others are: upsampling, doensampling and synthetic data generation using smote. 
 
 
 pca--> 400 images 64*64---> 400 vectors of 4096 elements--> 400 pca
@@ -148,14 +152,14 @@ Neural Network
 A neural network usually involves a large number of processors operating in parallel and arranged in tiers. The first tier receives the raw input information -- analogous to optic nerves in human visual processing. Each successive tier receives the output from the tier preceding it, rather than from the raw input -- in the same way neurons further from the optic nerve receive signals from those closer to it. The last tier produces the output of the system.
 
 
-RNN
+RNN: it is the same neural network, just that in addition to taking the input at time t, it also takes a cell state input which is the tanh dot product of itself and the previous cell state. Thus basically it has wts updated from all the previous cells. But then because of vanishing gradients it can not have long term dependencies. 
 
 
-LSTM
-forget gate
+LSTM: This is a variation of a vanilla rnn where the cell state is very advanced. it only updates the topics acording to the input gate and the forget gates thus mantaining only those weights which are required.
+
 The portion of a Long Short-Term Memory cell that regulates the flow of information through the cell. Forget gates maintain context by deciding which information to discard from the cell state.
 
-CNN
+CNN:is a neural network where the neurons are filter or kernels or as they are called the convolutions!!This convolution drags alomg the data input with s strides at a time thus finding the features.one convolution walks through the full input thus finding that one particular feature in the whole image. 
 
 
 Autoencoder, encoder/decoder
