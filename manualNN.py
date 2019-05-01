@@ -7,16 +7,22 @@ Created on Mon Dec 24 14:23:03 2018
 """
 
 a=np.array([[1,0,1,0],[1,0,1,1],[0,1,0,1]])
+a.shape
 wh=np.array([[.42,.88,.55],[.1,.73,.68],[.60,.18,.47],[.92,.11,.52]])
+wh.shape
 bh=np.array([.46,.72,.08])
+bh.shape
 
 h=a.dot(wh)+bh
+h.shape
+
 def sigmoid(n):
     m=1/(1+np.exp(-n))
     return(m)
 
 #wh2=np.array([[.81,.86,.75],[.92, .87,.83],[.81,.83,.78]])
 wh2=sigmoid(h)
+wh2.shape
 
 bh2=np.array([])
 
@@ -53,7 +59,12 @@ wh =  wh+ a.T.dot(d_hiddenlayer)*lr
 
 #Step 11: Update biases at both output and hidden layer
 
+bh.shape
+bh=bh.reshape(1,3)
 bh += np.sum(d_hiddenlayer, axis=0,keepdims=True)
+
+bout.shape
+bout=bout.reshape(1,1)
 bout += np.sum(d_output, axis=0,keepdims=True) *lr
 
 
