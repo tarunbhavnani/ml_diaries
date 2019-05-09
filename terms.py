@@ -43,7 +43,12 @@ gamma: low gamma considers points close to plane, high gamma considers farther p
 C: big c low margin, low C high margin
 
 svc
-cnn
+
+cnn its an extension of the neural networks.if we talk about a basic cnn cell. It is calledcnn because of teh convolutions. It basically has filters/kernels in place
+of neurons. These kernels swipe throuh the whole batch of data/image and doinf a dot product im the feed forward and adjustig the wts of the filter during the
+backpropogations.
+
+
 lstm
 bilstm
 nn
@@ -124,7 +129,9 @@ f1: harmonic mean of precision and recall
 Imbalanced data: One of the tactics of combating imbalanced classes is using Decision Tree algorithms, so, we are using Random Forest classifier to learn imbalanced data and set class_weight=balanced
 others are: upsampling, doensampling and synthetic data generation using smote. 
 
-
+Principal component analysis (PCA) is a statistical procedure that uses an orthogonal transformation to 
+convert a set of observations of possibly correlated variables (entities each of which takes on various 
+numerical values) into a set of values of linearly uncorrelated variables called principal components.
 pca--> 400 images 64*64---> 400 vectors of 4096 elements--> 400 pca
 Each of the 400 original images (i.e. each of the 400 original rows of the matrix) can be expressed as a (linear) combination of the 400 pca's.
 The goal of PCA is to reveal typical vectors: each of the creepy/typical guy represents one specific aspect underlying the data.
@@ -149,24 +156,40 @@ affinity of user for f into affinity of movie for f
 #####################################################################################################################################
 
 Neural Network
-A neural network usually involves a large number of processors operating in parallel and arranged in tiers. The first tier receives the raw input information -- analogous to optic nerves in human visual processing. Each successive tier receives the output from the tier preceding it, rather than from the raw input -- in the same way neurons further from the optic nerve receive signals from those closer to it. The last tier produces the output of the system.
+A neural network usually involves a large number of processors operating in parallel and arranged in tiers. 
+The first tier receives the raw input information -- analogous to optic nerves in human visual processing.
+ Each successive tier receives the output from the tier preceding it, rather than from the raw input --
+ in the same way neurons further from the optic nerve receive signals from those closer to it.
+ The last tier produces the output of the system.
 
 
-RNN: it is the same neural network, just that in addition to taking the input at time t, it also takes a cell state input which is the tanh dot product of itself and the previous cell state. Thus basically it has wts updated from all the previous cells. But then because of vanishing gradients it can not have long term dependencies. 
+RNN: it is the same neural network, just that in addition to taking the input at time t, 
+it also takes a cell state input which is the tanh dot product of itself and the previous cell state. 
+Thus basically it has wts updated from all the previous cells. 
+But then because of vanishing gradients it can not have long term dependencies. 
 
 
-LSTM: This is a variation of a vanilla rnn where the cell state is very advanced. it only updates the topics acording to the input gate and the forget gates thus mantaining only those weights which are required.
+LSTM: This is a variation of a vanilla rnn where the cell state is very advanced. 
+it only updates the topics acording to the input gate and the forget gates thus mantaining only 
+those weights which are required.
 
-The portion of a Long Short-Term Memory cell that regulates the flow of information through the cell. Forget gates maintain context by deciding which information to discard from the cell state.
+The portion of a Long Short-Term Memory cell that regulates the flow of information through the cell. 
+Forget gates maintain context by deciding which information to discard from the cell state.
 
-CNN:is a neural network where the neurons are filter or kernels or as they are called the convolutions!!This convolution drags alomg the data input with s strides at a time thus finding the features.one convolution walks through the full input thus finding that one particular feature in the whole image. 
+CNN:is a neural network where the neurons are filter or kernels or as they are called the convolutions!!
+This convolution drags alomg the data input with s finding the features.
+one convolution walks through the full input thus finding that one particular feature in the whole image. 
 
 
 Autoencoder, encoder/decoder
+special type of neural networks where the inpus and the output are the same.
+it is made up of encoder and decoder as is a nmt.
+
 
 
 generative adversarial network (GAN)
-A system to create new data in which a generator creates data and a discriminator determines whether that created data is valid or invalid.
+A system to create new data in which a generator creates data and a discriminator 
+determines whether that created data is valid or invalid.
 
 Attention
 
@@ -176,7 +199,10 @@ Word Embedding
 Word2vec
 
 backpropagation
-The primary algorithm for performing gradient descent on neural networks. First, the output values of each node are calculated (and cached) in a forward pass. Then, the partial derivative of the error with respect to each parameter is calculated in a backward pass through the graph.
+The primary algorithm for performing gradient descent on neural networks. 
+First, the output values of each node are calculated (and cached) in a forward pass. 
+Then, the partial derivative of the error with respect to each parameter is calculated in a 
+backward pass through the graph.
 Seq2Seq
 
 activation function
@@ -184,7 +210,10 @@ activation function
 A function (for example, ReLU or sigmoid) that takes in the weighted sum of all of the inputs from the previous layer and then generates and passes an output value (typically nonlinear) to the next layer.
 
 Optimizer
-
+gradient descent:
+  It is a simple and effective method to find the optimum values for the neural network.
+  The objective of all optimizers is to reach the global minima where the cost function attains the least
+  possible value.
 
 Adam
 rmsprop
@@ -447,6 +476,15 @@ If input is positive, output is equal to input.
 
 
 
+seq2seq:
+In the general case, input sequences and output sequences have different lengths (e.g. machine translation) and the entire input sequence is required in order to start predicting the target. This requires a more advanced setup, which is what people commonly refer to when mentioning "sequence to sequence models" with no further context. Here's how it works:
+
+A RNN layer (or stack thereof) acts as "encoder": it processes the input sequence and returns its own internal state. Note that we discard the outputs of the encoder RNN, only recovering the state. This state will serve as the "context", or "conditioning", of the decoder in the next step.
+Another RNN layer (or stack thereof) acts as "decoder": it is trained to predict the next characters of the target sequence, given previous characters of the target sequence. Specifically, it is trained to turn the target sequences into the same sequences but offset by one timestep in the future, a training process called "teacher forcing" in this context. Importantly, the encoder uses as initial state the state vectors from the encoder, which is how the decoder obtains information about what it is supposed to generate. Effectively, the decoder learns to generate targets[t+1...] given targets[...t], conditioned on the input sequence.
+
+
+
+timedistributed : its used when we need prediction at time t. like pos tags!
 
 
 
