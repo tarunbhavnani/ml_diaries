@@ -160,3 +160,7 @@ model.save_weights("model.h5")
 print("Saved model to disk")
 
 
+# load json and create model
+#json_file = open('model.json', 'r')
+#loaded_model_json = json_file.read()
+#json_file.close()

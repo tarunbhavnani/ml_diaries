@@ -229,7 +229,8 @@ A sophisticated gradient descent algorithm that rescales the gradients of each p
 
 
 batch normalization
-Normalizing the input or output of the activation functions in a hidden layer. Batch normalization can provide the following benefits:
+Normalizing the input or output of the activation functions in a hidden layer. 
+Batch normalization can provide the following benefits:
 
 Make neural networks more stable by protecting against outlier weights.
 Enable higher learning rates.
@@ -275,7 +276,8 @@ A ML technique that iteratively combines a set of simple and not very accurate c
 
 
 collaborative filtering
-Making predictions about the interests of one user based on the interests of many other users. Collaborative filtering is often used in recommendation systems.
+Making predictions about the interests of one user based on the interests of many other users.
+ Collaborative filtering is often used in recommendation systems.
 
 
 confirmation bias

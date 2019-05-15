@@ -1,0 +1,169 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+Created on Thu May  9 10:31:11 2019
+
+@author: tarun.bhavnani@dev.smecorner.com
+
+
+the rasa bot project
+
+the main objective: Create an AI bot to conduct PD interviews on real time basis
+
+It is currently deployed in a testing phase in gujrat.
+
+How it was built
+
+I built it using rasa open source platform.
+
+for any bot we require two components :
+
+NLU for the natural language understanding 
+and another component for the flow of converstaion. In rasa we call it core.
+
+
+for NLU i have used a deep learning model using lstm for the classification of intents.
+data is provided and it classifies the statements in the intents
+
+for entity extraction : options are ner_spacy and duckling package frm facebook or ner_crf for self data
+I am using a combination of ner_spacy and ner_crf
+why?
+spacy is very easily able to identify the digits i.e time and money 
+while crf gives me the ease of identifying things which I like to tag myself.
+
+
+
+the next part is the core or the flow of the converstaions
+this is tricky!!
+
+
+i developed two full fledged versions for the same
+one is only using the deep learning for the flow of converstaions
+other is a state of the art miz of hard coding plus AI
+
+Deep learning
+
+every utterance by bot as well as the interviewee is classified as an utterance, so basically whatever the
+user says doesnt go as is, it goes as one of the intents
+now the stiry build up is like intent followed by intent and so pn. These are also accompanied by the 
+extracted entities.
+
+Now this becomes a deep learning exercise. a lstm model has been built on this data which predicts the next 
+bot intent based on the user intent + entity for the same.
+
+
+
+Hard coding +AI
+
+Since the deep learnig method is not foolproof. It may get confused if the nlu gets confused in deciphering 
+the user intent. tHis is very possible since:
+  1) we dont yet know the exact language our customers will prefer, moreover we are trying to make a multi 
+     lingual bot
+  2) we will need enormous amout of training data. Each one instance of the data needs to be a full length 
+     interview it is difficult arranging for that kind of data.
+  3) apart from the intents the entities also have to alter the course.
+  4) we could have gone with bot asking the same queston again and again till it gets the right answer
+  but then COMPLETING a 60 question interview will become a pain. 
+    
+  Thats why hard coding logic.
+  
+  
+  1st part is the brain which i camm action default
+  every question is a class written in python
+  
+  for eg:
+    it start with a "HI" or a greeting as soon as the bot understands a greeting it enters the interview 
+    phase
+    it asks for the interview reference id.once received it goes to the dta base and pulls the data
+    
+    logic revolves around current counter and action default
+    
+    I created it majorly because some questions need to be skipped depending on the information we are
+     getting or have already reveived
+    
+    every time bot asks a question the current slot is updated by the question and the counter is updated by
+    the supposedly nect question in line but the followup action is the action listen where the bot listens 
+    to the answer. 
+    After listen the control goes to the action default or the brain.
+    The brain knows whta was the question because of the current slot. It analysis the response via the NLU
+    i.e intent and entity extraction and then 
+    depending on the findings it either updates the counter or follows the counter.
+    
+    also if there is a bifurcation on the basis of the answer then their are if elif loops which also control 
+    weather the followup action would be listen or the counter.
+    for eg the current question is supposed to be "age" but we already have the age the it wont utter the 
+    question, rather just silently skip it and move on to another question.
+    
+    
+    
+    
+    
+    
+    #the transaction analysis
+    
+    the data we receive when a customer approaches is the banking transactions data and the cibil reports.
+    One of the projects is the pd summary whch is a fetch and put kind of a project to extract any important 
+    pointer from cibil, like two pan cards. outstanding ubl and more.
+    The other most important doc is the bank statements. Mostly all the analysis has to be done from this
+    to gauge a customer.
+    there are multiple projects which were completed under the transaction analysis
+    1) Transaction classifier
+    it is the major one.
+    basically classifing all the transactions as a cash/chq/neft/rtgs/imps/return/bounce etc
+    firstly a regex classifier was built and it was a pretty tedious job as the docs are moslty from an OCR
+    thus imps can be 1mps. So tehse anamolies had to be found out manually
+    and a very meticlous approch to regx classifing was followed. as in if a statement says "cash-cheque"
+    the it is a chq and not cash but if it says cash chq return then its a return. 
+    This can be handeled by understaning the importance of terms and putting them in the oredr while 
+    classifying for eg in this case first the transaction will be classified as cash then as chq and later 
+    as a return. also the return classification is in another parameter which are later merged thus 
+    this transaction will be classified as a chq return just by using regex.
+    This took alot of manual effort for checking for anamolies before it qwas finally freezed.
+    
+    after this was done I was able to classify 2.2 lac records out of 3.5
+    for the rest i got the tagging done manually.
+    and trained a sepcnn model on a miz of the regex classief and manually classified docs.
+    
+    after the model was frozen we are ready for classifying.
+    
+    Now any new bank statement goes through the regex. The ones which are not tagged are classified through 
+    the model.
+    It gives an amazing accuracy of around 98% and the rest are classified as "name" since they dont
+    have any keyword to classify.
+    
+    THRE ARE OTHER PROJECTS under the same for fraud analysis!
+    
+    1) Round entries: parsing through all the debit entries and checking for the next 5 credit entries to 
+    see if there is an exact match.
+    same for credit.
+    Creating another parameter which says probable round entry at pos __
+    
+    But I came up with this idea after discussing this with a few underwriters, as to how to check
+    for round entries!
+    
+    2) patterns recognition
+    all the transcations with debit==0.
+    take the description(cleaned) use fuzzywuzzy.process.extract(). This finfs the score of all the
+    narrations for the one Description. we choose all that are >80 and then if the group has >5 then
+    we append it and remove descriptions from the list.
+    
+    3) Bounce detection: If the round entries are accompanied by 
+      1) same date
+      2) some thing in the return parameter of classification
+    
+    
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+

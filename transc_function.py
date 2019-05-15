@@ -288,7 +288,7 @@ def round_entry(dat):
            dat['roundiw'].iloc[j]="inward credit suspected {}".format(i)
            if dat["Date_new"].iloc[i]==dat["Date_new"].iloc[j]: #for bounce
              dat['roundiw'].iloc[j]="inward credit suspected same date {}".format(i)
-
+         
          if dat.Credit.iloc[i]==dat.Debit.iloc[j] and dat.Credit.iloc[i]!=0 :
            #print("check........ {}".format(i))
            dat['roundow'].iloc[i]="outward credit suspected {}".format(i)
