@@ -9,6 +9,14 @@ password: snecorner
 
 source activate tarun
 
+
+#transfer file
+scp check.txt ubuntu@192.168.1.135:~/tarun 
+
+#transfer file
+scp -r check ubuntu@192.168.1.135:~/tarun 
+
+
 pip install numba
 conda install cudatoolkit
 conda install numba cudatoolkit pyculib
