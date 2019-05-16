@@ -1,0 +1,8 @@
+language: "en"
+
+pipeline:
+- name: "nlp_spacy"
+- name: "ner_spacy"
+- name: "ner_synonyms"
+- name: "intent_featurizer_count_vectors"
+- name: "intent_classifier_tensorflow_embedding"
