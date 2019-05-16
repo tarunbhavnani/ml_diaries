@@ -16,7 +16,7 @@ cd gitchkdir
 git init
 ls -la
 #stop tracking
-rf -rm .git
+rm -rf .git
 
 
 #before first commit
