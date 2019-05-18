@@ -6,7 +6,8 @@
 python3 -m rasa_core_sdk.endpoint --actions app.actions.actions&
 
 # Start rasa core server with nlu model
-python3 -m rasa_core.run --enable_api --core /app/models/rasa_core -u /app/models/rasa_nlu/current/nlu --endpoints /app/config/endpoints.yml --credentials /app/config/credentials.yml -p $PORT
+#python3 -m rasa_core.run --enable_api --core /app/models/rasa_core -u /app/models/rasa_nlu/#current/nlu --endpoints /app/config/endpoints.yml --credentials /app/config/credentials.yml -p #$PORT
+
 
 # Start rn_app.py
-#python3 /app/run_app.py
+python3 /app/scripts/run_app.py

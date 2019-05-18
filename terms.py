@@ -15,6 +15,9 @@ oe spacy:
   nlp=en_core_web_sm.load()
 
 
+pip install spacy
+python -m download en
+
 
 
 
@@ -23,10 +26,15 @@ relation extraction-- same as above
 text summary
 text classification
 
-SVD(lsa/lsi) and LDA are two different things. The former is based on dimensionality reduction of the term-document matrix representing your corpus, while the latter is based on learning a generative model of term distributions over topics.
+SVD(lsa/lsi) and LDA are two different things. The former is based on dimensionality reduction of the term-document matrix representing your corpus, 
+while the latter is based on learning a generative model of term distributions over topics.
+
+lsa is svd or close to pca while lda gets the same result using a probilistic model
+both act on the bow. The better the bow the better the results.
 
 lda-- is a generative probabilistic model, that assumes a Dirichlet prior over the latent topics..lda finds the latent topics in the documents. it tries to make a words*w, w*docs such a way 
-to minimize the error. we have different topics which are clusters of diff words and each document 
+to minimize the error. we have different topics which are clusters of diff words and each document. lda can also be found close in working to colaborative filtering.
+ 
 has a propb of fallinf into each one of topics.
 
 lsa- its more like PCA.learns latent topics by performing a matrix decomposition (SVD) 
@@ -34,19 +42,26 @@ on the term-document matrix.
 
 lsa is faster but lesser accuracy mostly.
 
-pca:Principal components analysis is a procedure for identifying a smaller number of uncorrelated variables, called “principal components”, from a large set of data. The goal of principal components analysis is to explain the maximum amount of variance with the fewest number of principal components.
+pca:Principal components analysis is a procedure for identifying a smaller number of uncorrelated variables, called “principal components”, 
+from a large set of data. The goal of principal components analysis is to explain the maximum amount of variance with the fewest number 
+of principal components.
 
 imbalanced data--propensity to buy at tcs, and rest of tcs projects
 
-svm: Separation of classes. That’s what SVM does. Kernels(linera, polynomial) Polynomial and exponential kernels calculates separation line in higher dimension. This is called kernel trick
+svm: Separation of classes. That’s what SVM does. Kernels(linera, polynomial) Polynomial and exponential kernels calculates separation 
+line in higher dimension. This is called kernel trick
+
 gamma: low gamma considers points close to plane, high gamma considers farther points
 C: big c low margin, low C high margin
 
-svc
+SVC support vector classifier. using svm for classification
 
-cnn its an extension of the neural networks.if we talk about a basic cnn cell. It is calledcnn because of teh convolutions. It basically has filters/kernels in place
+CNN its an extension of the neural networks.if we talk about a basic cnn cell. It is called cnn because of the convolutions(filters/kernels/neurons). It basically has filters/kernels in place
 of neurons. These kernels swipe throuh the whole batch of data/image and doinf a dot product im the feed forward and adjustig the wts of the filter during the
 backpropogations.
+
+one convolution represent one set of weights and thus picks out one feature. this runs through the image and picks out what part of image has that one feature.
+
 
 
 lstm
