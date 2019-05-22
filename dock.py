@@ -4,6 +4,15 @@
 Created on Mon Apr 22 10:31:56 2019
 git clone https://github.com/BretFisher/udemy-docker-mastery.git
 @author: tarun.bhavnani@dev.smecorner.com
+
+rasa_chat
+sudo docker login
+tbhavnani
+Amadeus123
+
+sudo docker build -t tbhavnani/rasa_chat .
+sudo docker push tbhavnani/rasa_chat
+
 """
 
 #to start:

@@ -14,6 +14,9 @@ sudo chmod +x ./scripts/start_services.sh
 
 docker build -t rasa-chatbot .
 docker run -it --rm -p 5005:5005 -e PORT=5005 rasa-chatbot
+
+sudo docker run -d -it --rm -p 5005:5005 -e PORT=5005 rasa-chatbot
+
 ```
 It starts a webserver with rest api and listens for messages at localhost:5005
 
