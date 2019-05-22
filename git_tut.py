@@ -158,9 +158,26 @@ git branch -a
 
 
 
+###############################################################
+###############################################################
 
+https://github.com/Kunena/Kunena-Forum/wiki/Create-a-new-branch-with-git-and-manage-branches
 
+create a branch
 
+git pull
+git checkout -b final_bot7
+git push origin final_bot7
+
+clone a branch
+
+mkdir final_bot7_chk
+cd final_bot7_chk
+git init
+git remote add -t final_bot7 -f origin https://github.com/tarunbhavnani/rasa_5.git
+git checkout final_bot7
+
+this will clone branch final_bot7 into ur folder final_bot7_chk
 
 
 
