@@ -13,6 +13,11 @@ Amadeus123
 sudo docker build -t tbhavnani/rasa_chat .
 sudo docker push tbhavnani/rasa_chat
 
+image made with some name, find the container id
+
+sudo docker tag 45erdfs7fgs tbhavnani/rasa-chatbot-d
+sudo docker push tbhavnani/rasa-chatbot-d
+
 """
 
 #to start:

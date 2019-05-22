@@ -1,23 +1,11 @@
-[ ![Codeship Status for samik-saha/rasa-chatbot](https://app.codeship.com/projects/6476d760-e5f7-0136-cc6f-426618709d8e/status?branch=master)](https://app.codeship.com/projects/319332)
 
-# Sample chatbot with rasa stack
-
-It uses the rasa stack (rasa core/nlu/actions) to implement a simple bot which responds user messages.
-
-## Run on local machine
-
-#### Using docker
-Both action server and rasa-core runs as separate processes in the same container
-```
 #give permissions to sh file
 sudo chmod +x ./scripts/start_services.sh 
 
-docker build -t rasa-chatbot .
-docker run -it --rm -p 5005:5005 -e PORT=5005 rasa-chatbot
+sudo docker build -t rasa-chatbot-d .
 
-#docker run -it --rm -p 5005:5005 -e PORT=5005 SLACK= rasa-chatbot
+sudo docker run -it --rm -p 5005:5005 -e PORT=5005 -e SLACK="xoxb-542065604356-582580159955-nuwuIUEQfJQuYGbOWf3MDpq" rasa-chatbot-d
 
-sudo docker run -d -it --rm -p 5005:5005 -e PORT=5005 rasa-chatbot
 
 ```
 It starts a webserver with rest api and listens for messages at localhost:5005

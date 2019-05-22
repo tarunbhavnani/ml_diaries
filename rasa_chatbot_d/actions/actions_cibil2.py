@@ -26,8 +26,8 @@ from rasa_core_sdk.events import UserUtteranceReverted
 from rasa_core_sdk.events import ActionReverted
 from rasa_core_sdk.events import FollowupAction
 from rasa_core.interpreter import RasaNLUInterpreter
-#import pandas as pd
-#import xlrd
+import pandas as pd
+import xlrd
 import re
 from word2number import w2n
 from word2number import w2n
@@ -37,41 +37,18 @@ import datetime
 import requests
 nlp= spacy.load("en")
 
-#df = pd.read_excel('data_los.xlsx')
-"""
-def elastic_api(application_id):
-    """"""Returns response dict having los data
-        parameters--
-            application_id: application id of customer
-        Returns--
-            json_response: response dict
-        """"""
-    json_response = {}
-    try:
-        url = "https://www.smecorner.com/SME/loan/application/leadByAppId/get?applicationId="+str(application_id)
-        header_key = {"api_key":"5116528b6c24692d1a189750143297d3"}
-        response=requests.get(url = url , headers = header_key)
-        if str(response) == "<Response [200]>":
-            json_response = response.json()
-            #return json_response
-        else:
-            print("Unable to connect Elastic server for this application ID")
-    except Exception as e:
-        print("Error in elastic_api func, Exception:{}".format(str(e)))  
-    return json_response   
+
+##
+from final_cibil_los_pull import get_final_data
+from final_cibil_los_pull import elastic_api
 
 
-def response_dict(json_response):
-    response_dict={} 
-    json_response['dataMap']
-    try:
-        response_dict = json_response['dataMap']
-    except Exception as e:
-        print(e)
-        print("Unable to converty json into dict")
-    return response_dict
+##
 
-"""
+
+
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -95,11 +72,12 @@ class ActionDefaultFallback(Action):
         digits=[i for i in re.findall('\d+', last_message )]
         date= next(tracker.get_latest_entity_values("DATE"), None)
         cardinal= next(tracker.get_latest_entity_values("CARDINAL"), None)
-        #dispatcher.utter_message(current)
-        #dispatcher.utter_message(counter)
-        #dispatcher.utter_message(last_intent)
-        #json_response= tracker.get_slot("json_response")
-        #dispatcher.utter_message(json_response)
+        dispatcher.utter_message(current)
+        dispatcher.utter_message(counter)
+        dispatcher.utter_message(last_intent)
+        
+        json_response= tracker.get_slot("json_response")
+        
         
         #before interview start
         #interview state turns to "started if details are fetched in action fetch details"
@@ -109,9 +87,16 @@ class ActionDefaultFallback(Action):
             dispatcher.utter_message("अब हम पीडी शुरू करने के लिए आगे बढ़ेंगे। यदि आप किसी भी समय इंटरव्यू से बाहर निकलना चाहते हैं, तो 'stop' इनपुट करें.")
             counter="action_interview_start"
             return[FollowupAction(counter)]
+          
+          
           elif counter !="action_interview_start":
-            
-            dispatcher.utter_message("शुरू करने के लिए कृपया 'Hi' इनपुट करें.")
+            ret="utter_{}".format(last_intent)
+            try:
+              dispatcher.utter_template(ret, tracker)
+              dispatcher.utter_message("शुरू करने के लिए कृपया 'Hi' इनपुट करें.")
+            except:
+              dispatcher.utter_message("शुरू करने के लिए कृपया 'Hi' इनपुट करें.")
+              
             counter="action_listen"
             return[FollowupAction(counter)]
 
@@ -345,7 +330,8 @@ class ActionFetchDetails(Action):
                     #put a try catch here
                     #
                     
-                    json_response=elastic_api(int(i))
+                    #json_response=elastic_api(int(i))
+                    json_response=get_final_data(int(i))
                     
                     #json_response_cibil=cibil_api(int(i))
                     
@@ -424,9 +410,12 @@ class ActionPartner(Action):
         return "action_partner"
     def run(self, dispatcher, tracker, domain):
       user_cell= tracker.get_slot("user_cell")
+      json_response=tracker.get_slot("json_response")
+      
       #dispatcher.utter_message("Can you please name the partners and their respective ownership in the venture?")
       try:
-        directors=str(df[df.applicant_1_phone==int(user_cell)].directors.item())
+        directors= json_response["directors"]
+        #directors=str(df[df.applicant_1_phone==int(user_cell)].directors.item())
       except:
         directors="nan"
       if directors!="nan":
@@ -1729,7 +1718,7 @@ class ActionLoanAmount(Action):
         return "action_loan_amount"
     def run(self, dispatcher, tracker, domain):
       json_response= tracker.get_slot("json_response")
-      loan=str(json_response["loanAmount"])  
+      loan=str(json_response["loan_requested"])  
       #dispatcher.utter_message("आपको कितना लोन चाहिए?")
       dispatcher.utter_message("क्या आपने {} लोन राशि के लिए अनुरोध किया है?".format(loan))
       #ActionSave.run('action_save',dispatcher, tracker, domain)
@@ -1771,11 +1760,14 @@ class ActionUBL(Action):
       current="action_ubl"
       counter="action_ubl_enquiry"
       user_cell=tracker.get_slot('user_cell')
+      json_response= tracker.get_slot("json_response")
       try:
+       loan_amt= json_response["ubl"]
+       loan_num=json_response["ubl_num"]
        #loan_amt=int(df[df.applicant_1_phone==int(user_cell)].ubl.item())
        #loan_num=int(df[df.applicant_1_phone==int(user_cell)].ubl_num.item())
-       loan_amt=200000
-       loan_num=6
+       #loan_amt=200000
+       #loan_num=6
        dispatcher.utter_message("According to my knowledge, you have a current outstanding ubl of {} in {} different loans. Please explain if anything has changed.".format(loan_amt, loan_num))
        return [SlotSet('counter', counter),FollowupAction("action_listen"),SlotSet('current', current) ]
       except:
@@ -1796,11 +1788,14 @@ class ActionUBLEnquiry(Action):
       current="action_ubl_enquiry"
       counter="action_bto"
       user_cell=tracker.get_slot('user_cell')
+      json_response= tracker.get_slot("json_response")
+
       try:
+       enquiry= json_response["ubl_enquiry"]
        #enquiry=int(df[df.applicant_1_phone==int(user_cell)].ubl_enquiry.item())  
-       enquiry=0
        #put scop for 0 enquiry
-       dispatcher.utter_message("""You have applied for a UBL at {} different loan providers. Why have you not taken loan from any one of the other {}""".format(enquiry, enquiry-1))
+       dispatcher.utter_message("""You have applied for a UBL at {} different loan providers. Why have you not taken loan from any one of the other""".format(enquiry))
+
        return [SlotSet('counter', counter),FollowupAction("action_listen"),SlotSet('current', current) ]
        #ActionSave.run('action_save',dispatcher, tracker, domain)
       except:
@@ -1820,9 +1815,12 @@ class ActionBTO(Action):
       current="action_bto"
 #      BTO=1.5
       user_cell=tracker.get_slot('user_cell')
+      json_response= tracker.get_slot("json_response")
+      
       
       try:
-       BTO=0 
+       BTO= json_response["bto"]
+       #BTO=int(df[df.applicant_1_phone==int(user_cell)].BTO.item())  
       
 
        if BTO>1:
@@ -1853,8 +1851,11 @@ class ActionCCOD(Action):
       current="action_ccod"
       #ccod = 1
       user_cell=tracker.get_slot('user_cell')
+      json_response= tracker.get_slot("json_response")
       try:
-       ccod=0
+       ccod= json_response["ccod"]
+       #ccod=int(df[df.applicant_1_phone==int(user_cell)].ccod_dep.item())  
+
        if ccod==1:
          dispatcher.utter_message("Why CC/OD is depleating in the last 6 months?")
         # ActionSave.run('action_save',dispatcher, tracker, domain)
@@ -1875,8 +1876,10 @@ class ActionEMIBounce(Action):
       current="action_emi_bounce"
 #      emi_bounce=3
       user_cell=tracker.get_slot('user_cell')
+      json_response= tracker.get_slot("json_response")
       try:
-       emi_bounce=0
+       emi_bounce= json_response["emi_bounce_6"]
+       #emi_bounce=int(df[df.applicant_1_phone==int(user_cell)].emi_bounce_6.item())  
       
 
        if emi_bounce > 0:

@@ -1,0 +1,268 @@
+%YAML 1.1
+---
+actions:
+- action_chitchat
+- utter_thanks
+- utter_default
+- action_sell_payment
+- action_debt_outstanding
+- action_public2
+- action_gst_status
+- action_gst_status2
+- action_turnover
+- action_turnover2
+- action_credit_outstanding
+- action_business_years_explain
+- action_cash
+- action_purchase_parties
+- action_sell_parties
+- action_partner
+- action_thanks
+- action_employees
+- action_sp_order2
+- action_default_fallback
+- action_monthly_sales
+- action_monthly_sales2
+- utter_goodbye
+- action_business_kind
+- action_private
+- action_industry_type
+- action_loan_amount
+- action_loan_amount2
+- action_emi_bounce
+- action_nob
+- action_stock_level2
+- action_ubl_enquiry
+- action_sp_order
+- action_public
+- action_end_use
+- action_trader
+- action_trader2
+- action_trader3
+- action_trader4
+- action_trader5
+- action_stop
+- action_ccod
+#- action_listen
+- action_ubl
+- action_trader_logistics
+- action_purchase_payment
+- action_partner_explain
+- action_interview_start
+- action_business_years
+- action_stock_level
+- action_gross_margins
+- action_trader_galla
+- utter_chitchat
+- utter_greet
+- action_fetch_details
+- action_trader_godown
+- action_bto
+- action_industry_followup
+- utter_ask_nob
+- utter_ask_business_kind
+- utter_ask_industry
+- action_trader_auth
+- action_stop_check
+- action_decide_flow
+- action_hotel
+- action_hotel2
+- action_hotel3
+- action_hotel4
+- action_hotel5
+- action_hotel6
+- action_credit
+- action_credit2
+- action_credit3
+- action_credit4
+- action_debit
+- action_debit2
+- action_manu
+- action_manu1
+- action_manu2
+- action_manu3
+- action_manu4
+- action_manu5
+- action_manu6
+- action_manu7
+- action_manu8
+- action_manu20
+- action_fmcg
+- action_chemical
+- action_chemical2
+- action_garments
+- action_footwear
+- action_footwear2
+- action_footwear3
+- action_footwear4
+- action_footwear20
+- action_footwear21
+- action_family
+- action_family2
+- action_family3
+- action_family4
+- action_family5
+- action_family6
+- action_family7
+- action_family8
+- action_ref
+- action_ref2
+- action_ref3
+
+
+
+config:
+  store_entities_as_slots: false
+entities: []
+forms: []
+intents:
+- greet
+- inform
+- manufacturing
+- affirm
+- private
+- public
+- SP
+- partnership
+- deny
+- goodbye
+- prop
+- trader
+- chitchat
+- thank
+- stop
+slots:
+  counter:
+    auto_fill: true
+    initial_value: false
+    type: rasa_core.slots.UnfeaturizedSlot
+  current:
+    auto_fill: true
+    initial_value: false
+    type: rasa_core.slots.UnfeaturizedSlot
+  interview_state:
+    auto_fill: true
+    initial_value: start
+    type: rasa_core.slots.UnfeaturizedSlot
+  bkind:
+    auto_fill: true
+    initial_value: false
+    type: rasa_core.slots.UnfeaturizedSlot
+  industry:
+    auto_fill: true
+    initial_value: false
+    type: rasa_core.slots.UnfeaturizedSlot
+
+
+  nob:
+    auto_fill: true
+    initial_value: false
+    type: rasa_core.slots.UnfeaturizedSlot
+  trader_type:
+    auto_fill: true
+    initial_value: false
+    type: rasa_core.slots.UnfeaturizedSlot
+  user_cell:
+    auto_fill: true
+    initial_value: none
+    type: rasa_core.slots.TextSlot
+  user_name:
+    auto_fill: true
+    initial_value: Dear
+    type: rasa_core.slots.TextSlot
+  previous:
+    auto_fill: true
+    initial_value: action_interview_start action_interview_start
+    type: rasa_core.slots.TextSlot
+  json_response:
+    auto_fill: true
+    initial_value: none
+    type: rasa_core.slots.TextSlot
+
+
+templates:
+
+  utter_chitchat:
+  - text: "नहीं समझे। मैं फिर से पूछूंगा"
+  - text: "मुझे समझ नहीं आया, मैं फिर से पूछूंगा"
+  - text: "क्या आप फिर से अपना जवाब दोहरा सकते हैं, मैं फिर से पूछूंगा"
+
+  
+  utter_default:
+  - text: "क्या आप फिर से अपना जवाब दोहरा सकते हैं, मैं फिर से पूछूंगा"
+  
+  utter_goodbye:
+  - text: गुडबाय :(
+  - text: Bye!
+  
+  utter_greet:
+  - text: hi {user_name}!!
+  - text: नमस्ते
+  - text: Namaste!!
+  
+  utter_thanks:
+  - text: आपका धन्यवाद!
+  - text: धन्यवाद!
+
+  utter_ask_industry:
+  - text: "उद्योग का प्रकार क्या है?"
+    buttons:
+    - title: "गारमेंट्स"
+      payload: "garments"
+    - title: "FMCG"
+      payload: "fmcg"
+    - title: "केमिकल"
+      payload: "chemical"
+    - title: "होटल"
+      payload: "hotel"
+    - title: "फुटवियर"
+      payload: "footwear"
+
+  utter_ask_business_kind:
+  - text: "यह किस तरह का व्यवसाय है?"
+    buttons:
+    - title: "पब्लिक"
+      payload: "public"
+    - title: "प्राइवेट"
+      payload: "private"
+    - title: "प्रोप्रिएटरी"
+      payload: "prop"
+    - title: "पार्टनरशिप"
+      payload: "partnership"
+      
+  utter_ask_nob:
+  - text: "किस प्रकार का व्यापार?"
+    buttons:
+    - title: "मैन्युफैक्चरिंग"
+      payload: "manufacturing"
+    - title: "ट्रेडर"
+      payload: "trader"
+    - title: "सर्विस प्रोवाइडर"
+      payload: "SP"
+
+  utter_ask_manu:
+  - text: "Manufacturing is:"
+    buttons:
+    - title: "Inhouse"
+      payload: "Yes"
+    - title: "Outsourced"
+      payload: "No"
+
+  utter_ask_trader_type:
+  - text: "आप किस तरह का व्यापार करते हैं?"
+    buttons:
+    - title: "रिटेल"
+      payload: "retail"
+    - title: "थोक/होलसेल"
+      payload: "wholesale"
+    - title: "दोनों"
+      payload: "both"
+  
+  utter_stop_check:
+  - text: "क्या आप वाकई इंटरव्यू छोड़ना चाहते हैं?"
+    buttons:
+    - title: "हां, मैं इंटरव्यू से बाहर निकलना चाहता हूं।"
+      payload: "Yes"
+    - title: "नहीं, इंटरव्यू जारी रखें
+"
+      payload: "No"

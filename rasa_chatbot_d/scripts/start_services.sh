@@ -10,4 +10,5 @@ python3 -m rasa_core_sdk.endpoint --actions app.actions.actions&
 
 
 # Start rn_app.py
-python3 /app/scripts/run_app.py
+python3 /app/scripts/run_app_d.py $SLACK
+#python3 /app/scripts/run_app_d.py "xoxb-542065604356-582580159955-nuwuIUEQfJQ"

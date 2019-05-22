@@ -2,7 +2,7 @@ FROM ubuntu:18.04
 MAINTAINER tbhavnani
 
 RUN apt-get update && apt-get install -y python3 python3-pip
-RUN pip3 install rasa-core rasa-nlu[tensorflow] spacy sklearn-crfsuite rasa-core-sdk nltk word2number
+RUN pip3 install rasa-core rasa-nlu[tensorflow] spacy sklearn-crfsuite rasa-core-sdk nltk word2number argparse
 RUN python3 -m spacy download en
 
 ADD ./models /app/models/

@@ -5,8 +5,8 @@
     },
     "action_interview_start": {
       "slots": [
-        "counter",
-        "current"
+        "current",
+        "counter"
       ]
     },
     "action_default_fallback": {
@@ -32,7 +32,7 @@
     "rasa_core.policies.form_policy.FormPolicy",
     "rasa_core.policies.mapping_policy.MappingPolicy"
   ],
-  "trained_at": "20190518-200753",
+  "trained_at": "20190518-164700",
   "rasa_core": "0.14.4",
   "tensorflow": "1.13.1",
   "sklearn": "0.20.3"
