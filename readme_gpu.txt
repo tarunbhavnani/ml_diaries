@@ -4,6 +4,7 @@ yes
 
 password: snecorner
 
+export PATH="/home/ubuntu/anaconda3/bin:$PATH"
 #source conda_bash
 #conda create -n tarun python=3.6
 

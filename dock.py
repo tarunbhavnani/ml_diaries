@@ -10,13 +10,38 @@ sudo docker login
 tbhavnani
 Amadeus123
 
-sudo docker build -t tbhavnani/rasa_chat .
-sudo docker push tbhavnani/rasa_chat
 
-image made with some name, find the container id
+#do changes in the files and models
 
-sudo docker tag 45erdfs7fgs tbhavnani/rasa-chatbot-d
+#rebuild the docker
+sudo docker build -t tbhavnani/rasa-chatbot-d .
+
+#push the changes to cloud
+
 sudo docker push tbhavnani/rasa-chatbot-d
+
+#pull the new image
+sudo docker pull tbhavnani/rasa-chatbot-d
+
+#run docker
+
+sudo docker run -t --rm -p 5005:5005 -e SLACK="" tbhavnani/rasa-chatbot-d
+
+
+
+
+#mongo
+#https://www.thepolyglotdeveloper.com/2019/01/getting-started-mongodb-docker-container-deployment/
+
+docker run -d -p 27017-27019:27017-27019 --name mongodb mongo:4.0.4
+
+
+get inside
+docker exec -it mongodb bash
+mongo
+show dbs
+
+
 
 """
 
