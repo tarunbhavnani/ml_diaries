@@ -40,7 +40,16 @@ get inside
 docker exec -it mongodb bash
 mongo
 show dbs
-
+#create db rasa
+use rasa
+#create username pass
+db.createUser(
+  {
+    user: "tarun",
+    pwd: "pass123",
+    roles: [ { role: "readWrite", db: "new_database" } ]
+  }
+)
 
 
 """
