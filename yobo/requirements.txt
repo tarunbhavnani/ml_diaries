@@ -1,0 +1,8 @@
+rasa-core
+rasa-nlu[tensorflow]
+spacy
+sklearn-crfsuite
+rasa-core-sdk
+nltk
+word2number
+pandas

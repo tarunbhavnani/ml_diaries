@@ -1,0 +1,6 @@
+{
+  "yes": "affirm",
+  "no": "deny",
+  "rented": "deny",
+  "my father owns": "affirm"
+}

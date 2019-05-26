@@ -1,0 +1,12 @@
+version: '3.0'
+services:
+  rasa:
+    image: tbhavnani/rasa-chatbot-d
+    ports:
+      - 5005:5005
+    volumes:
+      - ./:/app
+    command:
+      - run
+
+

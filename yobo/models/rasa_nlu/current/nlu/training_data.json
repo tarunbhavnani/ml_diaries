@@ -1,0 +1,1609 @@
+{
+  "rasa_nlu_data": {
+    "common_examples": [
+      {
+        "intent": "abuse",
+        "text": "fuckoff"
+      },
+      {
+        "intent": "abuse",
+        "text": "you are an asshole"
+      },
+      {
+        "intent": "abuse",
+        "text": "asshole"
+      },
+      {
+        "intent": "abuse",
+        "text": "fuckoff!!"
+      },
+      {
+        "intent": "affirm",
+        "text": "yes"
+      },
+      {
+        "intent": "affirm",
+        "text": "yup"
+      },
+      {
+        "intent": "affirm",
+        "text": "yes, that sounds good"
+      },
+      {
+        "intent": "affirm",
+        "text": "sure"
+      },
+      {
+        "intent": "affirm",
+        "text": "definitely"
+      },
+      {
+        "intent": "affirm",
+        "text": "absolutely"
+      },
+      {
+        "intent": "affirm",
+        "text": "please do"
+      },
+      {
+        "intent": "affirm",
+        "text": "yes, please"
+      },
+      {
+        "intent": "affirm",
+        "text": "yes for sure"
+      },
+      {
+        "intent": "affirm",
+        "text": "yuss"
+      },
+      {
+        "intent": "affirm",
+        "text": "yaya"
+      },
+      {
+        "intent": "affirm",
+        "text": "hmm"
+      },
+      {
+        "intent": "affirm",
+        "text": "hmmm"
+      },
+      {
+        "intent": "affirm",
+        "text": "true"
+      },
+      {
+        "intent": "ask_bot_address",
+        "text": "where do you stay?"
+      },
+      {
+        "intent": "ask_bot_address",
+        "text": "where do you live bot?"
+      },
+      {
+        "intent": "ask_bot_address",
+        "text": "bot where are you?"
+      },
+      {
+        "intent": "ask_bot_address:",
+        "text": "where do you stay?"
+      },
+      {
+        "intent": "ask_bot_address:",
+        "text": "where are you?"
+      },
+      {
+        "intent": "ask_bot_address:",
+        "text": "where do you put up?"
+      },
+      {
+        "intent": "ask_bot_address:",
+        "text": "tell me more about yourself?"
+      },
+      {
+        "intent": "ask_bot_age",
+        "text": "what ur age"
+      },
+      {
+        "intent": "ask_bot_age",
+        "text": "what is your age"
+      },
+      {
+        "intent": "ask_bot_age",
+        "text": "aapki umar kya hai"
+      },
+      {
+        "intent": "ask_bot_age",
+        "text": "how old are u"
+      },
+      {
+        "intent": "ask_bot_age",
+        "text": "how old r u"
+      },
+      {
+        "intent": "ask_bot_arch",
+        "text": "what is your architecture?"
+      },
+      {
+        "intent": "ask_bot_arch",
+        "text": "you are based on what?"
+      },
+      {
+        "intent": "ask_bot_arch",
+        "text": "what are you based on?"
+      },
+      {
+        "intent": "ask_bot_arch",
+        "text": "what technology is used to build you?"
+      },
+      {
+        "intent": "ask_bot_arch",
+        "text": "you work on what technology?"
+      },
+      {
+        "intent": "ask_bot_creator",
+        "text": "who has created you?"
+      },
+      {
+        "intent": "ask_bot_creator",
+        "text": "who has built you bot?"
+      },
+      {
+        "intent": "ask_bot_creator",
+        "text": "who made you?"
+      },
+      {
+        "intent": "ask_bot_name",
+        "text": "whats your name?"
+      },
+      {
+        "intent": "ask_bot_name",
+        "text": "what do people call you?"
+      },
+      {
+        "intent": "ask_bot_name",
+        "text": "who are you?"
+      },
+      {
+        "intent": "ask_bot_name",
+        "text": "hu r u?"
+      },
+      {
+        "intent": "ask_bot_name",
+        "text": "hu u?"
+      },
+      {
+        "intent": "ask_bot_name",
+        "text": "what r u?"
+      },
+      {
+        "intent": "ask_bot_name",
+        "text": "who are you?"
+      },
+      {
+        "intent": "ask_bot_name",
+        "text": "what is you name bot?"
+      },
+      {
+        "intent": "ask_bot_name",
+        "text": "Can you tell me your name?"
+      },
+      {
+        "intent": "ask_bot_name",
+        "text": "whats ur name?"
+      },
+      {
+        "intent": "ask_bot_name",
+        "text": "what ur name"
+      },
+      {
+        "intent": "bot_intro",
+        "text": "tell me about yourself"
+      },
+      {
+        "intent": "bot_intro",
+        "text": "who are you what do you do"
+      },
+      {
+        "intent": "bot_intro",
+        "text": "what are you?"
+      },
+      {
+        "intent": "bot_intro",
+        "text": "walk me through yourself"
+      },
+      {
+        "intent": "bot_intro",
+        "text": "walk me through your profile"
+      },
+      {
+        "intent": "cell_number",
+        "entities": [
+          {
+            "start": 0,
+            "end": 10,
+            "value": "7838930304",
+            "entity": "user_cell"
+          }
+        ],
+        "text": "7838930304"
+      },
+      {
+        "intent": "cell_number",
+        "entities": [
+          {
+            "start": 20,
+            "end": 30,
+            "value": "8956562375",
+            "entity": "user_cell"
+          }
+        ],
+        "text": "my mobile number is 8956562375"
+      },
+      {
+        "intent": "cell_number",
+        "entities": [
+          {
+            "start": 20,
+            "end": 30,
+            "value": "7834983654",
+            "entity": "user_cell"
+          }
+        ],
+        "text": "my mobile number is 7834983654"
+      },
+      {
+        "intent": "cell_number",
+        "entities": [
+          {
+            "start": 0,
+            "end": 10,
+            "value": "9414487564",
+            "entity": "user_cell"
+          }
+        ],
+        "text": "9414487564"
+      },
+      {
+        "intent": "cell_number",
+        "entities": [
+          {
+            "start": 13,
+            "end": 23,
+            "value": "9856423476",
+            "entity": "user_cell"
+          }
+        ],
+        "text": "my number is 9856423476"
+      },
+      {
+        "intent": "cell_number",
+        "entities": [
+          {
+            "start": 10,
+            "end": 20,
+            "value": "7856340562",
+            "entity": "user_cell"
+          }
+        ],
+        "text": "my num is 7856340562"
+      },
+      {
+        "intent": "crack",
+        "text": "lol"
+      },
+      {
+        "intent": "crack",
+        "text": "lolz"
+      },
+      {
+        "intent": "crack",
+        "text": "you are funny"
+      },
+      {
+        "intent": "crack",
+        "text": "u r funny"
+      },
+      {
+        "intent": "crack",
+        "text": "haha"
+      },
+      {
+        "intent": "crack",
+        "text": "hahahaha"
+      },
+      {
+        "intent": "crack",
+        "text": ":D"
+      },
+      {
+        "intent": "crack",
+        "text": ";)"
+      },
+      {
+        "intent": "dance",
+        "text": "Do you dance?"
+      },
+      {
+        "intent": "dance",
+        "text": "can you dance?"
+      },
+      {
+        "intent": "dance",
+        "text": "what all dance do you know?"
+      },
+      {
+        "intent": "deny",
+        "text": "no"
+      },
+      {
+        "intent": "deny",
+        "text": "nope"
+      },
+      {
+        "intent": "deny",
+        "text": "No, I don't think so"
+      },
+      {
+        "intent": "deny",
+        "text": "Maybe not"
+      },
+      {
+        "intent": "deny",
+        "text": "Not today"
+      },
+      {
+        "intent": "deny",
+        "text": "No, I'm good"
+      },
+      {
+        "intent": "deny",
+        "text": "No thanks"
+      },
+      {
+        "intent": "deny",
+        "text": "i don't think so"
+      },
+      {
+        "intent": "deny",
+        "text": "naa"
+      },
+      {
+        "intent": "deny",
+        "text": "noi"
+      },
+      {
+        "intent": "eat",
+        "text": "what do you eat?"
+      },
+      {
+        "intent": "eat",
+        "text": "do you eat?"
+      },
+      {
+        "intent": "eat",
+        "text": "when do you eat food?"
+      },
+      {
+        "intent": "eat",
+        "text": "did you have lunch?"
+      },
+      {
+        "intent": "family_involve",
+        "text": "yes my brother works in the bussiness"
+      },
+      {
+        "intent": "family_involve",
+        "text": "my father works with me"
+      },
+      {
+        "intent": "family_involve",
+        "text": "no my brother has another shop"
+      },
+      {
+        "intent": "family_involve",
+        "text": "my son works in the business, he joined last year only."
+      },
+      {
+        "intent": "family_involve",
+        "text": "both my sons work with me"
+      },
+      {
+        "intent": "family_involve",
+        "text": "my father is retired he stays at home"
+      },
+      {
+        "intent": "family_involve",
+        "text": "no i work alone"
+      },
+      {
+        "intent": "family_involve",
+        "text": "yes i work alone"
+      },
+      {
+        "intent": "family_involve",
+        "text": "my wife works with me"
+      },
+      {
+        "intent": "family_place",
+        "text": "i stay in dadar"
+      },
+      {
+        "intent": "family_place",
+        "text": "my house is in panvel"
+      },
+      {
+        "intent": "family_place",
+        "text": "my family stays in andheri"
+      },
+      {
+        "intent": "family_place",
+        "text": "yes we have a house in kota"
+      },
+      {
+        "intent": "family_place",
+        "text": "i live in surat"
+      },
+      {
+        "intent": "family_size",
+        "text": "i have 2 brothers and one sister"
+      },
+      {
+        "intent": "family_size",
+        "text": "we are three people in my family"
+      },
+      {
+        "intent": "family_size",
+        "text": "i live with my father and my mother"
+      },
+      {
+        "intent": "family_size",
+        "text": "i have two children one son and one daughter"
+      },
+      {
+        "intent": "family_size",
+        "text": "two sons and my wife"
+      },
+      {
+        "intent": "family_size",
+        "text": "my mother , father , wife and two children"
+      },
+      {
+        "intent": "goodbye",
+        "text": "Bye"
+      },
+      {
+        "intent": "goodbye",
+        "text": "Goodbye"
+      },
+      {
+        "intent": "goodbye",
+        "text": "Talk to you later"
+      },
+      {
+        "intent": "goodbye",
+        "text": "See you"
+      },
+      {
+        "intent": "goodbye",
+        "text": "See you later"
+      },
+      {
+        "intent": "goodbye",
+        "text": "Bye bye"
+      },
+      {
+        "intent": "goodbye",
+        "text": "Bye for now"
+      },
+      {
+        "intent": "goodbye",
+        "text": "Goodbye bot"
+      },
+      {
+        "intent": "greet",
+        "text": "Hi"
+      },
+      {
+        "intent": "greet",
+        "text": "hey"
+      },
+      {
+        "intent": "greet",
+        "text": "heya"
+      },
+      {
+        "intent": "greet",
+        "text": "Hello"
+      },
+      {
+        "intent": "greet",
+        "text": "What's up"
+      },
+      {
+        "intent": "greet",
+        "text": "Heya"
+      },
+      {
+        "intent": "greet",
+        "text": "Greetings"
+      },
+      {
+        "intent": "greet",
+        "text": "Good  morning"
+      },
+      {
+        "intent": "greet",
+        "text": "Good afternoon"
+      },
+      {
+        "intent": "greet",
+        "text": "Good evening"
+      },
+      {
+        "intent": "greet",
+        "text": "Hey sir"
+      },
+      {
+        "intent": "greet",
+        "text": "Hi person"
+      },
+      {
+        "intent": "greet",
+        "text": "Hey robot"
+      },
+      {
+        "intent": "greet",
+        "text": "hi bot"
+      },
+      {
+        "intent": "greet",
+        "text": "Hello bot"
+      },
+      {
+        "intent": "greet",
+        "text": "Heyhey"
+      },
+      {
+        "intent": "greet",
+        "text": "heyyy"
+      },
+      {
+        "intent": "greet",
+        "text": "hiiiii"
+      },
+      {
+        "intent": "greet",
+        "text": "hi Zbot"
+      },
+      {
+        "intent": "greet",
+        "text": "hellooos"
+      },
+      {
+        "intent": "greet",
+        "text": "hi"
+      },
+      {
+        "intent": "house_owned:",
+        "entities": [
+          {
+            "start": 0,
+            "end": 3,
+            "value": "affirm",
+            "entity": "house_owned"
+          }
+        ],
+        "text": "yes i own my house"
+      },
+      {
+        "intent": "house_owned:",
+        "entities": [
+          {
+            "start": 0,
+            "end": 2,
+            "value": "deny",
+            "entity": "house_owned"
+          }
+        ],
+        "text": "no i stay on rent"
+      },
+      {
+        "intent": "house_owned:",
+        "entities": [
+          {
+            "start": 0,
+            "end": 2,
+            "value": "deny",
+            "entity": "house_owned"
+          }
+        ],
+        "text": "no its rebted"
+      },
+      {
+        "intent": "house_owned:",
+        "entities": [
+          {
+            "start": 0,
+            "end": 6,
+            "value": "deny",
+            "entity": "house_owned"
+          }
+        ],
+        "text": "rented"
+      },
+      {
+        "intent": "house_owned:",
+        "entities": [
+          {
+            "start": 0,
+            "end": 14,
+            "value": "affirm",
+            "entity": "house_owned"
+          }
+        ],
+        "text": "my father owns it"
+      },
+      {
+        "intent": "house_owned:",
+        "entities": [
+          {
+            "start": 0,
+            "end": 3,
+            "value": "affirm",
+            "entity": "house_owned"
+          }
+        ],
+        "text": "yes its mine"
+      },
+      {
+        "intent": "howr",
+        "text": "Hi how are you"
+      },
+      {
+        "intent": "howr",
+        "text": "how do you do"
+      },
+      {
+        "intent": "howr",
+        "text": "watsupp"
+      },
+      {
+        "intent": "howr",
+        "text": "ssupp"
+      },
+      {
+        "intent": "howr",
+        "text": "suupp"
+      },
+      {
+        "intent": "howr",
+        "text": "ssssuuppp"
+      },
+      {
+        "intent": "howr",
+        "text": "waduupp"
+      },
+      {
+        "intent": "howr",
+        "text": "watsuppp bot"
+      },
+      {
+        "intent": "howr",
+        "text": "hi bot hows it been"
+      },
+      {
+        "intent": "howr",
+        "text": "bot how are you?"
+      },
+      {
+        "intent": "howr",
+        "text": "howru"
+      },
+      {
+        "intent": "howr",
+        "text": "how r u"
+      },
+      {
+        "intent": "howr",
+        "text": "hru"
+      },
+      {
+        "intent": "howr",
+        "text": "howdy?"
+      },
+      {
+        "intent": "name_tell",
+        "entities": [
+          {
+            "start": 0,
+            "end": 14,
+            "value": "tarun bhavnani",
+            "entity": "user_name"
+          }
+        ],
+        "text": "tarun bhavnani"
+      },
+      {
+        "intent": "name_tell",
+        "entities": [
+          {
+            "start": 0,
+            "end": 8,
+            "value": "jitendra",
+            "entity": "user_name"
+          }
+        ],
+        "text": "jitendra"
+      },
+      {
+        "intent": "name_tell",
+        "entities": [
+          {
+            "start": 0,
+            "end": 12,
+            "value": "Virendra Pal",
+            "entity": "user_name"
+          }
+        ],
+        "text": "Virendra Pal"
+      },
+      {
+        "intent": "name_tell",
+        "entities": [
+          {
+            "start": 11,
+            "end": 23,
+            "value": "varun sharma",
+            "entity": "user_name"
+          }
+        ],
+        "text": "my name is varun sharma"
+      },
+      {
+        "intent": "name_tell",
+        "entities": [
+          {
+            "start": 11,
+            "end": 18,
+            "value": "pradeep",
+            "entity": "user_name"
+          }
+        ],
+        "text": "my name is pradeep"
+      },
+      {
+        "intent": "name_tell",
+        "entities": [
+          {
+            "start": 7,
+            "end": 19,
+            "value": "samir bhatia",
+            "entity": "user_name"
+          }
+        ],
+        "text": "myself samir bhatia"
+      },
+      {
+        "intent": "name_tell",
+        "entities": [
+          {
+            "start": 0,
+            "end": 8,
+            "value": "rajendra",
+            "entity": "user_name"
+          }
+        ],
+        "text": "rajendra"
+      },
+      {
+        "intent": "name_tell",
+        "entities": [
+          {
+            "start": 0,
+            "end": 12,
+            "value": "ashok gehlot",
+            "entity": "user_name"
+          }
+        ],
+        "text": "ashok gehlot"
+      },
+      {
+        "intent": "name_tell",
+        "entities": [
+          {
+            "start": 0,
+            "end": 14,
+            "value": "shankaracharya",
+            "entity": "user_name"
+          }
+        ],
+        "text": "shankaracharya"
+      },
+      {
+        "intent": "name_tell",
+        "entities": [
+          {
+            "start": 0,
+            "end": 12,
+            "value": "varun dhawan",
+            "entity": "user_name"
+          }
+        ],
+        "text": "varun dhawan"
+      },
+      {
+        "intent": "name_tell",
+        "entities": [
+          {
+            "start": 0,
+            "end": 9,
+            "value": "amit garg",
+            "entity": "user_name"
+          }
+        ],
+        "text": "amit garg"
+      },
+      {
+        "intent": "name_tell",
+        "entities": [
+          {
+            "start": 11,
+            "end": 21,
+            "value": "kamal sing",
+            "entity": "user_name"
+          }
+        ],
+        "text": "my name is kamal sing"
+      },
+      {
+        "intent": "name_tell",
+        "entities": [
+          {
+            "start": 7,
+            "end": 13,
+            "value": "jayant",
+            "entity": "user_name"
+          }
+        ],
+        "text": "myself jayant"
+      },
+      {
+        "intent": "name_tell",
+        "entities": [
+          {
+            "start": 15,
+            "end": 21,
+            "value": "eminem",
+            "entity": "user_name"
+          }
+        ],
+        "text": "people call me eminem"
+      },
+      {
+        "intent": "name_tell",
+        "entities": [
+          {
+            "start": 5,
+            "end": 17,
+            "value": "vikram bajaj",
+            "entity": "user_name"
+          }
+        ],
+        "text": "i am vikram bajaj"
+      },
+      {
+        "intent": "name_tell",
+        "entities": [
+          {
+            "start": 5,
+            "end": 12,
+            "value": "sowalka",
+            "entity": "user_name"
+          }
+        ],
+        "text": "i am sowalka"
+      },
+      {
+        "intent": "name_tell",
+        "entities": [
+          {
+            "start": 5,
+            "end": 15,
+            "value": "aamir khan",
+            "entity": "user_name"
+          }
+        ],
+        "text": "i am aamir khan"
+      },
+      {
+        "intent": "name_tell",
+        "entities": [
+          {
+            "start": 7,
+            "end": 14,
+            "value": "sukhraj",
+            "entity": "user_name"
+          }
+        ],
+        "text": "myself sukhraj"
+      },
+      {
+        "intent": "name_tell",
+        "entities": [
+          {
+            "start": 0,
+            "end": 13,
+            "value": "varun chauhan",
+            "entity": "user_name"
+          }
+        ],
+        "text": "varun chauhan"
+      },
+      {
+        "intent": "name_tell",
+        "entities": [
+          {
+            "start": 0,
+            "end": 15,
+            "value": "kandeel chauhan",
+            "entity": "user_name"
+          }
+        ],
+        "text": "kandeel chauhan"
+      },
+      {
+        "intent": "name_tell",
+        "entities": [
+          {
+            "start": 0,
+            "end": 23,
+            "value": "abhinav siddath chauhan",
+            "entity": "user_name"
+          }
+        ],
+        "text": "abhinav siddath chauhan"
+      },
+      {
+        "intent": "name_tell",
+        "entities": [
+          {
+            "start": 0,
+            "end": 14,
+            "value": "abhishek ahuja",
+            "entity": "user_name"
+          }
+        ],
+        "text": "abhishek ahuja"
+      },
+      {
+        "intent": "name_tell",
+        "entities": [
+          {
+            "start": 11,
+            "end": 23,
+            "value": "abdul babbar",
+            "entity": "user_name"
+          }
+        ],
+        "text": "my name is abdul babbar"
+      },
+      {
+        "intent": "name_tell",
+        "entities": [
+          {
+            "start": 11,
+            "end": 22,
+            "value": "manoj pawar",
+            "entity": "user_name"
+          }
+        ],
+        "text": "my name is manoj pawar"
+      },
+      {
+        "intent": "name_tell",
+        "entities": [
+          {
+            "start": 11,
+            "end": 22,
+            "value": "rahul patil",
+            "entity": "user_name"
+          }
+        ],
+        "text": "my name is rahul patil"
+      },
+      {
+        "intent": "name_tell",
+        "entities": [
+          {
+            "start": 11,
+            "end": 24,
+            "value": "nilesh pandit",
+            "entity": "user_name"
+          }
+        ],
+        "text": "my name is nilesh pandit"
+      },
+      {
+        "intent": "name_tell",
+        "entities": [
+          {
+            "start": 11,
+            "end": 17,
+            "value": "usman ",
+            "entity": "user_name"
+          }
+        ],
+        "text": "my name is usman "
+      },
+      {
+        "intent": "name_tell",
+        "entities": [
+          {
+            "start": 11,
+            "end": 27,
+            "value": "avanisj parashar",
+            "entity": "user_name"
+          }
+        ],
+        "text": "my name is avanisj parashar"
+      },
+      {
+        "intent": "name_tell",
+        "entities": [
+          {
+            "start": 11,
+            "end": 27,
+            "value": "aashutosh mishra",
+            "entity": "user_name"
+          }
+        ],
+        "text": "my name is aashutosh mishra"
+      },
+      {
+        "intent": "name_tell",
+        "entities": [
+          {
+            "start": 11,
+            "end": 22,
+            "value": "amit sharma",
+            "entity": "user_name"
+          }
+        ],
+        "text": "my name is amit sharma"
+      },
+      {
+        "intent": "name_tell",
+        "entities": [
+          {
+            "start": 11,
+            "end": 29,
+            "value": "praveen srivastava",
+            "entity": "user_name"
+          }
+        ],
+        "text": "my name is praveen srivastava"
+      },
+      {
+        "intent": "name_tell+ask_bot_name",
+        "entities": [
+          {
+            "start": 5,
+            "end": 17,
+            "value": "vikram bajaj",
+            "entity": "user_name"
+          }
+        ],
+        "text": "i am vikram bajaj what is your name"
+      },
+      {
+        "intent": "name_tell+ask_bot_name",
+        "entities": [
+          {
+            "start": 5,
+            "end": 12,
+            "value": "sowalka",
+            "entity": "user_name"
+          }
+        ],
+        "text": "i am sowalkaand what is your name"
+      },
+      {
+        "intent": "name_tell+ask_bot_name",
+        "entities": [
+          {
+            "start": 5,
+            "end": 15,
+            "value": "aamir khan",
+            "entity": "user_name"
+          }
+        ],
+        "text": "i am aamir khan and what is your name"
+      },
+      {
+        "intent": "name_tell+ask_bot_name",
+        "entities": [
+          {
+            "start": 7,
+            "end": 14,
+            "value": "sukhraj",
+            "entity": "user_name"
+          }
+        ],
+        "text": "myself sukhraj what is your name"
+      },
+      {
+        "intent": "name_tell+ask_bot_name",
+        "entities": [
+          {
+            "start": 0,
+            "end": 13,
+            "value": "varun chauhan",
+            "entity": "user_name"
+          }
+        ],
+        "text": "varun chauhan whats yours"
+      },
+      {
+        "intent": "name_tell+ask_bot_name",
+        "entities": [
+          {
+            "start": 0,
+            "end": 15,
+            "value": "kandeel chauhan",
+            "entity": "user_name"
+          }
+        ],
+        "text": "kandeel chauhan what is your name"
+      },
+      {
+        "intent": "name_tell+ask_bot_name",
+        "entities": [
+          {
+            "start": 0,
+            "end": 23,
+            "value": "abhinav siddath chauhan",
+            "entity": "user_name"
+          }
+        ],
+        "text": "abhinav siddath chauhan whats yours"
+      },
+      {
+        "intent": "name_tell+ask_bot_name",
+        "entities": [
+          {
+            "start": 0,
+            "end": 14,
+            "value": "abhishek ahuja",
+            "entity": "user_name"
+          }
+        ],
+        "text": "abhishek ahuja what is your name"
+      },
+      {
+        "intent": "name_tell+ask_bot_name",
+        "entities": [
+          {
+            "start": 11,
+            "end": 23,
+            "value": "abdul babbar",
+            "entity": "user_name"
+          }
+        ],
+        "text": "my name is abdul babbar what is your name"
+      },
+      {
+        "intent": "name_tell+ask_bot_name",
+        "entities": [
+          {
+            "start": 11,
+            "end": 22,
+            "value": "manoj pawar",
+            "entity": "user_name"
+          }
+        ],
+        "text": "my name is manoj pawar and yours?"
+      },
+      {
+        "intent": "name_tell+ask_bot_name",
+        "entities": [
+          {
+            "start": 11,
+            "end": 22,
+            "value": "rahul patil",
+            "entity": "user_name"
+          }
+        ],
+        "text": "my name is rahul patil what is your name"
+      },
+      {
+        "intent": "name_tell+ask_bot_name",
+        "entities": [
+          {
+            "start": 11,
+            "end": 24,
+            "value": "nilesh pandit",
+            "entity": "user_name"
+          }
+        ],
+        "text": "my name is nilesh pandit and yours?"
+      },
+      {
+        "intent": "name_tell+ask_bot_name",
+        "entities": [
+          {
+            "start": 11,
+            "end": 17,
+            "value": "usman ",
+            "entity": "user_name"
+          }
+        ],
+        "text": "my name is usman  what is your name"
+      },
+      {
+        "intent": "name_tell+ask_bot_name",
+        "entities": [
+          {
+            "start": 11,
+            "end": 27,
+            "value": "avanisj parashar",
+            "entity": "user_name"
+          }
+        ],
+        "text": "my name is avanisj parashar what is your name"
+      },
+      {
+        "intent": "name_tell+ask_bot_name",
+        "entities": [
+          {
+            "start": 11,
+            "end": 27,
+            "value": "aashutosh mishra",
+            "entity": "user_name"
+          }
+        ],
+        "text": "my name is aashutosh mishra what is your name"
+      },
+      {
+        "intent": "name_tell+ask_bot_name",
+        "entities": [
+          {
+            "start": 11,
+            "end": 22,
+            "value": "amit sharma",
+            "entity": "user_name"
+          }
+        ],
+        "text": "my name is amit sharma what is your name"
+      },
+      {
+        "intent": "name_tell+ask_bot_name",
+        "entities": [
+          {
+            "start": 11,
+            "end": 29,
+            "value": "praveen srivastava",
+            "entity": "user_name"
+          }
+        ],
+        "text": "my name is praveen srivastava what is your name"
+      },
+      {
+        "intent": "profile_extract",
+        "text": "can you please extract my profile"
+      },
+      {
+        "intent": "profile_extract",
+        "text": "can you share my details"
+      },
+      {
+        "intent": "profile_extract",
+        "text": "do you have my profile"
+      },
+      {
+        "intent": "profile_extract",
+        "text": "can i get a glimpse of my profile"
+      },
+      {
+        "intent": "profile_extract",
+        "text": "can you pull up my details"
+      },
+      {
+        "intent": "profile_extract",
+        "text": "do you have my details"
+      },
+      {
+        "intent": "profile_extract",
+        "text": "can i have my details here"
+      },
+      {
+        "intent": "profile_extract",
+        "text": "do you knwo about my profile"
+      },
+      {
+        "intent": "profile_extract",
+        "text": "can you please share my details"
+      },
+      {
+        "intent": "profile_extract",
+        "text": "can you share my profile"
+      },
+      {
+        "intent": "profile_extract",
+        "text": "can you please dig out my details"
+      },
+      {
+        "intent": "profile_extract",
+        "text": "will you be able to get my details"
+      },
+      {
+        "intent": "profile_extract",
+        "text": "can i get my profile"
+      },
+      {
+        "intent": "profile_extract",
+        "text": "can you pull up my profile"
+      },
+      {
+        "intent": "profile_extract",
+        "text": "can you extarct my details"
+      },
+      {
+        "intent": "profile_extract",
+        "text": "can you show me my profile"
+      },
+      {
+        "intent": "profile_extract",
+        "text": "grab my profile please"
+      },
+      {
+        "intent": "profile_extract",
+        "text": "what do you know about me"
+      },
+      {
+        "intent": "profile_extract",
+        "text": "do you know me already?"
+      },
+      {
+        "intent": "profile_extract",
+        "text": "what esle do you know"
+      },
+      {
+        "intent": "profile_extract",
+        "text": "how well do you know me?"
+      },
+      {
+        "intent": "sme_info",
+        "text": "Tell me about your company?"
+      },
+      {
+        "intent": "sme_info",
+        "text": "tell me about sme"
+      },
+      {
+        "intent": "sme_info",
+        "text": "tell me about smecorner"
+      },
+      {
+        "intent": "sme_info",
+        "text": "what does your company do?"
+      },
+      {
+        "intent": "sme_info",
+        "text": "what is smecorner"
+      },
+      {
+        "intent": "sme_info",
+        "text": "what does your company do?"
+      },
+      {
+        "intent": "sme_info",
+        "text": "smecorner"
+      },
+      {
+        "intent": "start_interview",
+        "text": "Can you please start the interview"
+      },
+      {
+        "intent": "start_interview",
+        "text": "Please start the interview"
+      },
+      {
+        "intent": "start_interview",
+        "text": "lets start the interview"
+      },
+      {
+        "intent": "start_interview",
+        "text": "lets start"
+      },
+      {
+        "intent": "start_interview",
+        "text": "we can now start the PD"
+      },
+      {
+        "intent": "start_interview",
+        "text": "Lets start the PD"
+      },
+      {
+        "intent": "thanks",
+        "text": "thanks"
+      },
+      {
+        "intent": "thanks",
+        "text": "thank you"
+      },
+      {
+        "intent": "thanks",
+        "text": "Thanks a lot"
+      },
+      {
+        "intent": "thanks",
+        "text": "Thanks a bunch"
+      },
+      {
+        "intent": "thanks",
+        "text": "Thank you very much"
+      },
+      {
+        "intent": "thanks",
+        "text": "Thank you so much"
+      },
+      {
+        "intent": "thanks",
+        "text": "thanku"
+      },
+      {
+        "intent": "thanks",
+        "text": "great!"
+      },
+      {
+        "intent": "thanks",
+        "text": "good!"
+      },
+      {
+        "intent": "thanks",
+        "text": "great"
+      },
+      {
+        "intent": "thanks",
+        "text": "good"
+      },
+      {
+        "intent": "thanks",
+        "text": "very good"
+      },
+      {
+        "intent": "thanks",
+        "text": "i like it"
+      },
+      {
+        "intent": "thanks",
+        "text": "kya baat hai"
+      },
+      {
+        "intent": "thanks",
+        "text": "wah"
+      },
+      {
+        "intent": "thanks",
+        "text": "too cool"
+      },
+      {
+        "intent": "thanks",
+        "text": "thankyou ji!!"
+      },
+      {
+        "intent": "thanks",
+        "text": "thanks"
+      },
+      {
+        "intent": "thanks+goodbye",
+        "text": "Awesome. Talk to you later!"
+      },
+      {
+        "intent": "thanks+goodbye",
+        "text": "Thanks. Bye for now"
+      },
+      {
+        "intent": "thanks+goodbye",
+        "text": "Awesome, bye bye"
+      },
+      {
+        "intent": "thanks+goodbye",
+        "text": "That's great. Goodbye."
+      },
+      {
+        "intent": "thanks+goodbye",
+        "text": "Perfect. Talk to you later"
+      },
+      {
+        "intent": "thanks+goodbye",
+        "text": "Thanks! Goodbye"
+      },
+      {
+        "intent": "thanks+goodbye",
+        "text": "Thank you very much. Talk to you later"
+      },
+      {
+        "intent": "thanks+goodbye",
+        "text": "Thanks a lot. Bye for now"
+      },
+      {
+        "intent": "thanks+goodbye",
+        "text": "Thanks bot. Goodbye"
+      },
+      {
+        "intent": "years_in_business",
+        "text": "i have been in this business for the last ten years"
+      },
+      {
+        "intent": "years_in_business",
+        "text": "it has been 30 years in this business"
+      },
+      {
+        "intent": "years_in_business",
+        "text": "40 years"
+      },
+      {
+        "intent": "years_in_business",
+        "text": "i just started last month"
+      },
+      {
+        "intent": "years_in_business",
+        "text": "its has been almost 15 years"
+      },
+      {
+        "intent": "years_in_business",
+        "text": "30 months"
+      },
+      {
+        "intent": "years_in_business",
+        "text": "we have been running this business since independence"
+      },
+      {
+        "intent": "years_in_business",
+        "text": "for the past 13 years I have been running it. My uncles started the business back in 1950"
+      },
+      {
+        "intent": "years_in_business",
+        "text": "we started the shop in 1967"
+      },
+      {
+        "intent": "years_in_business",
+        "text": "we established the business in 1897"
+      },
+      {
+        "intent": "years_in_business",
+        "text": "my father started the business in 1995"
+      }
+    ],
+    "regex_features": [
+      {
+        "name": "user_cell",
+        "pattern": "[0-9]{10}"
+      },
+      {
+        "name": "zipcode",
+        "pattern": "[0-9]{5}"
+      }
+    ],
+    "lookup_tables": [],
+    "entity_synonyms": [
+      {
+        "value": "affirm",
+        "synonyms": [
+          "yes",
+          "my father owns"
+        ]
+      },
+      {
+        "value": "deny",
+        "synonyms": [
+          "no",
+          "rented"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,83 @@
+%YAML 1.1
+---
+actions:
+- utter_abuse
+- utter_ask_gender
+- action_chitchat
+- utter_eat
+- utter_bot_address
+- utter_bot_intro
+- utter_dance
+- utter_howr
+- utter_bot_age
+- utter_thanks
+- utter_bot_creator
+- utter_greet
+- utter_bot_name
+- utter_crack
+- utter_default
+- utter_chitchat
+- utter_sleep
+- utter_bot_arch
+- utter_goodbye
+config:
+  store_entities_as_slots: false
+entities: []
+forms: []
+intents:
+- deny
+- thanks
+- stop
+- ask_bot_name
+- greet
+- goodbye
+- chitchat
+- thank
+- ask_bot_age
+- affirm
+slots:
+  counter:
+    auto_fill: true
+    initial_value: false
+    type: rasa_core.slots.UnfeaturizedSlot
+  current:
+    auto_fill: true
+    initial_value: false
+    type: rasa_core.slots.UnfeaturizedSlot
+  interview_state:
+    auto_fill: true
+    initial_value: start
+    type: rasa_core.slots.UnfeaturizedSlot
+  user_name:
+    auto_fill: true
+    initial_value: Dear
+    type: rasa_core.slots.TextSlot
+templates:
+  utter_ask_gender:
+  - buttons:
+    - payload: male
+      title: male
+    - payload: female
+      title: female
+    text: whats ur gender?
+  utter_chitchat:
+  - text: chitchat blah!
+  utter_default:
+  - text: Please rephrase!
+  utter_goodbye:
+  - text: Bye!
+  utter_greet:
+  - text: hi {user_name}!!
+  utter_thanks:
+  - text: thanks!
+  utter_abuse:
+  - text: fuck off!
+  utter_bot_age:
+  - text: plz dont ask
+  - text: i am quite a few months old 
+
+  utter_howr:
+  - text: cool i am
+  utter_bot_name:
+  - text: Yobo!!
+ 
