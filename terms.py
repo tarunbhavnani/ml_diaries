@@ -5,6 +5,10 @@ Created on Mon Apr 15 17:35:53 2019
 
 @author: tarun.bhavnani@dev.smecorner.com
 """
+
+Adam optimizer as it is computationally efficient and has very little memory requirement. 
+Adam is a combination of Adagrad and RMSprop.
+
 rasa core and nlu deep learning models, how they train on the data
 ner-everything:classify named entities in text into pre-defined categories such as the names of persons, 
 organizations, locations, expressions of times, quantities, monetary values, percentages, etc.
