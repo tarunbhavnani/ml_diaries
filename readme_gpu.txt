@@ -17,6 +17,9 @@ scp check.txt ubuntu@192.168.1.135:~/tarun
 #transfer file
 scp -r check ubuntu@192.168.1.135:~/tarun 
 
+scp check.txt tarun.bhavnani@dev.smecorner.com@192.168.1.200:~/Desktop/bit
+
+
 
 pip install numba
 conda install cudatoolkit

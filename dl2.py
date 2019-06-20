@@ -22,6 +22,8 @@ df=pd.DataFrame(data=X, columns=("x1","x2","x3","x4","x5"))
 df["x1"]=abs(df["x1"])**(1/3)
 df["x2"]=abs(df["x2"])**(1/2)
 
+df= round(10*df)
+
 Y=pd.get_dummies(y)
 
 
@@ -62,43 +64,60 @@ Y= pd.get_dummies(y)
 from keras.models  import Sequential
 from keras.layers import Dense
 
-#one layer, logistic regression 
-model= Sequential()
-model.add(Dense(units= 2, input_shape=(X.shape[1],), activation="sigmoid"))
-model.summary()
 
-model.compile(loss="categorical_crossentropy",optimizer="adam" , metrics=["acc"])
+def check_model(X,Y):
+    
+    
+    #one layer, logistic regression 
+    model1= Sequential()
+    model1.add(Dense(units= 2, input_shape=(X.shape[1],), activation="sigmoid"))
+    #model.summary()
 
-history=model.fit(X,Y,epochs=50, batch_size=32, validation_split=.3)
+    model1.compile(loss="categorical_crossentropy",optimizer="adam" , metrics=["acc"])
 
-
-#two layer, it basically cuts the circles in two dimensions and cut a hyperplane
-model= Sequential()
-model.add(Dense(units= 5, input_shape=(X.shape[1],), activation="relu"))
-model.add(Dense(units= 2,  activation="sigmoid"))
-
-model.summary()
-
-model.compile(loss="categorical_crossentropy",optimizer="adam" , metrics=["acc"])
-
-history=model.fit(X,Y,epochs=50, batch_size=32, validation_split=.3)
+    history1=model1.fit(X,Y,epochs=50, batch_size=32, validation_split=.3)
 
 
-model= Sequential()
-model.add(Dense(units= 20, input_shape=(X.shape[1],), activation="relu"))
-model.add(Dense(units= 10, input_shape=(X.shape[1],), activation="relu"))
+    #two layer, it basically cuts the circles in two dimensions and cut a hyperplane
+    model2= Sequential()
+    model2.add(Dense(units= 5, input_shape=(X.shape[1],), activation="relu"))
+    model2.add(Dense(units= 2,  activation="sigmoid"))
 
-model.add(Dense(units= 2,  activation="softmax"))
 
-model.summary()
+    model2.compile(loss="categorical_crossentropy",optimizer="adam" , metrics=["acc"])
 
-model.compile(loss="categorical_crossentropy",optimizer="adam" , metrics=["acc"])
+    history2=model2.fit(X,Y,epochs=50, batch_size=32, validation_split=.3)
 
-history=model.fit(X,Y,epochs=50, batch_size=32, validation_split=.3)
 
+    model3= Sequential()
+    model3.add(Dense(units= 20, input_shape=(X.shape[1],), activation="relu")) 
+    model3.add(Dense(units= 10, input_shape=(X.shape[1],), activation="relu"))
+
+    model3.add(Dense(units= 2,  activation="softmax"))
+
+    model3.summary()
+
+    model.compile(loss="categorical_crossentropy",optimizer="adam" , metrics=["acc"])
+
+    history3=model3.fit(X,Y,epochs=50, batch_size=32, validation_split=.3)
+
+    return history1, history2, history3
 
 
 #tsne took a very long time as compared to pca!!
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
