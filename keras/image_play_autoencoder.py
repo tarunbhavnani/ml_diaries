@@ -84,9 +84,10 @@ mdl= Model(inputs=[input1, input2],outputs= out3)
 
 mdl.compile(loss='sparse_categorical_crossentropy',  optimizer="adam",metrics=["acc"] )
 mdl.summary()
-hist1=mdl.fit([x_train, x_train], y_train, epochs=10, batch_size=64, validation_split=.3)
+hist1=mdl.fit([x_train, x_train], y_train, epochs=10, batch_size=128, validation_split=.3)
 
-
+mdl.evaluate([x_test,x_test], y_test)
+#[0.06300380642702803, 0.9808] on two epochs
 #sequential
 
 #build model
@@ -104,8 +105,12 @@ model.add(Dense(len(set(y_train)),activation="softmax"))
 model.summary()
 
 model.compile(loss='sparse_categorical_crossentropy',  optimizer="adam",metrics=["acc"] )
+#model.compile(loss='categorical_crossentropy',  optimizer="adam",metrics=["acc"] ) wont use this as y is not dummified.
 
-hist2=model.fit(x=x_train,y=y_train, epochs=10,batch_size=64, validation_split=.3)
+hist2=model.fit(x=x_train,y=y_train, epochs=2,batch_size=128, validation_split=.3)
+
+model.evaluate(x_test, y_test)
+#[0.06760597471790389, 0.9779] at 2 epochs
 
 
 #model.evaluate(x_test, y_test)

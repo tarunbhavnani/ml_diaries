@@ -86,13 +86,11 @@ from keras.preprocessing.sequence import pad_sequences
 w2v_pad=pad_sequences(w2v,maxlen=max_len)
 inp=max([max(i) for i in w2v])
 
+from keras.layers import Embedding, SpatialDropout1D, LSTM
+
 model2=Sequential()
-from keras.layers import Embedding
 model2.add(Embedding(input_dim=inp+1,output_dim=128,input_length=w2v_pad.shape[1]))
-from keras.layers import SpatialDropout1D
-model2.add(SpatialDropout1D(rate=.1))
-model2.summary()
-from keras.layers import LSTM
+#model2.add(SpatialDropout1D(rate=.1))
 model2.add(LSTM(units=300, dropout=.1, recurrent_dropout=.1))
 model2.add(Dense(2,activation='softmax'))
 model2.compile(loss="binary_crossentropy", metrics=['accuracy'], optimizer='adam')
@@ -102,6 +100,7 @@ model2.fit(x=w2v_pad,y=c2, epochs=5)
 model2.predict(w2v_pad)
 prd2=pd.DataFrame(data=np.round(model2.predict(w2v_pad)),columns=idx)
 """
+
 #notes
 dense=1 is for continous, then you dont hot encode the y.
 lstm cant be used in the non pad one, since the inputs are not in sequence

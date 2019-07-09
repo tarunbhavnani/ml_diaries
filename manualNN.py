@@ -45,7 +45,7 @@ Slope_output_layer=out*(1-out)
 Slope_hidden_layer=wh2*(1-wh2)
 
 lr=.1
-d_output = E * Slope_output_layer*lr
+d_output = E * Slope_output_layer
 
 Error_at_hidden_layer = d_output.dot( wout.T)
 

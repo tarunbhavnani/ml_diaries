@@ -1,0 +1,50 @@
+,Sr No,Description ,Current,Change ,Case Name ,Unnamed: 5,Unnamed: 6,Unnamed: 7,Description,Des,Des_cl,classification,cl_cl
+0,1.0,Terminal 1 Card settlement,Cheque,Card Settlement,Ayat Collection ,pos  ,,Pos machine as cash ,Terminal 1 Card settlement, terminal card settlement ,terminal1cardsettlement,pos,Not_Tagged
+1,2.0,"Internet banking- UPI, phonepe, Ebanking",Internet Banking ,RTGS/ NEFT ,"Dattaguru Advt., Aai Navdurga",,,,"Internet banking- UPI, phonepe, Ebanking", internet banking upi phonepe ebanking ,"internetbankingupi,phonepe,ebanking",internet_banking,Not_Tagged
+2,3.0,Pos Machine transactions ,Cash,Cheque,Dattaguru Advt.,POS different,,,Pos Machine transactions , pos machine transactions ,posmachinetransactions,pos,Not_Tagged
+3,4.0,Chq Paid thrid party ,Third Party ,Cheque,Sendhui Metal,,,,Chq Paid thrid party , chq paid thrid party ,chqpaidthridparty,cheque,Not_Tagged
+4,5.0,IB,IB- Interbank Transfer ,Transfer ,Graphite ,ib to transfer,,,IB, ib ,ib,ib,Not_Tagged
+5,6.0,NEFT Aadri Finance ,NEFT ,NACH/EMI,Graphite ,parse the list of emis,,,NEFT Aadri Finance , neft aadri finance ,neftaadrifinance,neft,Not_Tagged
+6,7.0,IAA/ APBS  Credit transaction ,SI ,?,AAI NAV Durga ,"see this, si is wrong, other",,,IAA/ APBS  Credit transaction , iaa apbs credit transaction ,iaaapbscredittransaction,Not_Tagged,Not_Tagged
+7,8.0,IB:LOAN,nach/emi,Disbursal ,Susheela Prints,,,,IB:LOAN, ib loan ,ibloan,nach/emi,Not_Tagged
+8,9.0,IB: IRCTC 0006314391,ib,Transfer ,Susheela Prints,,,,IB: IRCTC 0006314391, ib irctc ,ibirctc0006314391,ib,Not_Tagged
+9,10.0,MORA M SEDANI,imps,Name ,Grey Exim ,,,,MORA M SEDANI, mora m sedani ,moramsedani,Not_Tagged,Not_Tagged
+10,11.0,04220200000339:Int.Coll:01-09-2017 to 07-09-2017,int_coll,OD/CC Interest ,Grey Exim ,if debit then od/cc interest and if credit then interest capitalization,,,04220200000339:Int.Coll:01-09-2017 to 07-09-2017, int coll to ,04220200000339intcoll01092017to07092017,int_coll,Not_Tagged
+11,12.0,eBanking :,internet_banking,RTGS/ NEFT ,Grey Exim ,,,,eBanking :, ebanking ,ebanking,internet_banking,Not_Tagged
+12,13.0,EDELWEISSRETAILFINLT,third_party,Neft/ EMI,Newton Chemicals,third party list,,,EDELWEISSRETAILFINLT, edelweissretailfinlt ,edelweissretailfinlt,Not_Tagged,Not_Tagged
+13,14.0,REJECT:578447:FUNDS INSUFFICIENT,INSUFFICIENT FUNDS,Returns,Newton Chemicals,no sub parts for return just iw and ow,,,REJECT:578447:FUNDS INSUFFICIENT, reject funds insufficient ,reject578447fundsinsufficient,Not_Tagged,Not_Tagged
+14,15.0,"NEFT IW MAHARASHTRA VALUE ADDED TAX
+REFUNDS / U000",tax,RTGS/ NEFT ,Newton Chemicals,,,,"NEFT IW MAHARASHTRA VALUE ADDED TAX
+REFUNDS / U000", neft iw maharashtra value added tax refunds u ,neftiwmaharashtravalueaddedtaxrefundsu000,tax,Not_Tagged
+15,16.0,"UPI-044120100001211-heatweld@
+tjsb-716911846061-Heatweld payment
+Value Dt 18/06/2017 Ref 716911924338",internet_banking,RTGS/ NEFT ,Aditya Agency ,,,,"UPI-044120100001211-heatweld@
+tjsb-716911846061-Heatweld payment
+Value Dt 18/06/2017 Ref 716911924338", upi heatweld tjsb heatweld payment value dt ref ,upi044120100001211heatweld@tjsb716911846061heatweldpaymentvaluedt18062017ref716911924338,internet_banking,Not_Tagged
+16,17.0,DIMETRICSCHEMICALS PVT,nach/emi,Name ,ORBIT Electro ,,,,DIMETRICSCHEMICALS PVT, dimetricschemicals pvt ,dimetricschemicalspvt,nach/emi,Not_Tagged
+17,18.0,"HITESH CHANDRASENDr. 25,727.00KOTHARI",si,Name ,ORBIT Electro ,,,,"HITESH CHANDRASENDr. 25,727.00KOTHARI", hitesh chandrasendr kothari ,"hiteshchandrasendr25,72700kothari",Not_Tagged,Not_Tagged
+18,19.0,RTGS IWDBSSH18045679935/S/SAISONS TRADE&amp,rtgs iwdbssh s saisons trade amp i ,RTGS/ NEFT ,ORBIT Electro ,,,,RTGS IWDBSSH18045679935/S/SAISONS TRADE&amp, rtgs iwdbssh s saisons trade amp ,rtgsiwdbssh18045679935ssaisonstrade&amp,rtgs,Not_Tagged
+19,20.0,AMITA NAYAN SAVLA,si,Name ,ORBIT Electro ,,,,AMITA NAYAN SAVLA, amita nayan savla ,amitanayansavla,Not_Tagged,Not_Tagged
+20,21.0,Int 1-6-2018 to 30-6-2018,charges,OD/CC Interest ,ORBIT Electro ,,,,Int 1-6-2018 to 30-6-2018, int to ,int162018to3062018,Not_Tagged,Not_Tagged
+21,22.0,ATM-CA SH-AXI SiAECN,atm ca sh axi siaecn thane,Cash ,M B R Enterprise,,,,ATM-CA SH-AXI SiAECN, atm ca sh axi siaecn ,atmcashaxisiaecn,cash,Not_Tagged
+22,23.0,910020002822956:Int.Co11:01-01-2017 to 24-01-2017, int coll to ,OD/CC Interest ,M B R Enterprise,,,,910020002822956:Int.Co11:01-01-2017 to 24-01-2017, int coll to ,910020002822956intcoll01012017to24012017,int_coll,Not_Tagged
+23,24.0,ATM-CA SH-AXIS/BPCN290001,atm ca sh axis bpcn mira road,Cash ,M B R Enterprise,,,,ATM-CA SH-AXIS/BPCN290001, atm ca sh axis bpcn ,atmcashaxisbpcn290001,cash,Not_Tagged
+24,25.0,SUVIDHA CUTPUECE1004149/BGI,si,Name ,Kinjal Enterprise ,,,,SUVIDHA CUTPUECE1004149/BGI, suvidha cutpuece bgi ,suvidhacutpuece1004149bgi,Not_Tagged,Not_Tagged
+25,26.0,NVAS BABURAO (ADAM,si,Name ,Kinjal Enterprise ,,,,NVAS BABURAO (ADAM, nvas baburao adam ,nvasbaburaoadam,Not_Tagged,Not_Tagged
+26,27.0,REJECT:602115:FUNDS INSUFFICIENT,INSUFFICIENT FUNDS,Returns,Kinjal Enterprise ,,,,REJECT:602115:FUNDS INSUFFICIENT, reject funds insufficient ,reject602115fundsinsufficient,Not_Tagged,Not_Tagged
+27,28.0,MAHAHASHTRA CLOTH /176960/VUOB,si,Name ,Kinjal Enterprise ,,,,MAHAHASHTRA CLOTH /176960/VUOB, mahahashtra cloth vuob ,mahahashtracloth176960vuob,Not_Tagged,Not_Tagged
+28,29.0,Terminal 1 Card settlement,Cheque,Card Settlement,M K Mobile,pos  ,,,Terminal 1 Card settlement, terminal card settlement ,terminal1cardsettlement,pos,Not_Tagged
+29,30.0,"JOICY MICHAEL BAPTISTA
+-118400",si,Name ,RITA  Enterprises ,,,,"JOICY MICHAEL BAPTISTA
+-118400", joicy michael baptista ,joicymichaelbaptista118400,Not_Tagged,Not_Tagged
+30,31.0,"SONAWANE ALKA BALU
+-118400",si,Name ,RITA  Enterprises ,,,,"SONAWANE ALKA BALU
+-118400", sonawane alka balu ,sonawanealkabalu118400,Not_Tagged,Not_Tagged
+31,32.0,"YOGITA GURUNATH
+CHINDARK  -
+118400",si,Name ,RITA  Enterprises ,,,,"YOGITA GURUNATH
+CHINDARK  -
+118400", yogita gurunath chindark ,yogitagurunathchindark118400,Not_Tagged,Not_Tagged
+32,33.0,"IW CHQ :  433244 REJ
+-118400",cheque,I/W,RITA  Enterprises ,see  ,,,"IW CHQ :  433244 REJ
+-118400", iw chq rej ,iwchq433244rej118400,i/w,Not_Tagged

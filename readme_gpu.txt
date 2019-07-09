@@ -1,12 +1,20 @@
 ssh -X ubuntu@192.168.1.135
+ssh -X ubuntu@192.168.99.152
 yes
 
 
-password: snecorner
+password: smecorner
+
+
 
 export PATH="/home/ubuntu/anaconda3/bin:$PATH"
 #source conda_bash
 #conda create -n tarun python=3.6
+
+jupyter notebook --ip=127.0.0.1 --no-browser --allow-root
+
+
+
 
 source activate tarun
 
@@ -29,7 +37,7 @@ nvidia-smi
 #to check
 
 
-# install the tensorflow-gpu
+# install the tensorflow-gpur
 pip3 install tensorflow-gpu
 # Make sure the package is up to date
 pip3 install --upgrade tensorflow-gpu

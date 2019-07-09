@@ -35,6 +35,8 @@ sudo docker run -t --rm -p 5005:5005 -e SLACK="" tbhavnani/rasa-chatbot-d
 
 docker run -d -p 27017-27019:27017-27019 --name mongodb mongo:4.0.4
 
+sudo docker run -d -p 27017-27019:27017-27019 --network tarun --name mongodb mongo
+
 
 get inside
 docker exec -it mongodb bash
@@ -45,8 +47,8 @@ use rasa
 #create username pass
 db.createUser(
   {
-    user: "tarun",
-    pwd: "pass123",
+    user: "smeuser",
+    pwd: "Al+erna+e",
     roles: [ { role: "readWrite", db: "new_database" } ]
   }
 )

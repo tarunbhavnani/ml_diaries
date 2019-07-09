@@ -6,8 +6,15 @@ Created on Mon Apr 15 17:35:53 2019
 @author: tarun.bhavnani@dev.smecorner.com
 """
 
+
+relu:Because rectified linear units are nearly linear, they preserve many of the properties that make linear models easy to optimize with gradient-based methods. They also preserve many of the properties that make linear models generalize well.
+
 Adam optimizer as it is computationally efficient and has very little memory requirement. 
 Adam is a combination of Adagrad and RMSprop.
+
+rmsprop: sgd with momentum
+adagrad is adaptive lr for parameters,frequent parameters have lower lr
+
 
 rasa core and nlu deep learning models, how they train on the data
 ner-everything:classify named entities in text into pre-defined categories such as the names of persons, 
@@ -30,11 +37,17 @@ relation extraction-- same as above
 text summary
 text classification
 
-SVD(lsa/lsi) and LDA are two different things. The former is based on dimensionality reduction of the term-document matrix representing your corpus, 
-while the latter is based on learning a generative model of term distributions over topics.
+SVD(lsa/lsi) and LDA are two different things. 
+
+LSA:  The former is based on dimensionality reduction of the term-document matrix representing your corpus. PCA on bow.
+
+LDA is based on learning a generative model of term distributions over topics. It is probalistic modelon distribution of distributions.
 
 lsa is svd or close to pca while lda gets the same result using a probilistic model
+
 both act on the bow. The better the bow the better the results.
+
+
 
 lda-- is a generative probabilistic model, that assumes a Dirichlet prior over the latent topics..lda finds the latent topics in the documents. it tries to make a words*w, w*docs such a way 
 to minimize the error. we have different topics which are clusters of diff words and each document. lda can also be found close in working to colaborative filtering.
@@ -61,7 +74,7 @@ C: big c low margin, low C high margin
 SVC support vector classifier. using svm for classification
 
 CNN its an extension of the neural networks.if we talk about a basic cnn cell. It is called cnn because of the convolutions(filters/kernels/neurons). It basically has filters/kernels in place
-of neurons. These kernels swipe throuh the whole batch of data/image and doinf a dot product im the feed forward and adjustig the wts of the filter during the
+of neurons. These kernels swipe throuh the whole batch of data/image and doinf a dot product in the feed forward and adjustig the wts of the filter during the
 backpropogations.
 
 one convolution represent one set of weights and thus picks out one feature. this runs through the image and picks out what part of image has that one feature.
@@ -94,8 +107,6 @@ group data based on the predicted churn probability (value between 0.0 and 1.0).
 calculate the true churn rate per group. That is, you count how many people in each group churned and divide this by the total number of customers per group.
 
 lift analysis is done to pin pont the areas or instances of the data which are most affected by the event. we didvide the data in deciles and thus segregate the deciles with high pc of events,
-
-
 
 
 
@@ -174,7 +185,27 @@ affinity of user for f into affinity of movie for f
 #####################################################################################################################################
 #####################################################################################################################################
 
-Neural Network
+Neural Net
+it is tiers of neurons/perceptrons stacked in parallel. Each neuron has the length equal to the size of the input and gives a activated weigted sum of the input.
+the first tier is the input layer and the last tier is the output layer. there can be n number of hidden layers or tiers between the input and output layer.
+
+A rnn network has rnn cells instead of a vanilla perceptron. a perceptron takes the whole input in one go while a rnn actually deals with them sequentially.
+i.e. rnn cell takes the input at time t and a cell state from the inuput at time t-1, it outputs the cell state to the next cell. a rnn cell if unrolled has cells equal to the
+size of input. this helps in having weights updated from all the inputs, this rnns help in remembering the data. 
+
+
+so basically there is a cell state which is getting updated at each time step in rnn, thus maintaining a record of all the inputs at all the times.
+we use backpropogation to tune the weights fo all the states which uses chain rules of derrivatives thus in rnn for long term dependencies the gradienst either vanish or explode.
+enter lstms:
+lstm have much moe then just the cell state. it also has the forget and the input gates thus at each time step only a handful of weights get updated. this performs much better then a vanilla rnn.
+
+similarly there are bilstms which go go from lto r and r to l thus maintaing records on both sides and giving even better results.
+
+cnn: instead of a stack of neurons/rnn cells in a layer now we have convolutions or kernels in a layer. these don't take the whole input as by nn
+but they rather swipe through the whole input. so one kernel goes through the whole data creating an output. similarly many kernels drag through the data.
+each of these kernels finds different respective features. the weights are then tuned or perfected by updating using backpropogation on the top of an objective function which is the minimization of loss. 
+
+
 A neural network usually involves a large number of processors operating in parallel and arranged in tiers. 
 The first tier receives the raw input information -- analogous to optic nerves in human visual processing.
  Each successive tier receives the output from the tier preceding it, rather than from the raw input --
@@ -186,6 +217,9 @@ RNN: it is the same neural network, just that in addition to taking the input at
 it also takes a cell state input which is the tanh dot product of itself and the previous cell state. 
 Thus basically it has wts updated from all the previous cells. 
 But then because of vanishing gradients it can not have long term dependencies. 
+
+
+
 
 
 LSTM: This is a variation of a vanilla rnn where the cell state is very advanced. 

@@ -30,7 +30,7 @@ for i in range(1, 9):
 print('Shape of each image in the training data: ', X_train.shape[1:])
 
 from keras.models import Sequential
-from keras.layers import Conv2D, MaxPooling2D, Dense
+from keras.layers import Conv2D, MaxPooling2D, Dense, Flatten
 from keras.layers import Dropout, Flatten, GlobalAveragePooling2D
 
 
@@ -40,7 +40,7 @@ from keras.layers import Dropout, Flatten, GlobalAveragePooling2D
 
 model= Sequential()
 
-model.add(Conv2D(32,(3,3), activation='relu', input_shape= X_train.shape[1:]))
+model.add(Conv2D(32,(3,3), activation='relu', input_shape= (28,28,1)))
 model.add(MaxPooling2D(pool_size=(2,2)))
 
 model.add(Conv2D(32,(3,3), activation='relu'))
@@ -49,7 +49,8 @@ model.add(MaxPooling2D(pool_size=(2,2)))
 model.add(Conv2D(64, (3,3), activation='relu'))
 model.add(MaxPooling2D(pool_size=(2,2)))
 
-model.add(GlobalAveragePooling2D())
+#model.add(GlobalAveragePooling2D())
+model.add(Flatten())
 model.add(Dense(10, activation='softmax'))
 
 
@@ -112,6 +113,10 @@ from keras.applications.resnet50 import ResNet50, preprocess_input
 #Loading the ResNet50 model with pre-trained ImageNet weights
 #model = ResNet50(weights='imagenet', include_top=False, input_shape=(200, 200, 3))
 model_tl= ResNet50(weights='imagenet', include_top=False, input_shape=(200, 200, 3))
+model_tl.summary()
+
+for layer in model.layers:
+    print(layer)
 
 """The Cifar-10 dataset is small and similar to the ‘ImageNet’ dataset. 
 So, we will remove the fully connected layers of the pre-trained network near the end. 

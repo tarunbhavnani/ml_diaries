@@ -12,6 +12,8 @@ I want to concatenate the news embedding to the stock price and make predictions
 #2 is the news words
 #we will concatenate them and build a model!!
 
+import numpy as np
+
 n_samples = 1000
 time_series_length = 50
 news_words = 10
@@ -23,7 +25,11 @@ x_time_series = np.random.rand(n_samples, time_series_length, 1)
 x_time_series.shape
 
 x_news_words = np.random.choice(np.arange(50), replace=True, size=(n_samples, time_series_length, news_words))
+x_news_words.shape
+x_news_words[1]
 x_news_words = [x_news_words[:, :, i] for i in range(news_words)]
+x_news_words.__class__
+x_news_words[1]
 
 
 y = np.random.randint(2, size=(n_samples))
@@ -38,6 +44,7 @@ time_series_input = Input(shape=(50, 1, ), name='time_series')
 news_word_inputs = [Input(shape=(50, ), name='news_word_' + str(i + 1)) for i in range(news_words)]
 
 ## Shared embedding layer
+from keras.layers import Embedding, Input
 news_word_embedding = Embedding(word_cardinality, news_embedding_dim, input_length=time_series_length)
 
 ## Repeat this for every word position
@@ -46,6 +53,10 @@ news_words_embeddings = [news_word_embedding(inp) for inp in news_word_inputs]
 ## Concatenate the time series input and the embedding outputs
 from keras.layers import concatenate, LSTM, Dense
 concatenated_inputs = concatenate([time_series_input] + news_words_embeddings, axis=-1)
+
+#dim: (?,50,161)
+#10*16 from news and one from timeseries
+
 
 ## Feed into LSTM
 lstm = LSTM(16)(concatenated_inputs)
