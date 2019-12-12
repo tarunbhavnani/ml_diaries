@@ -11,7 +11,9 @@ export PATH="/home/ubuntu/anaconda3/bin:$PATH"
 #source conda_bash
 #conda create -n tarun python=3.6
 
-jupyter notebook --ip=127.0.0.1 --no-browser --allow-root
+#jupyter notebook --ip=127.0.0.1 --no-browser --allow-root
+
+jupyter notebook --ip=192.168.99.152 --no-browser --allow-root
 
 
 

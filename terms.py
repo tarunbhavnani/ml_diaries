@@ -244,6 +244,8 @@ generative adversarial network (GAN)
 A system to create new data in which a generator creates data and a discriminator 
 determines whether that created data is valid or invalid.
 
+
+
 Attention
 
 Word Embedding
@@ -331,6 +333,8 @@ A ML technique that iteratively combines a set of simple and not very accurate c
 collaborative filtering
 Making predictions about the interests of one user based on the interests of many other users.
  Collaborative filtering is often used in recommendation systems.
+
+doc*m m*topics
 
 
 confirmation bias
@@ -441,6 +445,7 @@ Logistic regression
 A model that generates a probability for each possible discrete label value in classification problems by applying a sigmoid function to a linear prediction. Although logistic regression is often used in binary classification problems, it can also be used in multi-class classification problems (where it becomes called multi-class logistic regression or multinomial regression).
 
 logits
+the raw predictions whch fo to the sigmoid layer for binary and softmax for multi class predictions
 The vector of raw (non-normalized) predictions that a classification model generates, which is ordinarily then passed to a normalization function. If the model is solving a multi-class classification problem, logits typically become an input to the softmax function. The softmax function then generates a vector of (normalized) probabilities with one value for each possible class.
 
 In addition, logits sometimes refer to the element-wise inverse of the sigmoid function. For more information, see tf.nn.sigmoid_cross_entropy_with_logits.

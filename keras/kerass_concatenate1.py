@@ -13,7 +13,7 @@ I want to concatenate the news embedding to the stock price and make predictions
 #we will concatenate them and build a model!!
 
 import numpy as np
-
+from keras.models import Model
 n_samples = 1000
 time_series_length = 50
 news_words = 10

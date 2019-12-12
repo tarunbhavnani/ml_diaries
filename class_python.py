@@ -22,12 +22,35 @@ class Pizza:
         return cls(['mozzarella', 'tomatoes', 'ham'])
     
 
-Pizza(["la","ba"])
+a=Pizza(["la","ba"])
 
 Pizza.margherita()
 Pizza.prosciutto()
 
 
+##
+you have to intialize the class to call functions, with @classmethod you do the same initialization, just you can do things with the data.
+eg the data is not in the right format, then write a classmethod to make it right and initialize it properly
+from datetime import date
+
+# random Person
+class Person:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+    @classmethod
+    def fromBirthYear(cls, name, birthYear):
+        return cls(name, date.today().year - birthYear)
+
+    def display(self):
+        print(self.name + "'s age is: " + str(self.age))
+
+person = Person('Adam', 19)
+person.display()
+
+person1 = Person.fromBirthYear('John',  1985)
+person1.display()
 
 ##
 import math

@@ -85,7 +85,7 @@ pdt=model.predict(X)
 dat1["predicted"]=le.inverse_transform(pdt.argmax(axis=-1))
 
 txt="what is my name?"
-txt="what is your name?"
+txt="what is ur name?"
 
 #import numpy as np
 txt=[tok.word_index[i] for i in txt]
@@ -100,5 +100,109 @@ y_p=model.predict(txt)
 
 predicted_intent = le.inverse_transform(y_p.argmax(axis=-1))[0]
 
+
+
+
+###use attention here!!
+
+
+
+
+class Attention(tf.keras.Model):
+    def __init__(self, units):
+        super(Attention, self).__init__()
+        self.W1 = tf.keras.layers.Dense(units)
+        self.W2 = tf.keras.layers.Dense(units)
+        self.V = tf.keras.layers.Dense(1)
+ 
+    def call(self, features, hidden):
+        hidden_with_time_axis = tf.expand_dims(hidden, 1)
+        score = tf.nn.tanh(self.W1(features) + self.W2(hidden_with_time_axis))
+        attention_weights = tf.nn.softmax(self.V(score), axis=1)
+        context_vector = attention_weights * features
+        context_vector = tf.reduce_sum(context_vector, axis=1)
+ 
+        return context_vector, attention_weights
+
+
+
+
+
+max_len=100
+#embed layer
+
+sequence_input = Input(shape=(max_len,), dtype='int32')
+
+embedded_sequences = keras.layers.Embedding(2000, 128, input_length=max_len)(sequence_input)
+
+
+#bidirectional rnn
+
+import os
+lstm = tf.keras.layers.Bidirectional(tf.keras.layers.LSTM
+                                     (128,
+                                      dropout=0.3,
+                                      return_sequences=True,
+                                      return_state=True,
+                                      recurrent_activation='relu',
+                                      recurrent_initializer='glorot_uniform'), name="bi_lstm_0")(embedded_sequences)
+ 
+lstm, forward_h, forward_c, backward_h, backward_c = tf.keras.layers.Bidirectional \
+    (tf.keras.layers.LSTM
+     (128,
+      dropout=0.2,
+      return_sequences=True,
+      return_state=True,
+      recurrent_activation='relu',
+      recurrent_initializer='glorot_uniform'))(lstm)
+
+#Our model uses a bi-directional RNN, we first concatenate the hidden states from each RNN before computing the attention 
+#weights and applying the weighted sum.
+
+state_h = Concatenate()([forward_h, backward_h])
+state_c = Concatenate()([forward_c, backward_c])
+ 
+
+attention= Attention(128)
+context_vector, attention_weights = attention(lstm, state_h)
+
+
+ 
+output = keras.layers.Dense(len(set(dat1["intent"])), activation="softmax")(context_vector)
+ 
+model = keras.Model(inputs=sequence_input, outputs=output)
+ 
+# summarize layers
+print(model.summary())
+
+
+#compile model
+
+model.compile(loss="categorical_crossentropy", metrics=["acc"], optimizer="adam")
+
+history=model.fit(X,Y, validation_split=.3, batch_size=12, epochs=125)
+
+
+#predict
+
+pdt=model.predict(X)
+
+dat1["predicted"]=le.inverse_transform(pdt.argmax(axis=-1))
+
+txt="what is my name?"
+txt="what is ur name?"
+
+#import numpy as np
+txt=[tok.word_index[i] for i in txt]
+txt=np.asarray(txt)
+txt.shape
+txt= txt.reshape(1,txt.shape[0])
+#txt=np.zeros((1,100))
+#txt=tok.texts_to_sequences(txt)
+txt=pad_sequences(txt, maxlen=100)
+
+y_p=model.predict(txt)
+
+predicted_intent = le.inverse_transform(y_p.argmax(axis=-1))[0]
 
 

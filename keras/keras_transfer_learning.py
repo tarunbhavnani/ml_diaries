@@ -40,7 +40,7 @@ from keras.layers import Dropout, Flatten, GlobalAveragePooling2D
 
 model= Sequential()
 
-model.add(Conv2D(32,(3,3), activation='relu', input_shape= (28,28,1)))
+model.add(Conv2D(32,(3,3), activation='relu', input_shape= (32,32,3)))
 model.add(MaxPooling2D(pool_size=(2,2)))
 
 model.add(Conv2D(32,(3,3), activation='relu'))
@@ -123,9 +123,21 @@ So, we will remove the fully connected layers of the pre-trained network near th
 To implement this, we set ‘include_top = False’, while loading the ResNet50 model.
 """
 
+#Reshaping the training data
+X_train_new = np.array([imresize(X_train[i], (200, 200, 3)) for i in range(0, len(X_train))]).astype('float32')
+
+#Preprocessing the data, so that it can be fed to the pre-trained ResNet50 model. 
+resnet_train_input = preprocess_input(X_train_new)
+
+#Creating bottleneck features for the training data
+train_features = model.predict(resnet_train_input)
+
+#Saving the bottleneck features
+np.savez('resnet_features_train', features=train_features)
 
 
 
+X_train_new = np.array([imresize(X_train[i], (200, 200, 3)) for i in range(0, len(X_train))]).astype('float32')
 
 
 
