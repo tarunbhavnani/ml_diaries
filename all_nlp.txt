@@ -1,0 +1,321 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Mar  7 12:20:18 2020
+@author: tarun.bhavnani
+"""
+import pandas as pd
+import numpy as np
+from sklearn.datasets import fetch_20newsgroups
+
+dataset = fetch_20newsgroups(shuffle=True, random_state=1, remove=('headers', 'footers', 'quotes'))
+documents = dataset.data
+target= dataset.target
+
+import matplotlib.pyplot as plt
+plt.plot([len(i.split()) for i in documents])
+plt.hist([len(i.split()) for i in documents])
+
+#1 direct tokenize and run a dense layer model
+
+from keras.preprocessing.text import Tokenizer
+from keras.preprocessing.sequence import pad_sequences
+from keras.models import Sequential
+from keras.layers import Embedding, Dense, Flatten, Dropout, LSTM, Input
+
+tok= Tokenizer(num_words= 3000, split= " ", oov_token= '-oov-')
+tok.fit_on_texts(documents)
+X=tok.texts_to_sequences(documents)
+plt.plot([len(i) for i in X])
+maxlen= 2000
+
+X= pad_sequences(X, maxlen=maxlen)
+y= pd.get_dummies(target)
+
+model= Sequential()
+model.add(Embedding(input_dim=3000, output_dim=256, input_length=2000))
+model.add(Dropout(.2))
+model.add(Flatten())
+model.add(Dense(len(set(target)), activation='softmax'))
+model.summary()
+model.compile(loss='categorical_crossentropy', metrics=['acc'], optimizer= 'adam')
+
+#from sklearn.model_selection import train_test_split
+
+
+#Xtr, Xtt, Ytr, Ytt= train_test_split(X, y, test_size=.3, stratify= y)
+
+#y.values
+#model.fit(Xtr,Ytr.values, epochs=10, batch_size=32, validation_data=[Xtt, Ytt.values])
+model.fit(X,y.values, epochs=10, batch_size=32, validation_split=.3)
+
+#very slow!
+#2nd epoch start at 68 pc acc
+#val acc 37 pc after 5 epochs
+#reject
+
+#next just add one more dense and relu
+model= Sequential()
+model.add(Embedding(input_dim=3000, output_dim=256, input_length=2000))
+model.add(Dropout(.2))
+model.add(Flatten())
+
+model.add(Dense(128, activation='relu'))
+model.add(Dense(len(set(target)), activation='softmax'))
+model.summary()
+model.compile(loss='categorical_crossentropy', metrics=['acc'], optimizer= 'adam')
+
+model.fit(X,y, epochs=10, batch_size=128, validation_split=.3)
+#after 1sr epoch 11pc
+#total fail reject
+
+
+
+#lets get a lstm layer
+model= Sequential()
+model.add(Embedding(input_dim=3000, output_dim=256, input_length=2000))
+model.add(LSTM(units= 256))
+model.add(Dropout(.2))
+#model.add(Flatten())
+model.add(Dense(128, activation='relu'))
+model.add(Dense(len(set(target)), activation='softmax'))
+model.summary()
+model.compile(loss='categorical_crossentropy', metrics=['acc'], optimizer= 'adam')
+
+model.fit(X,y, epochs=10, batch_size=128, validation_split=.3)
+#very slow
+
+
+model= Sequential()
+model.add(Embedding(input_dim=3000, output_dim=256, input_length=2000))
+model.add(LSTM(units= 256))
+model.add(Dropout(.2))
+#model.add(Flatten())
+model.add(Dense(128, activation='relu'))
+model.add(Dense(len(set(target)), activation='softmax'))
+model.summary()
+model.compile(loss='categorical_crossentropy', metrics=['acc'], optimizer= 'adam')
+
+model.fit(X,y, epochs=10, batch_size=128, validation_split=.3)
+
+#not working after 2nd epoch acc of 14 pc
+
+from keras.layers import Conv1D, GlobalAveragePooling1D, MaxPooling1D
+
+seq_length = 64
+
+model = Sequential()
+model.add(Embedding(input_dim=3000, output_dim=256, input_length=2000))
+model.add(Conv1D(64, 3, activation='relu'))
+model.add(Conv1D(64, 3, activation='relu'))
+model.add(MaxPooling1D(3))
+model.add(Conv1D(128, 3, activation='relu'))
+model.add(Conv1D(128, 3, activation='relu'))
+model.add(GlobalAveragePooling1D())
+model.add(Dropout(0.5))
+model.add(Dense(len(set(target)), activation='softmax'))
+
+model.compile(loss='categorical_crossentropy', metrics=['acc'], optimizer= 'adam')
+
+model.fit(X,y.values, epochs=10, batch_size=128, validation_split=.3)
+
+#much faster
+#after 1 epoch acc is 10pc
+#nothing working on this data!!
+
+
+#some other approach needed.
+
+
+#lets try my normal model
+model= Sequential()
+model.add(Embedding(input_dim=3000, output_dim= 256, input_length= X.shape[1]))
+model.add(Dropout(.2))
+model.add(Conv1D(filters=128,kernel_size=5, activation='relu'  ))
+model.add(MaxPooling1D(pool_size=2))
+model.add(Conv1D(filters=128,kernel_size=5, activation='relu'  ))
+model.add(MaxPooling1D(pool_size=2))
+model.add(Flatten())
+model.add(Dense(units=128, activation='relu'))
+model.add(Dense(len(set(target)), activation='softmax'))
+model.summary()
+
+
+model.compile(loss='categorical_crossentropy', metrics=['acc'], optimizer='adam')
+model.fit(X,y, epochs=10, batch_size=128, validation_split=.3)
+
+#keras.callbacks.tensorboard_v1.TensorBoard(log_dir='./logs', histogram_freq=0, batch_size=32, write_graph=True, write_grads=False, write_images=False, embeddings_freq=0, embeddings_layer_names=None, embeddings_metadata=None, embeddings_data=None, update_freq='epoch')
+#from keras.callbacks.callbacks import ReduceLROnPlateau
+from keras.callbacks import EarlyStopping, ReduceLROnPlateau
+
+reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2,
+                              patience=5, min_lr=0.001)
+model.fit(X,y, epochs=10, batch_size=128, validation_split=.3, callbacks=[reduce_lr])
+
+#model.fit(X_train, Y_train, callbacks=[reduce_lr])
+##
+#have to reduce maxlen or some other thing, till now have not used more than 200 maxlen.
+#after 7 epochs val acc is 35pc
+#after 8 38 pc val loss but the val loss has started increasing
+#loss: 0.7505 - acc: 0.7526 - val_loss: 2.8879 - val_acc: 0.3947
+
+
+
+
+####################################################################################################
+
+#some basic cleaning and the same before
+import unicodedata
+import re
+
+def unicode_to_ascii(s):
+    return ''.join(c for c in unicodedata.normalize('NFD', s)
+        if unicodedata.category(c) != 'Mn')
+
+
+def preprocess_sentence(w):
+    w = unicode_to_ascii(w.lower().strip())
+
+    # creating a space between a word and the punctuation following it
+    # eg: "he is a boy." => "he is a boy ."
+    # Reference:- https://stackoverflow.com/questions/3645931/python-padding-punctuation-with-white-spaces-keeping-punctuation
+    w = re.sub(r"([?.!,¿])", r" \1 ", w)
+    w = re.sub(r'[" "]+', " ", w)
+
+    # replacing everything with space except (a-z, A-Z, ".", "?", "!", ",")
+    w = re.sub(r"[^a-zA-Z?.!,¿]+", " ", w)
+
+    w = w.rstrip().strip()
+
+    # adding a start and an end token to the sentence
+    # so that the model know when to start and stop predicting.
+    #w = '<start> ' + w + ' <end>'
+    return w
+
+documents= [unicode_to_ascii(i) for i in documents]
+documents= [preprocess_sentence(i) for i in documents]
+
+tok= Tokenizer(num_words=3000, split=" ", oov_token='-oov-')
+tok.fit_on_texts(documents)
+X=tok.texts_to_sequences(documents)
+len(tok.word_index)
+X= pad_sequences(X, maxlen=1000)
+
+model= Sequential()
+model.add(Embedding(input_dim=3000, output_dim= 256, input_length= X.shape[1]))
+model.add(Dropout(.2))
+model.add(Conv1D(filters=128,kernel_size=5, activation='relu'  ))
+model.add(MaxPooling1D(pool_size=2))
+model.add(Conv1D(filters=128,kernel_size=5, activation='relu'  ))
+model.add(MaxPooling1D(pool_size=2))
+model.add(Flatten())
+model.add(Dense(units=128, activation='relu'))
+model.add(Dense(len(set(target)), activation='softmax'))
+model.summary()
+
+
+model.compile(loss='categorical_crossentropy', metrics=['acc'], optimizer='adam')
+history=model.fit(X,y, epochs=10, batch_size=256, validation_split=.3)
+
+
+
+
+####
+#glove
+#l3ets use glove and see
+
+# load the whole embedding into memory
+embeddings_index = dict()
+f = open('/home/tarun.bhavnani/Desktop/git_tarun/glove_data/glove.6B.50d.txt')
+for line in f:
+	values = line.split()
+	word = values[0]
+	coefs = np.asarray(values[1:], dtype='float32')
+	embeddings_index[word] = coefs
+f.close()
+print('Loaded %s word vectors.' % len(embeddings_index))
+
+
+tok.word_index
+# create a weight matrix for words in training docs
+vocab_size= len(tok.word_index)+1
+embedding_matrix = np.zeros((vocab_size, 50))
+for word, i in tok.word_index.items():
+	embedding_vector = embeddings_index.get(word)
+	if embedding_vector is not None:
+		embedding_matrix[i] = embedding_vector
+
+
+
+# define model
+model = Sequential()
+e = Embedding(vocab_size, 50, weights=[embedding_matrix], input_length= X.shape[1], trainable=False)
+model.add(e)
+model.add(Dropout(.2))
+model.add(Conv1D(filters=128,kernel_size=5, activation='relu'  ))
+model.add(MaxPooling1D(pool_size=2))
+model.add(Conv1D(filters=128,kernel_size=5, activation='relu'  ))
+model.add(MaxPooling1D(pool_size=2))
+model.add(Flatten())
+model.add(Dense(units=128, activation='relu'))
+model.add(Dense(len(set(target)), activation='softmax'))
+model.summary()
+
+model.compile(loss='categorical_crossentropy', metrics=['acc'], optimizer='adam')
+history=model.fit(X,y, epochs=10, batch_size=256, validation_split=.3)
+
+###############################################33
+
+
+
+#lets use tfidf
+from sklearn.feature_extraction.text import TfidfVectorizer
+#vec = TfidfVectorizer(min_df=50)
+vec = TfidfVectorizer(min_df=10, stop_words= 'english')
+vec = TfidfVectorizer(min_df=10, stop_words= 'english', ngram_range=(1,3))
+#documents= [unicode_to_ascii(i) for i in documents]
+#documents= [preprocess_sentence(i) for i in documents]
+
+X = vec.fit_transform(documents)
+X=X.todense()
+df = pd.DataFrame(X.toarray(), columns=vec.get_feature_names())
+model= Sequential()
+model.add(Dense(units=128, activation='relu', input_dim= X.shape[1]))
+model.add(Dense(len(set(target)), activation='softmax'))
+model.summary()
+model.compile(loss='categorical_crossentropy', metrics=['acc'], optimizer='adam')
+history=model.fit(X,y.values, epochs=10, batch_size=256, validation_split=.3)
+
+#65 pc accuracy, super fast at 2800 words, min df= 50
+#74 pc accuracy, super fast at 9773 words, min df= 10
+
+
+
+#################################################################################
+
+def model_cnn(embedding_matrix):
+    filter_sizes = [1,2,3,5]
+    num_filters = 36
+
+    inp = Input(shape=(maxlen,))
+    x = Embedding(max_features, embed_size, weights=[embedding_matrix])(inp)
+    x = Reshape((maxlen, embed_size, 1))(x)
+
+    maxpool_pool = []
+    for i in range(len(filter_sizes)):
+        conv = Conv2D(num_filters, kernel_size=(filter_sizes[i], embed_size),
+                                     kernel_initializer='he_normal', activation='elu')(x)
+        maxpool_pool.append(MaxPool2D(pool_size=(maxlen - filter_sizes[i] + 1, 1))(conv))
+
+    z = Concatenate(axis=1)(maxpool_pool)   
+    z = Flatten()(z)
+    z = Dropout(0.1)(z)
+
+    outp = Dense(1, activation="sigmoid")(z)
+
+    model = Model(inputs=inp, outputs=outp)
+    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+    
+    return model
+
+mdl= model_cnn(embedding_matrix)
