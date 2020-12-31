@@ -1,0 +1,35 @@
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true
+intents:
+- bot_name
+- greet
+- goodbye
+- chitchat
+- abuse
+- out_of_scope
+entities:
+- object_type
+slots:
+  object_type:
+    type: text
+    influence_conversation: false
+responses:
+  utter_greet:
+  - text: Hey!
+  - text: Hello! How can I help you?
+  utter_goodbye:
+  - text: Bye
+  - text: Goodbye. See you soon.
+  utter_ask_rephrase:
+  - text: Sorry, I'm not sure I understand. Can you rephrase?
+  - text: Can you please rephrase? I did not got that.
+  utter_iamabot:
+  - text: I am a bot, powered by Rasa.
+actions:
+- action_email
+- utter_goodbye
+- utter_greet
+- action_default_ask_affirmation
+- utter_ask_rephrase
+version: '2.0'
