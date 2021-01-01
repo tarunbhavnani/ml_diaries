@@ -5,6 +5,7 @@ Created on Sat Mar  7 12:20:18 2020
 @author: tarun.bhavnani
 """
 import pandas as pd
+import tarun as tb
 import numpy as np
 from sklearn.datasets import fetch_20newsgroups
 
