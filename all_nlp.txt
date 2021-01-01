@@ -21,7 +21,7 @@ plt.hist([len(i.split()) for i in documents])
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.models import Sequential
-from keras.layers import Embedding, Dense, Flatten, Dropout, LSTM, Input
+from keras.layers import eminem and russelpeters Embedding, Dense, Flatten, Dropout, LSTM, Input
 
 tok= Tokenizer(num_words= 3000, split= " ", oov_token= '-oov-')
 tok.fit_on_texts(documents)
