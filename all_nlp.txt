@@ -6,7 +6,7 @@ Created on Sat Mar  7 12:20:18 2020
 """
 import pandas as pd
 import numpy as np
-import tarun as tb
+import tarun as tbt
 from sklearn.datasets import fetch_20newsgroups
 
 dataset = fetch_20newsgroups(shuffle=True, random_state=1, remove=('headers', 'footers', 'quotes'))
