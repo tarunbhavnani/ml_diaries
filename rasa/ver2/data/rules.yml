@@ -1,0 +1,18 @@
+version: "2.0"
+
+rules:
+
+- rule: Say goodbye anytime the user says goodbye
+  steps:
+  - intent: goodbye
+  - action: utter_goodbye
+
+- rule: retry
+  steps:
+  - intent: retry
+  - action: utter_ask_rephrase
+
+- rule: thanks
+  steps:
+  - intent: thanks
+  - action: utter_thanks

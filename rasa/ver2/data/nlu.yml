@@ -1,0 +1,15 @@
+version: "2.0"
+nlu:
+- intent: greet
+  examples: |
+    - hi
+- intent: bot_name
+  examples: |
+    - whats your name
+    - who u?
+    - who u
+    - whats ur name?
+    - what is ur name
+- intent: goodbye
+  examples: |
+    - bye

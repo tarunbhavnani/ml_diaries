@@ -1,0 +1,27 @@
+conda create -n rasa python=3.6 spyder pandas
+
+pandas==1.1.3
+pip install rasa --ignore-installed ruamel.yaml --user
+
+
+##################
+
+in cmd as administrator
+python -m venv rasa_setup
+rasa_setup\Scripts\activate.bat
+#goes in user folder
+pip install -U pip
+pip install rasa  --use-feature=2020-resolver
+pip install matplotlib==3.2
+
+rasa init --no-prompt
+
+
+#run actions
+
+rasa_setup\Scripts\activate.bat
+
+cd Desktop\rasa\hello
+
+pip install rasa_core_sdk
+rasa run actions
