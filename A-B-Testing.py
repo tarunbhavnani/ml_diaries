@@ -4,7 +4,7 @@
 Created on Tue May 14 16:46:08 2019
 
 @author: tarun.bhavnani@dev.smecorner.com
-le bc bc mc mc
+le bc bc
 """
 
 #A/B testing
