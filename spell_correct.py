@@ -3,6 +3,7 @@
 Created on Wed Jan 27 18:40:38 2021
 
 @author: ELECTROBOT
+http://www.norvig.com/spell-correct.html
 """
 
 import re
@@ -44,3 +45,5 @@ def edits2(word):
 
 correction('speling')
 'spelling'
+
+edits1('speling')
