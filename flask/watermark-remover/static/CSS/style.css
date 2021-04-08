@@ -110,3 +110,7 @@ body {
     color: #fff;
     
 }
+.about-items {
+    margin-bottom: 10px;
+    list-style: none;
+}
