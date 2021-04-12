@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doc analyzer</title>
+
+</head>
+<body>
+<header>
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href = "/names">Names</a></li>
+        <li><a href = "/analysis">Analysis</a></li>
+    </ul>
+</header>
+<h2>Select files</h2>
+<p>
+    <form method="POST" action="/" enctype ="multipart/form-data" />
+    <input type="file" name="files[]" multiple="true" autocomplete="off"  required />
+</p>
+<p>
+    <input type="submit" value="go"/>
+
+</p>
+<p>
+<h1>Uploaded Files</h1>
+{%for name in names%}
+<h2><a href="/analysis/{{name}}">{{name}}</a></h2>
+{% endfor %}
+</p>
+</body>
+</html>
