@@ -1,8 +1,9 @@
 import os
 
-from flask import Flask, render_template, request,redirect, url_for,send_from_directory
-from werkzeug.utils import secure_filename
 import fitz
+import pandas as pd
+from flask import Flask, render_template, request, redirect, send_from_directory
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
@@ -30,6 +31,18 @@ def index_page():
     names = [i for i in os.listdir(app.config['UPLOAD_FOLDER'])]
     return render_template('index.html', names=names)
 
+@app.route('/delete')
+def reset_files():
+    names = [i for i in os.listdir(app.config['UPLOAD_FOLDER'])]
+    print(names)
+    for name in names:
+        print(name)
+        os.remove(os.path.join(app.config['UPLOAD_FOLDER'], name))
+    return redirect('/')
+
+
+
+
 @app.route('/', methods=["POST"])
 def get_files():
     if request.method == "POST":
@@ -50,6 +63,11 @@ def print_names():
     names=[i for i in os.listdir(app.config['UPLOAD_FOLDER'])]
     return render_template('names.html', names=names)
 
+@app.route("/analysis")
+def all_analysis():
+
+    return render_template('all_analysis.html')
+
 
 
 @app.route('/uploads/<filename>')
@@ -61,12 +79,17 @@ def upload(filename):
 #    doc = fitz.open(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 #    md = doc.metadata
 
-@app.route('/analysis/<filename>')
+@app.route('/analysis/<filename>/')
 def analysis(filename):
-    doc= fitz.open(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    md= doc.metadata
-    return render_template("analysis.html", md=md)
+    doc = fitz.open(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    md = doc.metadata
+    df = pd.DataFrame(md.items(), columns=["Paramater", "Details"])
+    tables = [df.to_html(classes='data')]
+    #titles = df.columns.values
+    return render_template("analysis.html", tables=tables, filename=filename)
     
+
+
 
 
 if __name__ == "__main__":

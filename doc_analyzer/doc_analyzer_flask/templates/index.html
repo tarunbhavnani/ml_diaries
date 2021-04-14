@@ -24,10 +24,12 @@
     <input type="submit" value="go"/>
 
 </p>
+<p><a href="/delete">Reset Files</a></p>
 <p>
 <h1>Uploaded Files</h1>
 {%for name in names%}
 <h2><a href="/analysis/{{name}}">{{name}}</a></h2>
+ <h3><a href="/uploads/{{name}}">View</a></h3>
 {% endfor %}
 </p>
 </body>
