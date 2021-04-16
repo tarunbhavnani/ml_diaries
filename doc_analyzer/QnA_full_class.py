@@ -4,6 +4,13 @@ Created on Fri Apr 16 10:16:28 2021
 
 @author: ELECTROBOT
 """
+import torch
+from transformers import BertForQuestionAnswering
+from transformers import BertTokenizer
+import re
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
 
 class qnatb(object):
     
@@ -18,8 +25,8 @@ class qnatb(object):
         ngrams = zip(*[string[i:] for i in range(n)])
         return [''.join(ngram) for ngram in ngrams]
     
-
-    def split_into_sentences(self,text):
+    @staticmethod
+    def split_into_sentences(text):
         alphabets= "([A-Za-z])"
         prefixes = "(Mr|St|Mrs|Ms|Dr|No)[.]"
         suffixes = "(Inc|Ltd|Jr|Sr|Co)"
@@ -61,12 +68,12 @@ class qnatb(object):
         
     
     def vectorize_text(self,text):
-        all_sents= self.split_into_sentences(text)
+        self.all_sents= qnatb.split_into_sentences(text)
         vec = TfidfVectorizer(min_df=1, analyzer=qnatb.ngrams)
         
-        self.vectorizer=vec.fit(all_sents)
+        self.vectorizer=vec.fit(self.all_sents)
         
-        self.tfidf_matrix= vec.transform(all_sents)
+        self.tfidf_matrix= vec.transform(self.all_sents)
         
         
     def get_response_sents(self, top=10):
@@ -75,14 +82,14 @@ class qnatb(object):
         stopwords=['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your', 'yours', 'yourself', 'yourselves', 'he', 'him', 'his', 'himself', 'she', 'her', 'hers', 'herself', 'it', 'its', 'itself', 'they', 'them', 'their', 'theirs', 'themselves', 'what', 'which', 'who', 'whom', 'this', 'that', 'these', 'those', 'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'having', 'do', 'does', 'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because', 'as', 'until', 'while', 'of', 'at', 'by', 'for', 'with', 'about', 'against', 'between', 'into', 'through', 'during', 'before', 'after', 'above', 'below', 'to', 'from', 'up', 'down', 'in', 'out', 'on', 'off', 'over', 'under', 'again', 'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all', 'any', 'both', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very', 's', 't', 'can', 'will', 'just', 'don', 'should', 'now']
         
         question_tfidf= " ".join([i for i in question.split() if i not in stopwords])
-        question_vec = vectorizer.transform([question_tfidf])
+        question_vec = self.vectorizer.transform([question_tfidf])
         scores=cosine_similarity(self.tfidf_matrix ,question_vec)
         scores=[i[0] for i in scores]
         dict_scores={i:j for i,j in enumerate(scores)}
         dict_scores={k: v for k, v in sorted(dict_scores.items(), key=lambda item: item[1], reverse= True)}
         
         #get top n sentences
-        final_responses=[all_sents[i] for i in dict_scores]
+        final_responses=[self.all_sents[i] for i in dict_scores]
         response_sents=final_responses[0:top]
         
         return response_sents
@@ -159,6 +166,9 @@ question="who is roger federers wife?"
 question="who is roger federer?"
 question="when did roger federer win his fiorst wimbeldon"
 question="how many grandslams has federer won"
+question="who is federers father"
+question="who is federers mother"
+
 
 
 
