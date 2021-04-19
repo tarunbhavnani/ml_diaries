@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doc analyzer</title>
+
+</head>
+<body>
+<h1>Search here</h1>
+{%for tx in text%}
+<h2>{{tx}}</h2>
+{%endfor%}
+
+{%for res in responses%}
+<h3>{{res}}</h3>
+{%endfor%}
+
+</body>
+</html>
+

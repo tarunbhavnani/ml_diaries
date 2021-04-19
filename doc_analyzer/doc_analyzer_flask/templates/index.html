@@ -6,15 +6,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doc analyzer</title>
 
+
 </head>
 <body>
-<header>
-    <ul>
-        <li><a href="/">Home</a></li>
-        <li><a href = "/names">Names</a></li>
-        <li><a href = "/analysis">Analysis</a></li>
-    </ul>
-</header>
+
+<div class="navbar">
+    <a class ="active" href="/">Home</a>
+    <a href ="/names">About</a>
+    <a href = "/analysis">Analysis</a>
+    <div class="navbar__search">
+        <form class="form" action="/search" method="POST">
+                <p class="form__input">
+                    <textarea name="search" ></textarea>
+                </p>
+                <button type="submit" >search</button>
+
+            </form>
+    </div>
+</div>
+
+
+
 <h2>Select files</h2>
 <p>
     <form method="POST" action="/" enctype ="multipart/form-data" />
