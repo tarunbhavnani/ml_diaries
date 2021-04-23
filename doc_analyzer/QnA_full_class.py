@@ -3,6 +3,9 @@
 Created on Fri Apr 16 10:16:28 2021
 
 @author: ELECTROBOT
+
+1.85 to 1|DOT|85
+re.sub(r'\d*\.\d*', lambda g: re.sub(r'\.', '|DOT|', g[0]), tt)
 """
 import torch
 from transformers import BertForQuestionAnswering
@@ -10,7 +13,7 @@ from transformers import BertTokenizer
 import re
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-
+import fitz
 
 class qnatb(object):
     
@@ -26,17 +29,32 @@ class qnatb(object):
         return [''.join(ngram) for ngram in ngrams]
     
     @staticmethod
+    def clean(sent):
+        sent= re.sub(r'<.*?>', " ", sent)#html tags
+        sent=re.sub(r'h\s*t\s*t\s*p\s*s?://\S+|www\.\S+', " ", sent) #remove urls
+        
+        sent=re.sub('\n', " ", sent) 
+        sent=re.sub(r'\(.*?\)', " ", sent)#all inside ()
+        sent=re.sub(r'\[.*?\]', " ", sent)#all inside ()
+        sent= re.sub(r'[^A-Za-z0-9\.,\?\(\)\[\]\/ ]', " ", sent)
+        sent=re.sub('\s+', " ", sent) 
+        return sent
+
+    @staticmethod
     def split_into_sentences(text):
         alphabets= "([A-Za-z])"
         prefixes = "(Mr|St|Mrs|Ms|Dr|No)[.]"
         suffixes = "(Inc|Ltd|Jr|Sr|Co)"
         starters = "(Mr|Mrs|Ms|Dr|He\s|She\s|It\s|They\s|Their\s|Our\s|We\s|But\s|However\s|That\s|This\s|Wherever)"
         acronyms = "([A-Z][.][A-Z][.](?:[A-Z][.])?)"
+        decimals =  "(\d*[.]\d*)"
         websites = "[.](com|net|org|io|gov|co|in)"
+        decimals =  r'\d\.\d'
         stopwords=['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your', 'yours', 'yourself', 'yourselves', 'he', 'him', 'his', 'himself', 'she', 'her', 'hers', 'herself', 'it', 'its', 'itself', 'they', 'them', 'their', 'theirs', 'themselves', 'what', 'which', 'who', 'whom', 'this', 'that', 'these', 'those', 'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'having', 'do', 'does', 'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because', 'as', 'until', 'while', 'of', 'at', 'by', 'for', 'with', 'about', 'against', 'between', 'into', 'through', 'during', 'before', 'after', 'above', 'below', 'to', 'from', 'up', 'down', 'in', 'out', 'on', 'off', 'over', 'under', 'again', 'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all', 'any', 'both', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very', 's', 't', 'can', 'will', 'just', 'don', 'should', 'now']
 
         text = " " + text + "  "
         text = text.replace("\n"," ")
+        text= re.sub(decimals, lambda g: re.sub(r'\.', '<prd>', g[0]), text)
         #text= re.sub(r'(?<=\[).+?(?=\])', "", text) # remove everything inside square brackets
         #text= re.sub(r'(?<=\().+?(?=\))', "", text) # remove everything inside  brackets
         text=re.sub(r'\[(\w*)\]', "", text)# remove evrything in sq brackets with sq brackets
@@ -68,6 +86,7 @@ class qnatb(object):
         
     
     def vectorize_text(self,text):
+        text= self.clean(text)
         self.all_sents= qnatb.split_into_sentences(text)
         vec = TfidfVectorizer(min_df=1, analyzer=qnatb.ngrams)
         
@@ -75,8 +94,15 @@ class qnatb(object):
         
         self.tfidf_matrix= vec.transform(self.all_sents)
         
+    
+    def vectorize_question(self,question):
+        question= re.sub(r'[^A-Za-z0-9 ]', " ", question)
+        question= re.sub(r'\s+', " ", question.strip())
+        self.question=question
         
-    def get_response_sents(self, top=10):
+
+
+    def get_response_sents(self):
         question=self.question
         #vectorize question
         stopwords=['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your', 'yours', 'yourself', 'yourselves', 'he', 'him', 'his', 'himself', 'she', 'her', 'hers', 'herself', 'it', 'its', 'itself', 'they', 'them', 'their', 'theirs', 'themselves', 'what', 'which', 'who', 'whom', 'this', 'that', 'these', 'those', 'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'having', 'do', 'does', 'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because', 'as', 'until', 'while', 'of', 'at', 'by', 'for', 'with', 'about', 'against', 'between', 'into', 'through', 'during', 'before', 'after', 'above', 'below', 'to', 'from', 'up', 'down', 'in', 'out', 'on', 'off', 'over', 'under', 'again', 'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all', 'any', 'both', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very', 's', 't', 'can', 'will', 'just', 'don', 'should', 'now']
@@ -90,9 +116,10 @@ class qnatb(object):
         
         #get top n sentences
         final_responses=[self.all_sents[i] for i in dict_scores]
-        response_sents=final_responses[0:top]
+        final_responses= [i for i in final_responses if len(i.split())>3]
+        #response_sents=final_responses[0:top]
         
-        return response_sents
+        return final_responses
         
     
     
@@ -120,20 +147,16 @@ class qnatb(object):
         return answer, start_logit
     
     
-    def retrieve_answer(self,question, top=10):
+    def retrieve_answer(self, top=10):
+                
         
-        question= re.sub(r'[^A-Za-z0-9 ]', " ", question)
-        question= re.sub(r'\s+', " ", question.strip())
-        self.question=question
-        
-        
-        response_sents=self.get_response_sents(top=top)
+        response_sents=self.get_response_sents()
         max_logit=3
         logits=[]
         correct_answer="Please rephrase"
         answer_extracted= "Please rephrase"
 
-        for num, answer_text in enumerate(response_sents):
+        for num, answer_text in enumerate(response_sents[0:top]):
             answer, start_logit= self.answer_question(answer_text)
             logits.append(start_logit)
             if start_logit>max_logit:
@@ -148,17 +171,72 @@ class qnatb(object):
 
 
         
+# =============================================================================
+# function to read multiple files and search and give results with filename and page number
+# =============================================================================
+
+
+def read_pdf(path):
+    doc = fitz.open(path)
+    file={}
+    for num, page in enumerate(doc):
+        try:
+            text=page.getText().encode('utf8')
+            text= text.decode('utf8')
+            file[num]=text
+        except:
+            file[num]=""
+    return file
         
+text= read_pdf(path="C:/Users/ELECTROBOT/Desktop/rf.pdf")
+
+
+text1= [qnatb.clean(i) for i in text.values()]
+text2=" ".join([i for i in text1])
+all_sents= split_into_sentences(text2)
+
+text_blob=" ".join([i for i in text.values()])
+
+text_blob= re.sub(r'<.*?>', " ", text_blob)#html tags
+text_blob=re.sub(r'h\s*t\s*t\s*p\s*s?://\S+|www\.\S+', " ", text_blob) #remove urls
+text_blob= re.sub(r'<.*?>', " ", text_blob)#html tags
+text_blob=re.sub('\n', " ", text_blob) #remove urls
+text_blob=re.sub(r'\(.*?\)', " ", text_blob)
+text_blob=re.sub('\s+', " ", text_blob) #remove urls
+
+
+
+
+#text_blob= qna.split_into_sentences(text_blob)
+#responses=sim_tb(text_blob, "who is roger federer married to?", top=10)
+
+    
+
+3def search(string, file):
+    
+    
+    
+# =============================================================================
+# not workig because of wrong sentences, try and improve the similarity sentences 
+
+"USE BERT EMBEDDING/TOKENIZER"
+"iMPROVE LOADING QUESTION AND TEXT"
+
+# =============================================================================
+
+
         
 
 # =============================================================================
-#         
+#define a better clean, remove all https etc
 # =============================================================================
         
 qna= qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\Bert-qa\model')
 
 #induce text
+
 qna.vectorize_text(text_blob)
+
 
 #get answer
 question="who is roger federer married to?"
@@ -170,15 +248,20 @@ question="who is federers father"
 question="who is federers mother"
 
 
+qna.vectorize_question(question)
+
+correct_answer, answer_extracted, max_logit, logits=qna.retrieve_answer( top=15)
 
 
-correct_answer, answer_extracted, max_logit, logits=qna.retrieve_answer(question, top=5)
+responses=qna.get_response_sents()
+responses[0:15]
+
+file = read_pdf("C:/Users/ELECTROBOT/Desktop/output.pdf")
+    
+        
 
 
-
-
-
-
+#what if the vectorizer is set on question??
 
         
         
