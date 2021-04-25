@@ -8,14 +8,14 @@
 
 </head>
 <body>
-<h1>Search here</h1>
-{%for tx in text%}
-<h2>{{tx}}</h2>
+<h1>Results</h1>
+{%for resp in responses%}
+<h2>{{resp['sentence']}}</h2>
+<h3><a href="/uploads/{{resp['doc']}}">{{resp['doc']}}</a></h3>
+
+<h4>Page No.:{{resp['page']}}</h4>
 {%endfor%}
 
-{%for res in responses%}
-<h3>{{res}}</h3>
-{%endfor%}
 
 </body>
 </html>
