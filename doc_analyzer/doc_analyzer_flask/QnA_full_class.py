@@ -136,7 +136,8 @@ class qnatb(object):
         dict_scores = {i: j for i, j in enumerate(scores)}
         dict_scores = {k: v for k, v in sorted(dict_scores.items(), key=lambda item: item[1], reverse=True)}
         # get top n sentences
-        final_response_dict = [self.tb_index[i] for i in dict_scores]
+        # final_response_dict=[self.tb_index[i] for i in dict_scores]
+        final_response_dict = [self.tb_index[i] for i, j in dict_scores.items() if j > 0.1]
 
         # final_responses=[self.all_sents[i] for i in dict_scores]
 
@@ -201,4 +202,5 @@ class qnatb(object):
             top_response['answer'] = answer
             top_responses.append(top_response)
         top_responses = sorted(top_responses, key=lambda item: item['start_logit'], reverse=True)
-        return top_responses
+        responses = top_responses + response_sents[10:]
+        return responses

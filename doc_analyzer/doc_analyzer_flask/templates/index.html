@@ -40,8 +40,9 @@
 <p>
 <h1>Uploaded Files</h1>
 {%for name in names%}
-<h2><a href="/analysis/{{name}}">{{name}}</a></h2>
- <h3><a href="/uploads/{{name}}">View</a></h3>
+<h2><a href="/analysis/{{name}}">{{name | truncate(30, true)}}</a></h2>
+<h3><a href="/uploads/{{name}}">View</a></h3>
+<hr>
 {% endfor %}
 </p>
 </body>

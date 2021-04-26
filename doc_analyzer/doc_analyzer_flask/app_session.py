@@ -9,7 +9,7 @@ qna = qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\Bert-qa\model')
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "OCML3BRawWEUeaxcuKHLpw"
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+#app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 # Get current path
 path = os.getcwd()
 # file Upload
@@ -40,9 +40,14 @@ def index_page():
 @app.route('/', methods=["POST"])
 def get_files():
     if request.method == "POST":
-        reset_files()  # cleans the files from upload folder if new files uploaded and pops files from session
-        files = request.files.getlist('files[]')
-        print(files)
+        try:
+            reset_files()  # cleans the files from upload folder if new files uploaded and pops files from session
+            files = request.files.getlist('files[]')
+            print(files)
+        except Exception as e:
+            print(e)
+
+
 
         documents = []
 
@@ -88,7 +93,7 @@ def search():
         _, _, _, _ = qna.files_processor_tb(names)
         #responses = qna.get_response_sents(search_data, max_length=7)
         #correct_answer, answer_extracted, _, _ = qna.retrieve_answer(search_data, top=10, max_length=7)
-        responses = qna.get_top_n(search_data, top=10, max_length=None)
+        responses = qna.get_top_n(search_data, top=10, max_length=7)
 
     except Exception as e:
         print(e)
