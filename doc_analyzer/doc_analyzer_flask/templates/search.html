@@ -1,22 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doc analyzer</title>
+{% extends "layout.html" %}
+{% block content %}
+    <h1>Results</h1>
+    {%for resp in responses%}
+    <h2>{{resp['sentence']}}</h2>
+    <h3><a href="/uploads/{{resp['doc']}}">{{resp['doc']}}</a></h3>
+    <h4>Page No.:{{resp['page']}}</h4>
+    <hr>
+    {%endfor%}
 
-</head>
-<body>
-<h1>Results</h1>
-{%for resp in responses%}
-<h2>{{resp['sentence']}}</h2>
-<h3><a href="/uploads/{{resp['doc']}}">{{resp['doc']}}</a></h3>
-<h4>Page No.:{{resp['page']}}</h4>
-<hr>
-{%endfor%}
-
-
-</body>
-</html>
-
+{% endblock %}

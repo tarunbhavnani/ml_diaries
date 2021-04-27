@@ -1,16 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<h1>{{filename}}</h1>
-{% for table in tables %}
-            {{ table|safe }}
-{% endfor %}
+{% extends "layout.html" %}
+{% block content %}
+    <h1>{{filename}}</h1>
+    {% for table in tables %}
+                {{ table|safe }}
+    {% endfor %}
 
-<h3><a href="/uploads/{{filename}}">View</a></h3>
-
-</body>
-</html>
+    <h3><a href="/uploads/{{filename}}">View</a></h3>
+{% endblock %}

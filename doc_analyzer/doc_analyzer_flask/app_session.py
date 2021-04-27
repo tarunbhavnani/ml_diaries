@@ -97,6 +97,7 @@ def search():
 
     except Exception as e:
         print(e)
+        return redirect('/')
 
 
     return render_template('search.html',  responses=responses)

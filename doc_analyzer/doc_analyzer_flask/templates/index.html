@@ -1,49 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doc analyzer</title>
+{% extends "layout.html" %}
+{% block content %}
+    <h2>Select files</h2>
+    <p>
+        <form method="POST" action="/" enctype ="multipart/form-data" />
+        <input type="file" name="files[]" multiple="true" autocomplete="off"  required />
+    </p>
+    <p>
+        <input type="submit" value="go"/>
 
-
-</head>
-<body>
-
-<div class="navbar">
-    <a class ="active" href="/">Home</a>
-    <a href ="/names">About</a>
-    <a href = "/analysis">Analysis</a>
-    <div class="navbar__search">
-        <form class="form" action="/search" method="POST">
-                <p class="form__input">
-                    <textarea name="search" ></textarea>
-                </p>
-                <button type="submit" >search</button>
-
-            </form>
+    </p>
+    <p><a href="/delete">Reset Files</a></p>
+    <p>
+    {%if names%}
+    <h2>Uploaded Files</h2>
+    {%endif%}
+    {%for name in names%}
+    <div class="entry">
+        <h3 class="entry__item"><a href="/uploads/{{name}}">{{name | truncate(30, true)}}</a></h3>
+        <h4 class="entry__item"><a href="/analysis/{{name}}">Analysis</a></h4>
     </div>
-</div>
-
-
-
-<h2>Select files</h2>
-<p>
-    <form method="POST" action="/" enctype ="multipart/form-data" />
-    <input type="file" name="files[]" multiple="true" autocomplete="off"  required />
-</p>
-<p>
-    <input type="submit" value="go"/>
-
-</p>
-<p><a href="/delete">Reset Files</a></p>
-<p>
-<h1>Uploaded Files</h1>
-{%for name in names%}
-<h2><a href="/analysis/{{name}}">{{name | truncate(30, true)}}</a></h2>
-<h3><a href="/uploads/{{name}}">View</a></h3>
-<hr>
-{% endfor %}
-</p>
-</body>
-</html>
+    <hr>
+    {% endfor %}
+    </p>
+{% endblock %}
