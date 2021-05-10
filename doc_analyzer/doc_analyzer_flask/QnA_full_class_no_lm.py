@@ -1,6 +1,6 @@
-import torch
-from transformers import BertForQuestionAnswering
-from transformers import BertTokenizer
+#import torch
+#from transformers import BertForQuestionAnswering
+#from transformers import BertTokenizer
 import re
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -22,8 +22,8 @@ class qnatb(object):
 
     def __init__(self, model_path):
         self.model_path = model_path
-        self.model = BertForQuestionAnswering.from_pretrained(model_path)
-        self.tokenizer = BertTokenizer.from_pretrained(model_path)
+        #self.model = BertForQuestionAnswering.from_pretrained(model_path)
+        #self.tokenizer = BertTokenizer.from_pretrained(model_path)
 
     @staticmethod
     def ngrams(string, n=4):
@@ -147,60 +147,84 @@ class qnatb(object):
 
         return final_response_dict
 
-    def answer_question(self, question, answer_text):
-        question = qnatb.clean(question)
-        encoded_dict = self.tokenizer.encode_plus(text=question, text_pair=answer_text, add_special=True)
-        input_ids = encoded_dict['input_ids']
-        segment_ids = encoded_dict['token_type_ids']
-        assert len(segment_ids) == len(input_ids)
-        output = self.model(torch.tensor([input_ids]),  # The tokens representing our input text.
-                            token_type_ids=torch.tensor(
-                                [segment_ids]))  # The segment IDs to differentiate question from answer_text
+    # def answer_question(self, question, answer_text):
+    #     question = qnatb.clean(question)
+    #     encoded_dict = self.tokenizer.encode_plus(text=question, text_pair=answer_text, add_special=True)
+    #     input_ids = encoded_dict['input_ids']
+    #     segment_ids = encoded_dict['token_type_ids']
+    #     assert len(segment_ids) == len(input_ids)
+    #     output = self.model(torch.tensor([input_ids]),  # The tokens representing our input text.
+    #                         token_type_ids=torch.tensor(
+    #                             [segment_ids]))  # The segment IDs to differentiate question from answer_text
 
-        answer_start = torch.argmax(output['start_logits'])
-        start_logit = output['start_logits'][0][answer_start].detach().numpy()
-        answer_end = torch.argmax(output['end_logits'])
+    #     answer_start = torch.argmax(output['start_logits'])
+    #     start_logit = output['start_logits'][0][answer_start].detach().numpy()
+    #     answer_end = torch.argmax(output['end_logits'])
 
-        tokens = self.tokenizer.convert_ids_to_tokens(input_ids)
-        answer = tokens[answer_start]
-        for i in range(answer_start + 1, answer_end + 1):
+    #     tokens = self.tokenizer.convert_ids_to_tokens(input_ids)
+    #     answer = tokens[answer_start]
+    #     for i in range(answer_start + 1, answer_end + 1):
 
-            if tokens[i][0:2] == '##':
-                answer += tokens[i][2:]
-            else:
-                answer += ' ' + tokens[i]
-        return answer, start_logit
+    #         if tokens[i][0:2] == '##':
+    #             answer += tokens[i][2:]
+    #         else:
+    #             answer += ' ' + tokens[i]
+    #     return answer, start_logit
 
-    def retrieve_answer(self, question, top=10, max_length=None):
+    # def retrieve_answer(self, question, top=10, max_length=None):
 
-        response_sents = self.get_response_sents(question, max_length=max_length)
-        max_logit = 3
-        logits = []
-        correct_answer = "Please rephrase"
-        answer_extracted = "Please rephrase"
+    #     response_sents = self.get_response_sents(question, max_length=max_length)
+    #     max_logit = 3
+    #     logits = []
+    #     correct_answer = "Please rephrase"
+    #     answer_extracted = "Please rephrase"
 
-        for num, answer_text in enumerate(response_sents[0:top]):
-            answer, start_logit = self.answer_question(question, answer_text['sentence'])
-            logits.append(start_logit)
-            if start_logit > max_logit:
-                max_logit = start_logit
-                correct_answer = answer
-                answer_extracted = answer_text
-                # answer_num=num
+    #     for num, answer_text in enumerate(response_sents[0:top]):
+    #         answer, start_logit = self.answer_question(question, answer_text['sentence'])
+    #         logits.append(start_logit)
+    #         if start_logit > max_logit:
+    #             max_logit = start_logit
+    #             correct_answer = answer
+    #             answer_extracted = answer_text
+    #             # answer_num=num
 
-        return correct_answer, answer_extracted, max_logit, logits
+    #     return correct_answer, answer_extracted, max_logit, logits
 
     def get_top_n(self, question, top=10, max_length=None):
 
         response_sents = self.get_response_sents(question, max_length=max_length)
-        top_responses = []
+        # top_responses = []
 
-        for num, answer_text in enumerate(response_sents[0:top]):
-            answer, start_logit = self.answer_question(question, answer_text['sentence'])
-            top_response = response_sents[num]
-            top_response['start_logit'] = start_logit
-            top_response['answer'] = answer
-            top_responses.append(top_response)
-        top_responses = sorted(top_responses, key=lambda item: item['start_logit'], reverse=True)
-        responses = top_responses + response_sents[top:]
-        return responses
+        # for num, answer_text in enumerate(response_sents[0:top]):
+        #     answer, start_logit = self.answer_question(question, answer_text['sentence'])
+        #     top_response = response_sents[num]
+        #     top_response['start_logit'] = start_logit
+        #     top_response['answer'] = answer
+        #     top_responses.append(top_response)
+        # top_responses = sorted(top_responses, key=lambda item: item['start_logit'], reverse=True)
+        # responses = top_responses + response_sents[top:]
+        # return responses
+        return response_sents
+
+
+
+
+# qna = qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\Bert-qa\model')
+# import os
+# files= os.listdir(r"C:\Users\ELECTROBOT\Desktop\Desktop_kachra")
+
+# names=[os.path.join(r"C:\Users\ELECTROBOT\Desktop\Desktop_kachra",i) for i in files]
+# _, _, _, _ = qna.files_processor_tb(names)
+
+# search_data="who did federer marry"
+# responses = qna.get_top_n(search_data, top=10, max_length=7)
+
+
+
+
+
+
+
+
+
+

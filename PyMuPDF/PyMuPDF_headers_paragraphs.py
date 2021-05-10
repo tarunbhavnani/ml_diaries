@@ -54,6 +54,17 @@ doc = fitz.open(file) #
 font_counts, styles = fonts(doc, granularity=False)
 
 
+normal_font= font_counts[0][0]
+#remove all with fonts lower than normal
+
+fonts= [i for i in font_counts if i[0]>=normal_font]
+
+
+
+
+
+
+
 
 
 def font_tags(font_counts, styles):
@@ -152,19 +163,19 @@ headers_paragraph= headers_para(doc, size_tag)
 
 fl=[]
 para=[]
+
 for item in headers_paragraph:
     print(item)
     
-    if item[0:4] in ['<h1>','<h2>','<h3>']:
+    if item[0:2] =='<h':
+        
         if len(para)>0:
             fl.append(" ".join([i for i in para]))
             para=[]
-            
-        #fl.append(item)
-        fl.append(item[4:])
-    elif item[0:3] =='<p>':
+        fl.append(item)
+    elif item[0:2] =='<p':
         para.append(item[3:])
-    elif item[0:4] =='<s1>':
+    elif item[0:2] =='<s':
         para.append('(')
         para.append(item[4:])
         para.append(')')
