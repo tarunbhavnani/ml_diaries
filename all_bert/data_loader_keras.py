@@ -37,6 +37,13 @@ tok.fit_on_texts(train_df)
 
 
 # =============================================================================
+# encoder
+# =============================================================================
+from sklearn.preprocessing import LabelEncoder
+encoder= LabelEncoder()
+encoder.fit_transform(targets)
+
+# =============================================================================
 # data generator
 # =============================================================================
 class DataGenerator(tf.keras.utils.Sequence):
@@ -175,5 +182,99 @@ model.compile(loss='categorical_crossentropy', metrics=['acc'], optimizer= 'adam
 
 
 # =============================================================================
-# 
+#  multi CNN model
 # =============================================================================
+
+
+
+
+inp= Input(shape=(1000,1))
+Conv1d= Conv1D(32,3,activation='relu', padding='same')(inp)
+maxp=[]
+maxp.append(MaxPooling1D(2)(Conv1d))
+Conv1d= Conv1D(32,4,activation='relu', padding='same')(inp)
+maxp.append(MaxPooling1D(2)(Conv1d))
+Conv1d= Conv1D(32,5,activation='relu', padding='same')(inp)
+maxp.append(MaxPooling1D(2)(Conv1d))
+z= Concatenate(axis=1)(maxp)
+flat= Flatten()(z)
+dense= Dense(128,activation='relu')(flat)
+out= Dense(2,activation='softmax')(dense)
+model=Model(inp, out)
+model.compile(loss='categorical_crossentropy', metrics=['acc'], optimizer= 'adam')
+model.summary()
+
+
+
+dat= np.empty([1000,100], dtype='float').reshape(100,-1,1)  #(100,1000,1)
+label= np.random.choice([0,1],100)
+label= tf.keras.utils.to_categorical(label)#(100,2)
+
+model.fit(dat, label, batch_size=32)
+
+
+
+
+
+# =============================================================================
+# attention
+#https://keras.io/api/layers/attention_layers/attention/
+#Dot-product attention layer, a.k.a. Luong-style attention.
+
+
+# =============================================================================
+
+from tensorflow.keras.models import Model
+import tensorflow as tf
+
+# Variable-length int sequences.
+query_input = tf.keras.Input(shape=(None,), dtype='int32')
+value_input = tf.keras.Input(shape=(None,), dtype='int32')
+
+# Embedding lookup.
+#token_embedding = tf.keras.layers.Embedding(input_dim=1000, output_dim=64)
+token_embedding = tf.keras.layers.Embedding(vocab_size,1000)
+# Query embeddings of shape [batch_size, Tq, dimension].
+query_embeddings = token_embedding(query_input)
+# Value embeddings of shape [batch_size, Tv, dimension].
+value_embeddings = token_embedding(value_input)
+
+# CNN layer.
+cnn_layer = tf.keras.layers.Conv1D(
+    filters=100,
+    kernel_size=4,
+    # Use 'same' padding so outputs have the same shape as inputs.
+    padding='same')
+# Query encoding of shape [batch_size, Tq, filters].
+query_seq_encoding = cnn_layer(query_embeddings)
+# Value encoding of shape [batch_size, Tv, filters].
+value_seq_encoding = cnn_layer(value_embeddings)
+
+# Query-value attention of shape [batch_size, Tq, filters].
+query_value_attention_seq = tf.keras.layers.Attention()(
+    [query_seq_encoding, value_seq_encoding])
+
+# Reduce over the sequence axis to produce encodings of shape
+# [batch_size, filters].
+query_encoding = tf.keras.layers.GlobalAveragePooling1D()(
+    query_seq_encoding)
+query_value_attention = tf.keras.layers.GlobalAveragePooling1D()(
+    query_value_attention_seq)
+
+# Concatenate query and document encodings to produce a DNN input layer.
+input_layer = tf.keras.layers.Concatenate()(
+    [query_encoding, query_value_attention])
+
+outp = tf.keras.layers.Dense(len(set(targets)), activation='softmax')(input_layer)
+
+
+model = Model(inputs=[query_input,value_input], outputs=outp)
+
+model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+model.summary()
+model.fit_generator(generator=train_gen,
+                    validation_data=val_gen,
+                    epochs=10)
+                    
+
+
