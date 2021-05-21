@@ -91,6 +91,8 @@ class DataGenerator(tf.keras.utils.Sequence):
         #     y[i] = # labels
 
         return X, y
+        #return (X,X) y# for the attention model
+    
 
 
 
