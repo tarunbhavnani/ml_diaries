@@ -12,6 +12,7 @@ if torch.cuda.is_available():
 
     # Tell PyTorch to use the GPU.    
     device = torch.device("cuda")
+    #torch.cuda.get_device_name(0)
 
     print('There are %d GPU(s) available.' % torch.cuda.device_count())
 
