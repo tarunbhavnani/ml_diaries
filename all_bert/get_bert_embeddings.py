@@ -14,7 +14,7 @@ from typing import List
 CLS_TOKEN = "[CLS]"
 SEP_TOKEN = "[SEP]"
 
-logger = logging.getLogger(__name__)
+#logger = logging.getLogger(__name__)
 
 class InputExample(object):
     """A single training/test example for simple sequence classification."""
@@ -59,7 +59,8 @@ def convert_examples_to_features(examples, tokenizer, max_seq_length,
     features = []
     for (ex_index, example) in enumerate(examples):
         if ex_index % 10000 == 0:
-            logger.info("Writing example %d of %d" % (ex_index, len(examples)))
+            pass
+            #logger.info("Writing example %d of %d" % (ex_index, len(examples)))
 
         tokens_a = tokenizer.tokenize(example.text_a)
 
@@ -129,13 +130,14 @@ def convert_examples_to_features(examples, tokenizer, max_seq_length,
         assert len(segment_ids) == max_seq_length
 
         if ex_index < 5:
-            logger.info("*** Example ***")
-            logger.info("guid: %s" % (example.guid))
-            logger.info("tokens: %s" % " ".join(
-                    [str(x) for x in tokens]))
-            logger.info("input_ids: %s" % " ".join([str(x) for x in input_ids]))
-            logger.info("input_mask: %s" % " ".join([str(x) for x in input_mask]))
-            logger.info("segment_ids: %s" % " ".join([str(x) for x in segment_ids]))
+            pass
+            # logger.info("*** Example ***")
+            # logger.info("guid: %s" % (example.guid))
+            # logger.info("tokens: %s" % " ".join(
+            #         [str(x) for x in tokens]))
+            # logger.info("input_ids: %s" % " ".join([str(x) for x in input_ids]))
+            # logger.info("input_mask: %s" % " ".join([str(x) for x in input_mask]))
+            # logger.info("segment_ids: %s" % " ".join([str(x) for x in segment_ids]))
 
         features.append(
                 InputFeatures(input_ids=input_ids,
