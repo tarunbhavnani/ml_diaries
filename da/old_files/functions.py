@@ -5,9 +5,6 @@ import io
 from PIL import Image
 import numpy as np
 import tabula
-from docx import Document
-
-
 
 class PyMuPDF_all():
     def __init__(self, file_path, file_name):
@@ -49,43 +46,3 @@ class PyMuPDF_all():
             table = tabula.read_pdf(os.path.join(self.file_path, self.file_name), pages=i, multiple_tables=True)
             [tables.append(i) for i in table]
         return tables
-
-class doc_all():
-    def __init__(self, file_path, file_name):
-        self.file_path=file_path
-        self.file_name= file_name
-        self.doc= Document(os.path.join(file_path, file_name))
-
-    def get_metadata(self):
-        metadata = {}
-        prop = self.doc.core_properties
-        metadata["author"] = prop.author
-        metadata["category"] = prop.category
-        metadata["comments"] = prop.comments
-        metadata["content_status"] = prop.content_status
-        metadata["created"] = prop.created
-        metadata["identifier"] = prop.identifier
-        metadata["keywords"] = prop.keywords
-        metadata["language"] = prop.language
-        metadata["modified"] = prop.modified
-        metadata["subject"] = prop.subject
-        metadata["title"] = prop.title
-        metadata["version"] = prop.version
-        md_df= pd.DataFrame(metadata.items(), columns= ['Parameter', 'Details'])
-        return md_df
-    def get_tables(self):
-
-        tables=[]
-        for table in self.doc.tables:
-            fl=[]
-            for row in table.rows:
-                l=[]
-                for cell in row.cells:
-                    l.append(cell.text)
-                fl.append(l)
-            tab= pd.DataFrame(fl)
-            tab.columns= tab.iloc[0]
-            tab= tab[1:]
-            tables.append(tab)
-        return tables
-

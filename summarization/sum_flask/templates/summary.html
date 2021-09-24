@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>{{filename}}</h1>
+    <h2>PDF extract </h2>
+    <h3>{{len(read.split())}} words</h3>
+    <small>{{read}}</small>
+
+    <h2>Summary</h2>
+    <h3>{{len(weighted_summary.split())}} words</h3>
+
+    <p>{{weighted_summary}}</p>
+
+    <h2>Final Summary</h2>
+    <h3>{{len(summary.split())}} words</h3>
+
+    <h2>{{summary}}</h2>
+{% endblock %}

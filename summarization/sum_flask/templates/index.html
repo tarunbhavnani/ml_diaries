@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h2>Select files</h2>
+    <p>
+        <form method="POST" action="/" enctype ="multipart/form-data" />
+        <input type="file" name="files[]" multiple="true" autocomplete="off"  required />
+        <input type="checkbox" id="audit_report" name="audit_report" value="audit_report">
+        <label for="audit_report">Audit Report</label><br>
+    </p>
+    <p>
+        <input type="submit" value="go"/>
+
+    </p>
+    <p><a href="/delete">Reset Files</a></p>
+    <p>
+    {%if names%}
+    <h2>Uploaded Files</h2>
+    {%endif%}
+    {%for name in names%}
+    <div class="entry">
+        <h3 class="entry__item"><a href="/uploads/{{name}}">{{name | truncate(30, true)}}</a></h3>
+        <h4 class="entry__item"><a href="/summary/{{name}}">Summarize</a></h4>
+    </div>
+    <hr>
+    {% endfor %}
+    </p>
+{% endblock %}
