@@ -263,11 +263,24 @@ def split_into_sentences(text):
 
     
     
+def clean_junk(text):
+    text=re.sub(r'[A-Za-z0-9]*@[A-Za-z]*\.?[A-Za-z0-9]*', "", text)
+    text=re.sub(r'http.*', " ", text)
+    text=re.sub('<[^<]+?>', '', text)
+    text=re.sub(r'(?<=\[).+?(?=\])', "", text) 
+    text=re.sub(r'(?<=\().+?(?=\))', "", text) # remove everything inside  brackets
+    text=re.sub(r'[^A-Za-z0-9 /., ]', " ", text)
+    text=re.sub(r'\s+', " ", text)
+    return text
+    
+    
+
     
     
 def get_weighted_summary_pdf(doc):
     #doc=fitz.open(os.path.join(folder, file))
     all_sentences=get_all_sents(doc)
+    all_sentences=[clean_junk(i) for i in all_sentences]
     
     words={}
     for sent in all_sentences:
