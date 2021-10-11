@@ -1,0 +1,4 @@
+fuzzywuzzy
+python-docx
+python-pptx
+flask-session
