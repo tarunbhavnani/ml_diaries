@@ -133,12 +133,12 @@ def search():
         responses = qna_loaded.get_top_n(search_data, top=10, max_length=7)
         #return render_template('search.html', responses=responses, search_data=search_data)
         resp = {"success": True, "response": responses}
-        return jsonify(responses), 200
+        return jsonify(resp), 200
 
     except Exception as e:
         resp = {"success": False, "response": str(e)}
         #return redirect('/')
-        return jsonify(responses), 200
+        return jsonify(resp), 200
 
 
 @app.route('/regex', methods=["GET", "POST"])

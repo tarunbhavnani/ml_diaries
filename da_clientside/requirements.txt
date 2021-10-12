@@ -1,3 +1,11 @@
+Flask
+PyMuPDF
+pandas
+torch==1.8.1
+sentence-transformers==1.1.0
+tabula
+Pillow
+scikit-learn
 fuzzywuzzy
 python-docx
 python-pptx
