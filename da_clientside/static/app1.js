@@ -4,7 +4,7 @@ function uploadFile(form)
 
  var oOutput = document.getElementById("static_file_response")
  var oReq = new XMLHttpRequest();
-     oReq.open("POST", "upload_static_file", true);
+     oReq.open("POST", "/document", true);
  oReq.onload = function(oEvent) {
      if (oReq.status == 200) {
        oOutput.innerHTML = "Uploaded!";
