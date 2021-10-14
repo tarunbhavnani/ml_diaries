@@ -89,3 +89,34 @@ class doc_all():
             tables.append(tab)
         return tables
 
+def metadata1(filename, session):
+    try:
+        tables = []
+        if filename.endswith('pdf'):
+            call_analysis = PyMuPDF_all(session['Folder'], filename)
+            md = call_analysis.get_metadata()
+        elif filename.endswith('docx'):
+            call_analysis = doc_all(session['Folder'], filename)
+            md = call_analysis.get_metadata()
+        else:
+            md = pd.DataFrame(columns=["Parameter", "Details"])
+
+        try:
+            print(filename)
+            print(session['stats'])
+            st = [(i['words'], i['pages']) for i in session['stats'] if i['doc'] == filename]
+            md = md.append({"Parameter": "Pages", "Details": st[0][1]}, ignore_index=True)
+            md = md.append({"Parameter": "Word-count", "Details": st[0][0]}, ignore_index=True)
+
+        except Exception as e:
+            print(e)
+            print('something is wrong in metadata')
+
+
+        md_dict= {i:j for i,j in zip(md.Parameter, md.Details)}
+
+        return md_dict
+
+    except Exception as e:
+
+        return str(e)

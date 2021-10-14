@@ -1,32 +1,27 @@
 from flask import Flask, render_template, request, session, redirect, url_for, send_from_directory, jsonify, Response
-#from flask_session import Session #server side session
+# from flask_session import Session #server side session
 # from flask_cors import CORS
 from werkzeug.utils import secure_filename
 import os
-
 import uuid
 import pickle
 from endpoints.QnA_no_lm import qnatb
-from endpoints.functions import PyMuPDF_all, doc_all
+from endpoints.functions import PyMuPDF_all, doc_all, metadata1
 import pandas as pd
 import shutil
-
-# from QnA_full_class_no_lm import qnatb
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "OCML3BRawWEUeaxcuKHLpw"
 # to use sesison secret key is needed
 
-#app.config["SESSION_TYPE"] = "filesystem" #server side session
-#Session(app) #server side session
+# app.config["SESSION_TYPE"] = "filesystem" #server side session
+# Session(app) #server side session
 
-# qna = qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\Bert-qa\model')
 qna = qnatb()
 
 # app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 # Get current path
 path = os.getcwd()
-
 # file Upload
 UPLOAD_FOLDER = os.path.join(path, 'uploads')
 
@@ -47,20 +42,37 @@ def index_page():
     try:
         s = os.listdir(session['Folder'])
         names = [i for i in s if i.split('.')[-1] in ['pdf', 'pptx', 'docx']]
+        print(names)
         return render_template('index.html', names=names)
     except:
         return render_template('index.html')
 
 
-@app.route('/upload_static_file', methods=['POST'])
-def upload_static_file():
+@app.route('/document', methods=['GET'])
+def show_file():
+    s = os.listdir(session['Folder'])
+    names = [i for i in s if i.split('.')[-1] in ['pdf', 'pptx', 'docx']]
+    response = {i: metadata1(i, session) for i in names}
+    return jsonify(response), 200
+
+
+@app.route('/document/<filename>', methods=['GET'])
+def show_one_file(filename):
+    response = metadata1(filename, session)
+    return jsonify(response), 200
+
+
+@app.route('/document', methods=['POST'])
+def upload_file():
     print("Got request in static files")
+
     # reset files in beginning of session
     reset_files()
 
     # get files from upload form
     fls = request.files.getlist('filenames')
     print(fls)
+
     # create a session id, and a respective folder
     session['uid'] = uuid.uuid4().hex
     Folder = os.path.join(app.config['UPLOAD_FOLDER'], session['uid'])
@@ -68,14 +80,11 @@ def upload_static_file():
         os.mkdir(Folder)
 
     session['Folder'] = Folder
-    print(Folder)
+    # print(Folder)
 
     # save all files in the folder, save the responses in json to send
     resp_all = {}
-
     for f in fls:
-        #print(f)
-        #print(f.filename)
         if allowed_file(f.filename):
             try:
                 filename = secure_filename(f.filename)
@@ -120,24 +129,22 @@ def reset_files():
         resp = {"success": False, "response": str(e)}
 
     return jsonify(resp), 200
-    #return redirect('/')
+    # return redirect('/')
 
 
-@app.route('/search', methods=["GET", "POST"])
+@app.route('/search')
 def search():
     try:
-        search_data = request.form.get("search")
+        #search_data = request.form.get("search")
+        search_data = request.args.get("search")
         with open(os.path.join(session['Folder'], 'qna'), 'rb') as handle:
             qna_loaded = pickle.load(handle)
 
         responses = qna_loaded.get_top_n(search_data, top=10, max_length=7)
-        #return render_template('search.html', responses=responses, search_data=search_data)
         resp = {"success": True, "response": responses}
         return jsonify(resp), 200
-
     except Exception as e:
         resp = {"success": False, "response": str(e)}
-        #return redirect('/')
         return jsonify(resp), 200
 
 
@@ -195,37 +202,6 @@ def upload(filename):
 
 @app.route('/metadata/<filename>/')
 def metadata(filename):
-    print(filename)
-    try:
-        tables = []
-        if filename.endswith('pdf'):
-            call_analysis = PyMuPDF_all(session['Folder'], filename)
-            md = call_analysis.get_metadata()
-        elif filename.endswith('docx'):
-            call_analysis = doc_all(session['Folder'], filename)
-            md = call_analysis.get_metadata()
-        else:
-            md = pd.DataFrame(columns=["Parameter", "Details"])
-
-        try:
-            print(filename)
-            print(session['stats'])
-            st = [(i['words'], i['pages']) for i in session['stats'] if i['doc'] == filename]
-            md = md.append({"Parameter": "Pages", "Details": st[0][1]}, ignore_index=True)
-            md = md.append({"Parameter": "Word-count", "Details": st[0][0]}, ignore_index=True)
-
-        except Exception as e:
-            print(e)
-            print('something is wrong in metadata')
-
-
-        md_dict= {i:j for i,j in zip(md.Parameter, md.Details)}
-        resp = {"success": False, "response": md_dict}
-        #tables.append(md.to_html(classes='data'))
-
-        return jsonify(resp), 200
-
-    except Exception as e:
-        resp = {"success": False, "response": str(e)}
-        #return redirect('/')
-        return jsonify(resp), 200
+    resp = metadata1(filename, session)
+    resp = {"success": False, "response": resp}
+    return jsonify(resp), 200

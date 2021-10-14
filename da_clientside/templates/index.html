@@ -2,7 +2,7 @@
 {% block content %}
     <h2>Select files</h2>
     <form enctype = "multipart/form-data" onsubmit="return false;" >
-       <input id="file" type="file" name="files[]" multiple="true"/>
+       <input id="file" type="file" name="filenames" multiple="true"/>
        <button id="upload-button" onclick="uploadFile(this.form)"> Upload </button>
     </form>
     <div id="static_file_response"> </div>

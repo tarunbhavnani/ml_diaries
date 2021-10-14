@@ -34,14 +34,15 @@ jsonApiData = response.json()
 # =============================================================================
 
 
+import requests
 
 
 session = requests.Session()
-session.headers.update({'Authorization': 'Bearer {access_token}'})
+#session.headers.update({'Authorization': 'Bearer {access_token}'})
 #response = session.get('http://127.0.0.1:5000')
 
 with open(r"C:\Users\ELECTROBOT\Desktop\pdf_files\Arria123.pdf", 'rb') as f:
-    response = session.post('http://127.0.0.1:5000/upload_static_file', files={'files[]': f})
+    response = session.post('http://127.0.0.1:5000/upload_static_file', files={'filenames': f})
 
 response.text
 
@@ -60,6 +61,61 @@ response = session.get('http://127.0.0.1:5000/metadata/Arria123.pdf/')
 jsonApiData = response.json()
 
 
+
+
+
+
+
+
+
+
+session = requests.Session()
+#session.headers.update({'Authorization': 'Bearer {access_token}'})
+#response = session.get('http://127.0.0.1:5000')
+
+files = [('filenames', open(r"C:\Users\ELECTROBOT\Desktop\pdf_files\Arria123.pdf", 'rb')),
+         ('filenames', open(r"C:\Users\ELECTROBOT\Desktop\pdf_files\pymupdf-readthedocs-io-en-latest.pdf", 'rb')),
+         ('filenames', open(r"C:\Users\ELECTROBOT\Desktop\pdf_files\HerokuTutorial.pdf",'rb'))]
+
+#with open(r"C:\Users\ELECTROBOT\Desktop\pdf_files\Arria123.pdf", 'rb') as f:
+response = session.post('http://127.0.0.1:5000/document', files=files)
+
+response
+response.json()
+
+
+response=session.get('http://127.0.0.1:5000/document')
+response
+response.json()
+
+response=session.get('http://127.0.0.1:5000/document/Arria123.pdf')
+response
+response.json()
+
+
+response = session.get('http://127.0.0.1:5000/metadata/Arria123.pdf/')
+response
+response.json()
+
+response = session.get('http://127.0.0.1:5000/metadata/pymupdf-readthedocs-io-en-latest.pdf/')
+response
+response.json()
+
+
+
+
+response= session.get('http://127.0.0.1:5000/search?search=what+is+heroku')
+response
+response.json()
+
+
+response=session.get('http://127.0.0.1:5000/delete')
+response
+response.json()
+
+response=session.get('http://127.0.0.1:5000/document')
+response
+response.json()
 
 
 
