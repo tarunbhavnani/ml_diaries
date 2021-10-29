@@ -9,6 +9,7 @@ from docx import Document
 from pptx import Presentation
 import pandas as pd
 from fuzzywuzzy import fuzz
+import os
 
 class qnatb(object):
     stopwords = ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your', 'yours', 'yourself',
@@ -86,8 +87,16 @@ class qnatb(object):
         return sentences
     
     @staticmethod
-    def tb_index_pdf(file, tb_index):
-        doc = fitz.open(file)
+    def tb_index_pdf(Folder, file, tb_index):
+        
+        doc = fitz.open(os.path.join(Folder, file))
+        try:
+            metadata= {i:j for i,j in doc.metadata.items() if i in ["format", "title", "author", "creationDate", "modDate"]}
+        except:
+            metadata={'format':'PDF', 'title': "", "author": "", "creationDate":"", "modDate":""}
+            
+        metadata['filename']=file
+
         for num, page in enumerate(doc):
             try:
                 text = page.getText().encode('utf8')
@@ -108,11 +117,24 @@ class qnatb(object):
                     "sentence": ""
     
                 })
-        return tb_index
+        return tb_index, metadata
 
     @staticmethod
-    def tb_index_docx(file, tb_index):
-        doc= Document(file)
+    def tb_index_docx(Folder, file, tb_index):
+        doc= Document(os.path.join(Folder, file))
+        try:
+            metadata={}
+            prop=doc.core_properties
+            metadata['format']="docx"
+            metadata['title']=prop.subject
+            metadata['author']=prop.author
+            metadata['creationDate']=prop.created
+            metadata['modDate']=prop.modified
+        except:
+            metadata={'format':'docx', 'title': "", "author": "", "creationDate":"", "modDate":""}
+                        
+        metadata['filename']=file
+
         text=[]
         try:
             for para in doc.paragraphs:
@@ -135,11 +157,14 @@ class qnatb(object):
                 "sentence": "Not read"
     
             })
-        return tb_index
+        return tb_index, metadata
 
     @staticmethod
-    def tb_index_pptx(file, tb_index):
-        ppt= Presentation(file)
+    def tb_index_pptx(Folder, file, tb_index):
+        ppt= Presentation(os.path.join(Folder, file))
+        
+        metadata={'format':'pptx', 'title': "", "author": "", "creationDate":"", "modDate":""}
+        metadata['filename']=file
         
         for num, slide in enumerate(ppt.slides):
             try:
@@ -164,38 +189,64 @@ class qnatb(object):
                     "sentence": ""
     
                 })
-        return tb_index
+        return tb_index, metadata
 
 
-    def files_processor_tb(self, files):
+    def files_processor_tb(self, Folder):
         tb_index = []
+        
+        response_file_processing=[]
+        
+        metadata_all=[]
+        
+        files= [i for i in os.listdir(Folder)]
+        
+        
         for file in files:
             
             if file.endswith('pdf'):
                 try:
-                    qnatb.tb_index_pdf(file, tb_index)
-                except:
-                    print(file)
+                    _, metadata= qnatb.tb_index_pdf(Folder, file, tb_index)
+                    metadata_all.append(metadata)
+                    response= {"filename": file, "msg":"", "status": "success"}
+                    response_file_processing.append(response)
+                except Exception as e:
+                    response= {"filename": file, "msg":str(e), "status": "failed"}
+                    response_file_processing.append(response)
+                    
+                    
             elif file.endswith('docx'):
                 try:
-                    qnatb.tb_index_docx(file, tb_index)
-                except:
-                    print(file)
+                    _, metadata= qnatb.tb_index_docx(Folder, file, tb_index)
+                    metadata_all.append(metadata)
+                    response= {"filename": file, "msg":"", "status": "success"}
+                    response_file_processing.append(response)
+                except Exception as e:
+                    response= {"filename": file, "msg":str(e), "status": "failed"}
+                    response_file_processing.append(response)
+                
             elif file.endswith('pptx'):
                 try:
-                    qnatb.tb_index_pptx(file, tb_index)
-                except:
-                    print(file)
+                    _, metadata= qnatb.tb_index_pptx(Folder, file, tb_index)
+                    metadata_all.append(metadata)
+                    response= {"filename": file, "msg":"", "status": "success"}
+                    response_file_processing.append(response)
+                except Exception as e:
+                    response= {"filename": file, "msg":str(e), "status": "failed"}
+                    response_file_processing.append(response)
             else:
                 print(file)
+
             
-        
+        self.metadata_all= metadata_all
         self.tb_index=tb_index
         all_sents= [i['sentence'] for i in tb_index]
         self.all_sents= all_sents
         
         
-        return tb_index, all_sents
+        #run metadata
+        self.metadata()
+        return tb_index, all_sents, response_file_processing
     
     
     def reg_ind(self, words):
@@ -326,6 +377,25 @@ class qnatb(object):
             st['words']= sum([len(i['sentence'].split()) for i in self.tb_index if i['doc']==doc])
             stats.append(st)
         return stats
+    
+    def metadata(self):
+        try:
+            md= self.metyadata_all
+            updated_md=[]
+            for metadata_file in md:
+                try:
+                    filename= metadata_file['filename'].split('/')[-1]
+                    metadata_file['pages']=len(set([i['page'] for i in self.tb_index if i['filename']==filename]))
+                    metadata_file['words']=sum([len(i['sentence'].split()) for i in self.tb_index if i['filename']==filename])
+                except:
+                    metadata_file['pages']=None
+                    metadata_file['words']=None
+
+                updated_md.append(metadata_file)
+            self.metadata_all= updated_md
+        except:
+            pass
+        
     
             
         

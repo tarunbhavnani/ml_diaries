@@ -124,6 +124,6 @@ response.json()
 
 
 
-
+curl --location --request POST 'http://127.0.0.1:5000/document' --form 'filenames=@"/C:/Users/ELECTROBOT/Desktop/pdf_files/CML_8896_17-Dec-2020_1247_1234.pdf"'
 
 

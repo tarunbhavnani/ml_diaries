@@ -20,18 +20,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7fbe9b7f-0ef2-4342-84d6-af5f10509b2a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/app_session1.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.ipynb_checkpoints/active_passive_check-checkpoint.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/da_clientside.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../da/app_session.py" beforeDir="false" afterPath="$PROJECT_DIR$/../da/app_session.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api_test_workspace_spyder.py" beforeDir="false" afterPath="$PROJECT_DIR$/api_test_workspace_spyder.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app_session.py" beforeDir="false" afterPath="$PROJECT_DIR$/app_session.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/endpoints/functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/endpoints/functions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/endpoints/QnA_no_lm.py" beforeDir="false" afterPath="$PROJECT_DIR$/endpoints/QnA_no_lm.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/endpoints/workspace.py" beforeDir="false" afterPath="$PROJECT_DIR$/endpoints/workspace.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static/app1.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/app1.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/layout.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/layout.html" afterDir="false" />
@@ -64,17 +57,17 @@
   </component>
   <component name="RunManager">
     <configuration name="wsgi" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="da_clientside" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="" />
+      <option name="SDK_HOME" value="C:\Users\ELECTROBOT\Desktop\Environments\doc_analyzer\.venv\Scripts\python.exe" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
+      <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/wsgi.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
@@ -114,31 +107,36 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
+    <state x="414" y="175" width="1092" height="714" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1634537559328">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="414" y="175" width="1092" height="714" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1634537559328" />
     <state x="739" y="275" key="FileChooserDialogImpl" timestamp="1634039151524">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="739" y="275" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1634039151524" />
-    <state width="1899" height="282" key="GridCell.Tab.0.bottom" timestamp="1634195177177">
+    <state width="1899" height="282" key="GridCell.Tab.0.bottom" timestamp="1635490195438">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1899" height="282" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1634195177177" />
-    <state width="1899" height="282" key="GridCell.Tab.0.center" timestamp="1634195177177">
+    <state width="1899" height="282" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1635490195438" />
+    <state width="1899" height="282" key="GridCell.Tab.0.center" timestamp="1635490195438">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1899" height="282" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1634195177177" />
-    <state width="1899" height="282" key="GridCell.Tab.0.left" timestamp="1634195177177">
+    <state width="1899" height="282" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1635490195438" />
+    <state width="1899" height="282" key="GridCell.Tab.0.left" timestamp="1635490195438">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1899" height="282" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1634195177177" />
-    <state width="1899" height="282" key="GridCell.Tab.0.right" timestamp="1634195177177">
+    <state width="1899" height="282" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1635490195438" />
+    <state width="1899" height="282" key="GridCell.Tab.0.right" timestamp="1635490195438">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1899" height="282" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1634195177177" />
-    <state x="461" y="165" key="SettingsEditor" timestamp="1634040314417">
+    <state width="1899" height="282" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1635490195438" />
+    <state x="461" y="165" key="SettingsEditor" timestamp="1634537511550">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="461" y="165" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1634040314417" />
+    <state x="461" y="165" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1634537511550" />
   </component>
 </project>
