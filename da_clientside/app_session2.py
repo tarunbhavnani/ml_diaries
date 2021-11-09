@@ -218,6 +218,36 @@ def search_service():
     return resp
 
 
+@app.route('/regex', methods=["GET", "POST"])
+def regex():
+    try:
+        Folder = session['Folder']
+        reg_data = request.form.get("search")
+        with open(os.path.join(Folder, 'qna'), 'rb') as handle:
+            qna_loaded = pickle.load(handle)
+
+        tb_index_reg, overall_dict, docs = qna_loaded.reg_ind(reg_data)
+
+        #audit_trail = session['audit_trail']
+        #audit_trail[reg_data] = overall_dict
+        #session['audit_trail'] = audit_trail
+
+        tables = []
+        for doc in docs:
+            try:
+                cut = [i for i in tb_index_reg if i['doc'] == doc]
+                cut = pd.DataFrame(cut)
+                pd.set_option('display.max_colwidth', 40)
+                tables.append(cut.to_html(classes='table table-striped'))
+            except:
+                pass
+
+    except Exception as e:
+        print(e)
+        return redirect('/')
+    return render_template("regex.html", overall_dict=overall_dict, tables=tables, reg_data=reg_data, zip=zip)
+
+
 @app.route('/v1/get_file/<filename>')
 def get_file_add(filename):
     # user
