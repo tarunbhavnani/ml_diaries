@@ -11,6 +11,7 @@ import pandas as pd
 import shutil
 import json
 import re
+
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "OCML3BRawWEUeaxcuKHLpw"
 # to use sesison secret key is needed
@@ -196,63 +197,46 @@ def search():
 @app.route('/v1/search_web', methods=['POST'])
 def search_web():
     try:
-        final_response = search_service()
-        return render_template('search.html', responses=final_response['info'], search_data="search_data")
+        Folder = session['Folder']
+        search_data = request.form.get("search")
+        kw_check = request.form.getlist('kw')
+        final_response = search_service(Folder, search_data, kw_check)
+        print(final_response)
+        if kw_check==[]:
+            return render_template('search.html', responses=final_response['info'], search_data="search_data")
+        else:
+            return render_template("regex.html", tb_index_reg=final_response['tb_index_reg'], overall_dict=final_response['overall_dict'], docs= final_response['docs'],
+                            reg_data=search_data, zip=zip)
+
     except:
         return redirect(url_for('index_page'))
 
 
-def search_service():
+def search_service(Folder, search_data, kw_check):
     try:
-        # user
-        Folder = session['Folder']
-        # search_data= request.args.get("search")
-        search_data = request.form.get("search")
         with open(os.path.join(Folder, 'qna'), 'rb') as handle:
             qna_loaded = pickle.load(handle)
 
-        responses = qna_loaded.get_top_n(search_data, top=10, max_length=7)
-        resp = {"status": "success", "info": responses}
+        if kw_check == []:
+            responses = qna_loaded.get_top_n(search_data, top=10, max_length=7)
+            resp = {"status": "success", "info": responses}
+            return resp
+        else:
 
+            tb_index_reg, overall_dict, docs = qna_loaded.reg_ind(search_data)
+            print(docs)
+            resp = {"status": "success", "tb_index_reg": tb_index_reg,"overall_dict":overall_dict,"docs":docs }
+            return resp
     except Exception as e:
-        resp = {"status": "failed", "info": str(e)}
-    return resp
+        print(str(e))
 
 
-@app.route('/regex', methods=["GET", "POST"])
-def regex():
-    try:
-        Folder = session['Folder']
-        reg_data = request.form.get("search")
-        with open(os.path.join(Folder, 'qna'), 'rb') as handle:
-            qna_loaded = pickle.load(handle)
-
-        tb_index_reg, overall_dict, docs = qna_loaded.reg_ind(reg_data)
-
-        #audit_trail = session['audit_trail']
-        #audit_trail[reg_data] = overall_dict
-        #session['audit_trail'] = audit_trail
-
-        tables = []
-        for doc in docs:
-            try:
-                cut = [i for i in tb_index_reg if i['doc'] == doc]
-                cut = pd.DataFrame(cut)
-                pd.set_option('display.max_colwidth', 40)
-                tables.append(cut.to_html(classes='table table-striped'))
-            except:
-                pass
-
-    except Exception as e:
-        print(e)
-        return redirect('/')
-    return render_template("regex.html", tb_index_reg=tb_index_reg, overall_dict=overall_dict, tables=tables, reg_data=reg_data, zip=zip)
 
 @app.route('/regex_docs/<dat>')
 def regex_docs(dat):
     print(dat)
-    dat=re.split("---",dat,maxsplit=1)
-    reg_data=dat[0]
+    dat = re.split("---", dat, maxsplit=1)
+    reg_data = dat[0]
     doc = dat[1]
     Folder = session['Folder']
 
@@ -260,11 +244,10 @@ def regex_docs(dat):
         qna_loaded = pickle.load(handle)
 
     tb_index_reg, overall_dict, docs = qna_loaded.reg_ind(reg_data)
-    final_data= [i for i in tb_index_reg if i['doc']==doc]
-
-
+    final_data = [i for i in tb_index_reg if i['doc'] == doc]
 
     return render_template("regex_docs.html", reg_data=final_data)
+
 
 @app.route('/v1/get_file/<filename>')
 def get_file_add(filename):

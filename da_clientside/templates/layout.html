@@ -20,18 +20,15 @@
 
         </div>
 
-         <div class="navbar__search">
-            <form action="/regex" method="POST">
-                <input type="text" placeholder="regex.." name="search">
-                <button type="submit">Search</button>
-            </form>
-        </div>
+
 
          <div class="navbar__search">
             <form action="/v1/search_web" method="POST">
                 <input type="text" placeholder="Search.." name="search">
+                <input type="checkbox" id= "kw" name="kw" value="kw" > Keywords
                 <button type="submit">Search</button>
             </form>
+
         </div>
     
     </header>
