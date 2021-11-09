@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h2>Select files</h2>
+    <h4>Select files</h4>
     <form enctype = "multipart/form-data" onsubmit="return false;" >
        <input id="file" type="file" name="filenames" multiple="true"/>
        <button id="upload-button" onclick="uploadFile(this.form)"> Upload </button>
@@ -14,14 +14,23 @@
     </p>
     <p>
     {%if names%}
-    <h2>Uploaded Files</h2>
+
+    <table id="data" class="table table-striped">
+        <thead>
+          <tr>
+            <th>Uploaded Files</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for name in names %}
+            <tr>
+              <td><p class="entry__item"><a href="/uploads/{{name}}">{{name | truncate(30, true)}}</a></p></td>
+              <td><p class="entry__item"><a href="/v1/metadata_web/{{name}}">Details</a></p></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+  </table>
     {%endif%}
-    {%for name in names%}
-    <div class="entry">
-        <h3 class="entry__item"><a href="/uploads/{{name}}">{{name | truncate(30, true)}}</a></h3>
-        <h4 class="entry__item"><a href="/v1/metadata_web/{{name}}">Details</a></h4>
-    </div>
-    <hr>
-    {% endfor %}
     </p>
 {% endblock %}
