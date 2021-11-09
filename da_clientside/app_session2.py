@@ -9,7 +9,8 @@ from endpoints.QnA_no_lm import qnatb
 from endpoints.functions import PyMuPDF_all, doc_all, metadata1
 import pandas as pd
 import shutil
-
+import json
+import re
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "OCML3BRawWEUeaxcuKHLpw"
 # to use sesison secret key is needed
@@ -245,8 +246,25 @@ def regex():
     except Exception as e:
         print(e)
         return redirect('/')
-    return render_template("regex.html", overall_dict=overall_dict, tables=tables, reg_data=reg_data, zip=zip)
+    return render_template("regex.html", tb_index_reg=tb_index_reg, overall_dict=overall_dict, tables=tables, reg_data=reg_data, zip=zip)
 
+@app.route('/regex_docs/<dat>')
+def regex_docs(dat):
+    print(dat)
+    dat=re.split("---",dat,maxsplit=1)
+    reg_data=dat[0]
+    doc = dat[1]
+    Folder = session['Folder']
+
+    with open(os.path.join(Folder, 'qna'), 'rb') as handle:
+        qna_loaded = pickle.load(handle)
+
+    tb_index_reg, overall_dict, docs = qna_loaded.reg_ind(reg_data)
+    final_data= [i for i in tb_index_reg if i['doc']==doc]
+
+
+
+    return render_template("regex_docs.html", reg_data=final_data)
 
 @app.route('/v1/get_file/<filename>')
 def get_file_add(filename):

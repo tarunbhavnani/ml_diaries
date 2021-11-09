@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+{%if reg_data%}
+<table id="data" class="table table-striped">
+    <thead>
+      <tr>
+        <th>Sentence</th>
+        <th>page</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for dat in reg_data %}
+        <tr>
+          <td>{{ dat['sentence'] }}</td>
+          <td>{{ dat['page'] }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+
+{%endif%}
+
+{%endblock%}
