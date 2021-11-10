@@ -38,15 +38,22 @@ allowed_ext = [".pdf", ".pptx", ".docx"]
 def allowed_file(file):
     return True in [file.endswith(i) for i in allowed_ext]
 
+def get_user_folder():
+    try:
+        Folder = os.path.join(app.config['UPLOAD_FOLDER'], session['uid'])
+    except:
+        session['uid'] = uuid.uuid4().hex
+        Folder = os.path.join(app.config['UPLOAD_FOLDER'], session['uid'])
+    return Folder
 
 @app.route('/')
 def index_page():
     try:
         # user.id=<>
-        Folder = session['Folder']
+
+        Folder = get_user_folder()
         filenames = [i for i in os.listdir(Folder)]
         filenames == [i for i in filenames if i.split('.')[-1] in ['pdf', 'pptx', 'docx']]
-
         return render_template('index.html', names=filenames)
     except:
         return render_template('index.html')
@@ -54,27 +61,28 @@ def index_page():
 
 @app.route('/v1/metadata', methods=['GET'])
 def metadata():
-    final_response = metadata_service()
+    Folder = get_user_folder()
+    final_response = metadata_service(Folder)
     return jsonify(final_response), 200
 
 
 @app.route('/v1/metadata_web/<filename>', methods=['GET'])
 def metadata_web(filename):
+    Folder = get_user_folder()
     try:
-        tables = []
-        response = metadata_service()
+        #tables = []
+        response = metadata_service(Folder)
         final_response = [i for i in response['info'] if i['filename'] == filename][0]
-        md = pd.DataFrame(final_response.items(), columns=[":Parameter", "Details"])
-        tables.append(md.to_html(classes='data'))
-        return render_template("metadata.html", tables=tables, filename=filename)
+        #md = pd.DataFrame(final_response.items(), columns=[":Parameter", "Details"])
+        #tables.append(md.to_html(classes='data'))
+        return render_template("metadata.html", final_response=final_response, filename=filename)
     except:
         return redirect(url_for('index_page'))
 
 
-def metadata_service():
+def metadata_service(Folder):
     try:
-        # user.id=
-        Folder = session['Folder']
+
         with open(os.path.join(Folder, "qna"), 'rb') as handle:
             qna_loaded = pickle.load(handle)
         md = qna_loaded.metadata_all
@@ -86,28 +94,29 @@ def metadata_service():
 
 @app.route('/v1/upload', methods=['POST'])
 def upload_file():
-    final_response = upload_service()
+    files = request.files.getlist('filenames')
+    Folder = get_user_folder()
+    final_response = upload_service(Folder,files)
     return jsonify(final_response), 200
 
 
 @app.route('/v1/upload_web', methods=['POST'])
 def upload_file_web():
-    final_response = upload_service()
+    files = request.files.getlist('filenames')
+    Folder = get_user_folder()
+    print(files)
+    print(Folder)
+    final_response = upload_service(Folder, files)
     return redirect(url_for('index_page'))
 
 
-def upload_service():
-    fls = request.files.getlist('filenames')
-    session['uid'] = uuid.uuid4().hex
-    Folder = os.path.join(app.config['UPLOAD_FOLDER'], session['uid'])
+def upload_service(Folder, files):
     if not os.path.isdir(Folder):
         os.mkdir(Folder)
 
-    session['Folder'] = Folder
-
     resp_fail_upload = []
     # fail_counter=0
-    for f in fls:
+    for f in files:
         if allowed_file(f.filename):
             try:
                 filename = secure_filename(f.filename)
@@ -128,14 +137,8 @@ def upload_service():
                         "msg": "Extensiuon type not allowed",
                         "status": "failed"}
             resp_fail_upload.append(response)
-    # if fail_counter==0:
-    #     status="success"
-    # else:
-    #     status="failed"
 
-    #    final_response= {"status":status, "info": resp_all}
-
-    qna_resp = get_qna()
+    qna_resp = get_qna(Folder)
     resp_all = qna_resp['info'] + resp_fail_upload
 
     if "failed" in set([i['status'] for i in resp_all]):
@@ -146,10 +149,9 @@ def upload_service():
     return final_response
 
 
-def get_qna():
+def get_qna(Folder):
     try:
         # user=<>
-        Folder = session['Folder']
         _, _, response_file_processing = qna.files_processor_tb(Folder)
         with open(os.path.join(Folder, "qna"), "wb") as handle:
             pickle.dump(qna, handle, protocol=pickle.HIGHEST_PROTOCOL)
@@ -160,21 +162,22 @@ def get_qna():
 
 @app.route('/v1/delete', methods=['POST'])
 def reset_files():
-    final_response = reset_files_service()
+    Folder = get_user_folder()
+    final_response = reset_files_service(Folder)
     return jsonify(final_response), 200
 
 
 @app.route('/v1/delete_web', methods=['POST'])
 def reset_files_web():
+    Folder = get_user_folder()
     try:
-        final_response = reset_files_service()
+        final_response = reset_files_service(Folder)
         return redirect(url_for('index_page'))
     except:
         return redirect(url_for('index_page'))
 
 
-def reset_files_service():
-    Folder = session['Folder']
+def reset_files_service(Folder):
     if not os.path.isdir(Folder):
         resp = {"status": "failde", "info": "Folder not present"}
     else:
@@ -192,9 +195,18 @@ def reset_files_service():
 def search():
     Folder = session['Folder']
     search_data = request.form.get("search")
-    kw_check = request.form.getlist('kw')
-    final_response = search_service()
+    kw_check = "query"
+    final_response = search_service(Folder, search_data, kw_check)
     return jsonify(final_response), 200
+
+@app.route('/v1/regex', methods=['POST'])
+def regex():
+    Folder = session['Folder']
+    search_data = request.form.get("search")
+    kw_check = "kw"
+    final_response = search_service(Folder, search_data, kw_check)
+    return jsonify(final_response), 200
+
 
 
 @app.route('/v1/search_web', methods=['POST'])
@@ -203,13 +215,15 @@ def search_web():
         Folder = session['Folder']
         search_data = request.form.get("search")
         kw_check = request.form.getlist('kw')
-        print(kw_check)
+        #print(kw_check)
         final_response = search_service(Folder, search_data, kw_check)
-        print(final_response)
+        #print(final_response)
         if kw_check==['query']:
             return render_template('search.html', responses=final_response['info'], search_data=search_data)
         elif kw_check == ['kw']:
-            return render_template("regex.html", tb_index_reg=final_response['tb_index_reg'], overall_dict=final_response['overall_dict'], docs= final_response['docs'],
+            docs= list(set([i['doc'] for i in final_response['info']]))
+            overall_dict={i:sum([1 for j in final_response['info'] if j['doc']==i]) for i in docs}
+            return render_template("regex.html", tb_index_reg=final_response['info'], overall_dict=overall_dict, docs= docs,
                             reg_data=search_data, zip=zip)
 
     except:
@@ -227,9 +241,9 @@ def search_service(Folder, search_data, kw_check):
             return resp
         else:
 
-            tb_index_reg, overall_dict, docs = qna_loaded.reg_ind(search_data)
-            print(docs)
-            resp = {"status": "success", "tb_index_reg": tb_index_reg,"overall_dict":overall_dict,"docs":docs }
+            tb_index_reg, _, _ = qna_loaded.reg_ind(search_data)
+
+            resp = {"status": "success", "info": tb_index_reg}
             return resp
     except Exception as e:
         print(str(e))

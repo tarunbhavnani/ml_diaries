@@ -25,7 +25,8 @@
          <div class="navbar__search">
             <form action="/v1/search_web" method="POST">
                 <input type="text" placeholder="Search.." name="search">
-                <input type="checkbox" id= "kw" name="kw" value="kw" > Keywords
+                <input type="radio" checked id= "kw" name="kw" value="query" > Query
+                <input type="radio"  id= "kw" name="kw" value="kw" > Keywords
                 <button type="submit">Search</button>
             </form>
 

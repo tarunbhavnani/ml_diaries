@@ -105,14 +105,14 @@ class qnatb(object):
                 sentences = qnatb.split_into_sentences(text)
                 for sent in sentences:
                     tb_index.append({
-                        "doc": file.split('\\')[-1],
+                        "doc": file,
                         "page": num,
                         "sentence": sent
     
                     })
             except:
                 tb_index.append({
-                    "doc": file.split('\\')[-1],
+                    "doc": file,
                     "page": num,
                     "sentence": ""
     
@@ -145,14 +145,14 @@ class qnatb(object):
             sentences = qnatb.split_into_sentences(text)
             for sent in sentences:
                 tb_index.append({
-                    "doc": file.split('\\')[-1],
+                    "doc": file,
                     "page": "-",
                     "sentence": sent
         
                 })
         except:
             tb_index.append({
-                "doc": file.split('\\')[-1],
+                "doc": file,
                 "page": "-",
                 "sentence": "Not read"
     
@@ -177,14 +177,14 @@ class qnatb(object):
                         [all_text.append(i) for i in sentences]
                 all_text= " ".join(i for i in all_text)        
                 tb_index.append({
-                    "doc": file.split('\\')[-1],
+                    "doc": file,
                     "page": num,
                     "sentence": all_text
                 })
     
             except:
                 tb_index.append({
-                    "doc": file.split('\\')[-1],
+                    "doc": file,
                     "page": num,
                     "sentence": ""
     
@@ -380,13 +380,13 @@ class qnatb(object):
     
     def metadata(self):
         try:
-            md= self.metyadata_all
+            md= self.metadata_all
             updated_md=[]
             for metadata_file in md:
                 try:
-                    filename= metadata_file['filename'].split('/')[-1]
-                    metadata_file['pages']=len(set([i['page'] for i in self.tb_index if i['filename']==filename]))
-                    metadata_file['words']=sum([len(i['sentence'].split()) for i in self.tb_index if i['filename']==filename])
+                    filename= metadata_file['filename']
+                    metadata_file['pages']=len(set([i['page'] for i in self.tb_index if i['doc']==filename]))
+                    metadata_file['words']=sum([len(i['sentence'].split()) for i in self.tb_index if i['doc']==filename])
                 except:
                     metadata_file['pages']=None
                     metadata_file['words']=None
