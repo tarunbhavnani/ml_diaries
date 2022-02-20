@@ -221,8 +221,8 @@ def search_web():
         if kw_check==['query']:
             return render_template('search.html', responses=final_response['info'], search_data=search_data)
         elif kw_check == ['kw']:
-            docs= list(set([i['doc'] for i in final_response['info']]))
-            overall_dict={i:sum([1 for j in final_response['info'] if j['doc']==i]) for i in docs}
+            docs= list(set([i['filename'] for i in final_response['info']]))
+            overall_dict={i:sum([1 for j in final_response['info'] if j['filename']==i]) for i in docs}
             return render_template("regex.html", tb_index_reg=final_response['info'], overall_dict=overall_dict, docs= docs,
                             reg_data=search_data, zip=zip)
 
@@ -262,7 +262,7 @@ def regex_docs(dat):
         qna_loaded = pickle.load(handle)
 
     tb_index_reg, overall_dict, docs = qna_loaded.reg_ind(reg_data)
-    final_data = [i for i in tb_index_reg if i['doc'] == doc]
+    final_data = [i for i in tb_index_reg if i['filename'] == doc]
 
     return render_template("regex_docs.html", reg_data=final_data)
 

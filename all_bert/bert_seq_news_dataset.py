@@ -2,7 +2,7 @@
 """
 Created on Fri Jul 23 12:29:03 2021
 
-@author: ELECTROBOT
+@author: ELECTROBOT1
 """
 
 # =============================================================================
@@ -341,7 +341,7 @@ with torch.no_grad():
         # model predictions
         preds = mdl(input_ids=ids.unsqueeze(0), attention_mask= masks.unsqueeze(0))
         
-pred=np.argmax(preds['logits'].detach().cpu().numpy(), axis=1)
+pred=np.argmax(preds['logits'].detach().cpu().numpy(), axis=1).item()
 
 
 
