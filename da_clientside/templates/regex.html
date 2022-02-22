@@ -1,16 +1,27 @@
 {% extends "layout.html" %}
+
 {% block content %}
 
 {%if overall_dict%}
-<h2> Keywords: {{reg_data}}</h2>
+<table id="data" class="table table-striped">
+    <thead>
+      <tr>
+        <th>Document</th>
+        <th>Occurances</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for doc in overall_dict %}
+      <!--reg_data = "{% for key in tb_index_reg %}Key: {{key}} Value: {{doc}}\n{% endfor %}"-->
+        <tr>
+          <td>{{ doc }}</td>
+          <td><p class="entry__item"><a href="/regex_docs/{{reg_data+'---'+doc}}">{{ overall_dict[doc] }}</a></p></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 
-    {%for resp, table in zip(overall_dict.items(), tables)%}
-        <h2>Documents: {{resp[0]}}</h2>>
-        <h2>Occurances: {{resp[1]}}</h2>>
-        {{table|safe}}
-        <hr>
-        <hr>
-    {%endfor%}
+
 {%endif%}
 
 {%endblock%}

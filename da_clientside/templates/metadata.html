@@ -1,16 +1,22 @@
 {% extends "layout.html" %}
 {% block content %}
     <h1>{{filename}}</h1>
-    {% for table in tables %}
-        {{ table|safe }}
-        <hr>
-    {% endfor %}
+<table id="data" class="table table-striped">
+    <thead>
+      <tr>
+        <th>Parameter</th>
+        <th>Details</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for doc in final_response %}
+      <!--reg_data = "{% for key in tb_index_reg %}Key: {{key}} Value: {{doc}}\n{% endfor %}"-->
+        <tr>
+          <td>{{ doc }}</td>
+          <td>{{final_response[doc]}}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endblock %}
 
-    <h3><a href="/uploads/{{filename}}">View</a></h3>
-    <hr>
-    {% for im in image_names %}
-        <img src="{{ url_for('upload', filename=im) }}" style="width: 256px">
-        {{im}}
-        <hr>
-    {% endfor %}
-{% endblock %}

@@ -23,7 +23,7 @@ width:100%;
     
 }
 .navbar {
-    background: #ffffff;
+    background: #000000;
     margin: 0 0;
     padding: 0 20px;
     display: flex;
@@ -55,7 +55,7 @@ width:100%;
 
 }
 .navbar__brand {
-    
+    color: #fff;
     display: flex;
     align-items: center;
 }
@@ -64,6 +64,8 @@ width:100%;
 .navbar__search {
 
     margin:7px;
+    color: #fff;
+    font-size: 15px;
 
 
 }
@@ -71,8 +73,9 @@ width:100%;
 .navbar input[type=text] {
   padding: 6px;
   margin-top: 8px;
+  border-radius: 10px;
   font-size: 17px;
-  border: bold;
+  border: none;
 }
 
 .navbar__search button {
@@ -83,8 +86,9 @@ width:100%;
   margin-left: 4px;
   background: #ddd;
   font-size: 17px;
-  border: bold;
+  border: none;
   cursor: pointer;
+  border-radius: 10px;
 }
 .main {
     max-width: 100%;
@@ -153,3 +157,4 @@ margin-right:20px;
     margin-bottom: 10px;
     list-style: none;
 }
+
