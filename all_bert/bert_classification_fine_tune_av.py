@@ -18,7 +18,9 @@ from sklearn.model_selection import train_test_split
 
 
 data= pd.read_csv(r"C:\Users\ELECTROBOT\Desktop\kaggle\datasets\imdb\IMDB Dataset.csv")
+
 data['sentiment']=[1 if i=="positive" else 0 for i in data['sentiment']]
+
 
 train_text, temp_text, train_labels, temp_labels = train_test_split(data['review'], data['sentiment'], 
                                                                     random_state=2018, 
@@ -34,7 +36,7 @@ val_text, test_text, val_labels, test_labels = train_test_split(temp_text, temp_
 
 
 # import BERT-base pretrained model
-model_name=r"C:\Users\ELECTROBOT\Desktop\flask_bert_ml\bert_sentiment_flask\input\bert_base_uncased"
+model_name=r"C:\Users\ELECTROBOT\Desktop\model_dump\bert_base_uncased"
 bert = AutoModel.from_pretrained(model_name)
 
 # Load the BERT tokenizer
