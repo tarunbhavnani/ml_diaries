@@ -1,3 +1,4 @@
+
 from flask import Flask, render_template, request, session, redirect, url_for, send_from_directory, jsonify, Response
 # from flask_session import Session #server side session
 # from flask_cors import CORS
@@ -24,6 +25,7 @@ qna = qnatb()
 # app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 # Get current path
 path = os.getcwd()
+
 # file Upload
 UPLOAD_FOLDER = os.path.join(path, 'uploads')
 
@@ -41,9 +43,11 @@ def allowed_file(file):
 def get_user_folder():
     try:
         Folder = os.path.join(app.config['UPLOAD_FOLDER'], session['uid'])
-    except:
+    except Exception as e:
+        print(e)
         session['uid'] = uuid.uuid4().hex
         Folder = os.path.join(app.config['UPLOAD_FOLDER'], session['uid'])
+    print(Folder)
     return Folder
 
 @app.route('/')
@@ -53,9 +57,12 @@ def index_page():
 
         Folder = get_user_folder()
         filenames = [i for i in os.listdir(Folder)]
+        print("1----")
+        print(Folder)
         filenames == [i for i in filenames if i.split('.')[-1] in ['pdf', 'pptx', 'docx']]
         return render_template('index.html', names=filenames)
-    except:
+    except Exception as e:
+        print(e)
         return render_template('index.html')
 
 
@@ -126,6 +133,8 @@ def upload_service(Folder, files):
                 #             "status":"success"}
                 # resp_all.append(response)
             except Exception as e:
+                print("save issue")
+                print(e)
 
                 response = {"filename": filename,
                             "msg": str(e),

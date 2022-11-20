@@ -12,22 +12,23 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
 from fuzzywuzzy import fuzz
 
-stopwords = ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your', 'yours', 'yourself',
-             'yourselves', 'he', 'him', 'his', 'himself', 'she', 'her', 'hers', 'herself', 'it', 'its', 'itself',
-             'they', 'them', 'their', 'theirs', 'themselves', 'what', 'which', 'who', 'whom', 'this', 'that',
-             'these', 'those', 'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had',
-             'having', 'do', 'does', 'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because', 'as',
-             'until', 'while', 'of', 'at', 'by', 'for', 'with', 'about', 'against', 'between', 'into', 'through',
-             'during', 'before', 'after', 'above', 'below', 'to', 'from', 'up', 'down', 'in', 'out', 'on', 'off',
-             'over', 'under', 'again', 'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how',
-             'all', 'any', 'both', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not',
-             'only', 'own', 'same', 'so', 'than', 'too', 'very', 's', 't', 'can', 'will', 'just', 'don', 'should',
-             'now']
+
 
 class file_processor(object):
     def __init__(self, files):
         #self.files=files
         #self.tb_index, self.all_sents, self.vec, self.tfidf_matrix= self.files_processor_tb(files)
+        self.stopwords= ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your', 'yours', 'yourself',
+                     'yourselves', 'he', 'him', 'his', 'himself', 'she', 'her', 'hers', 'herself', 'it', 'its', 'itself',
+                     'they', 'them', 'their', 'theirs', 'themselves', 'what', 'which', 'who', 'whom', 'this', 'that',
+                     'these', 'those', 'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had',
+                     'having', 'do', 'does', 'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because', 'as',
+                     'until', 'while', 'of', 'at', 'by', 'for', 'with', 'about', 'against', 'between', 'into', 'through',
+                     'during', 'before', 'after', 'above', 'below', 'to', 'from', 'up', 'down', 'in', 'out', 'on', 'off',
+                     'over', 'under', 'again', 'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how',
+                     'all', 'any', 'both', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not',
+                     'only', 'own', 'same', 'so', 'than', 'too', 'very', 's', 't', 'can', 'will', 'just', 'don', 'should',
+                     'now']
         self.tb_index, self.all_sents, self.vec, self.tfidf_matrix,self.response_file_processing, self.metadata_all=self.files_processor_tb(files)
     
     @staticmethod
@@ -451,20 +452,22 @@ class qnatb(object):
 
         return correct_answer, answer_extracted, max_logit, logits
 
-    def get_top_n(self, question, get_response_sents,top=10, max_length=None):
+    def get_top_n(self, question, response_sents,top=10, max_length=None):
 
-        response_sents = get_response_sents
         top_responses = []
 
         for num, answer_text in enumerate(response_sents[0:top]):
             answer, start_logit = self.answer_question(question, answer_text['sentence'])
+            top_response={}
             top_response = response_sents[num]
             top_response['start_logit'] = start_logit
             top_response['answer'] = answer
             top_responses.append(top_response)
+            
         top_responses = sorted(top_responses, key=lambda item: item['start_logit'], reverse=True)
         responses = top_responses + response_sents[top:]
         return responses
+
 
 
 
@@ -491,18 +494,37 @@ final_response_dict= get_response_fuzz(question=question,
                                        max_length=7)
 
 
+# =============================================================================
 
 
 
 qna= qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\Bert-qa\model')
 
+fp= file_processor(files)
+
+kl=qna.get_top_n( question, final_response_dict,top=10, max_length=None)
+
 qna.retrieve_answer(question=question,get_response_sents=final_response_dict, top=5, max_length=None)
 
 #qna.get_top_n(question="who is federers wife?",get_response_sents=final_response_dict2,top=10, max_length=None)
 
+import pickle
+with open(r"C:\Users\ELECTROBOT\Desktop\qna", "wb") as handle:
+    pickle.dump(fp, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
+with open(r"C:\Users\ELECTROBOT\Desktop\qna", 'rb') as handle:
+    fp_loaded = pickle.load(handle)
 
-
+question="who is federers married to"
+final_response_dict= get_response_fuzz(question=question,
+                                       vec=fp_loaded.vec,
+                                       tfidf_matrix=fp_loaded.tfidf_matrix,
+                                       tb_index=fp_loaded.tb_index,
+                                       stopwords=stopwords,
+                                       max_length=7)
+qna= qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\Bert-qa\model')
+qna.retrieve_answer(question=question,get_response_sents=final_response_dict, top=5, max_length=None)
+kl=qna.get_top_n( question=question,get_response_sents=final_response_dict, top=5, max_length=None)
 
 
