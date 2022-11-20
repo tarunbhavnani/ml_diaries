@@ -204,3 +204,16 @@ class qnatb(object):
         top_responses = sorted(top_responses, key=lambda item: item['start_logit'], reverse=True)
         responses = top_responses + response_sents[top:]
         return responses
+
+
+
+
+# =============================================================================
+# 
+# =============================================================================
+
+# qna= qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\Bert-qa\model')
+# qna.files_processor_tb(files)
+# #qna.tb_index
+# qna.retrieve_answer( question="who did federer marry", top=10, max_length=10)
+# top=qna.get_top_n( question="who is federers wife?", top=10, max_length=None)

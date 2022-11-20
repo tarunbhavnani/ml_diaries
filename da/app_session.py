@@ -23,6 +23,7 @@ qna= qnatb()
 # app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 # Get current path
 path = os.getcwd()
+print(path)
 
 # file Upload
 UPLOAD_FOLDER = os.path.join(path, 'uploads')

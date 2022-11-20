@@ -35,3 +35,6 @@ doc=fitz.open(filename=None, stream= io.BytesIO(response.content), filetype="xre
 for num, page in enumerate(doc):
     #pass
     page.getText().encode("utf-8").decode()
+
+
+helpdesk-vahan@gov.in
