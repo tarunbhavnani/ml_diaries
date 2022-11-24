@@ -501,6 +501,12 @@ final_response_dict= get_response_fuzz(question=question,
 qna= qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\Bert-qa\model')
 
 fp= file_processor(files)
+final_response_dict= get_response_fuzz(question=question,
+                                       vec=fp.vec,
+                                       tfidf_matrix=fp.tfidf_matrix,
+                                       tb_index=fp.tb_index,
+                                       stopwords=stopwords,
+                                       max_length=7)
 
 kl=qna.get_top_n( question, final_response_dict,top=10, max_length=None)
 
