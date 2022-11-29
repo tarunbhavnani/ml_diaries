@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdA</title>
+    <link rel="icon" href="/static/cs.png" type="image/gif" sizes="16x16">
+    <link rel="stylesheet" href="/static/CSS/style.css" />
+</head>
+
+
+<body>
+    <header class="navbar">
+        <div class= "navbar__brand">
+            <img class ="navbar__logo" src="/static/cs.png" alt="microblog logo" />AdA
+
+        </div>
+
+         <div class="navbar__search">
+            <form action="/regex" method="POST">
+                <input type="text" placeholder="Search.." name="search">
+                <button type="submit">Keyword</button>
+            </form>
+        </div>
+
+         <div class="navbar__search">
+            <form action="/search" method="POST">
+                <input type="text" placeholder="Search.." name="search">
+                <button type="submit">Semantic Search</button>
+            </form>
+        </div>
+    
+    </header>
+    <main class="main">
+
+        {% block content %}{% endblock %}
+        
+    </main>
+    <footer class="footer">
+        <li class="footer-item"><a class ="footer-link" href="\" class=footer__link>Home</a></li>
+        <li class="footer-item"><a class ="footer-link" href="\about" class=footer__link>About</a></li>
+
+    </footer>
+    
+
+</body>
+
+</html>

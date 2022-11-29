@@ -267,6 +267,37 @@ class file_processor(object):
     
 
 
+
+# =============================================================================
+# regex ind
+# =============================================================================
+
+def reg_ind( words, tb_index):
+    if "," in words:
+        
+        words= [i.strip().lower() for i in words.split(",")]
+        reg= "|".join(words)
+        tb_index_reg=tb_index
+        tb_index_reg=[i for i in tb_index if len(re.findall(reg, i['sentence'].lower()))>0]
+        
+    elif "+" in words:
+        words= [i.strip().lower() for i in words.split("+")]
+        tb_index_reg=tb_index
+        for word in words:
+            
+            tb_index_reg=[i for i in tb_index_reg if len(re.findall(word, i['sentence'].lower()))>0]
+    else:
+        words= words.strip().lower()
+        tb_index_reg=[i for i in tb_index if len(re.findall(words, i['sentence'].lower()))>0]
+    
+    
+    docs= list(set([i['doc'] for i in tb_index_reg]))
+    
+    overall_dict={i:sum([1 for j in tb_index_reg if j['doc']==i]) for i in docs}
+    
+    
+    return tb_index_reg, overall_dict, docs
+
 # =============================================================================
 
 
@@ -481,6 +512,11 @@ import glob
 files=glob.glob(r"C:\Users\ELECTROBOT\Desktop\data\*")
 
 fp= file_processor(files)
+
+
+words= "federer+wimbledon"
+
+tb_index_reg, overall_dict, docs=reg_ind(words=words,tb_index=fp.tb_index)
 
 
 question="who is federers married to"
