@@ -300,19 +300,22 @@ class qnatb(object):
 
         return correct_answer, answer_extracted, max_logit, logits
 
-    def get_top_n(self, question, top=10, max_length=None):
+    def get_top_n(self, question, top=10, max_length=None, lm=False):
 
         response_sents = self.get_response_sents(question, max_length=max_length)
         top_responses = []
 
-        for num, answer_text in enumerate(response_sents[0:top]):
-            answer, start_logit = self.answer_question(question, answer_text['sentence'])
-            top_response = response_sents[num]
-            top_response['start_logit'] = start_logit
-            top_response['answer'] = answer
-            top_responses.append(top_response)
-        top_responses = sorted(top_responses, key=lambda item: item['start_logit'], reverse=True)
-        responses = top_responses + response_sents[top:]
+        if lm:
+            for num, answer_text in enumerate(response_sents[0:top]):
+                answer, start_logit = self.answer_question(question, answer_text['sentence'])
+                top_response = response_sents[num]
+                top_response['start_logit'] = start_logit
+                top_response['answer'] = answer
+                top_responses.append(top_response)
+            top_responses = sorted(top_responses, key=lambda item: item['start_logit'], reverse=True)
+            responses = top_responses + response_sents[top:]
+        else:
+            responses=response_sents
         return responses
         #return response_sents
     

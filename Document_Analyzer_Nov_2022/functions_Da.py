@@ -31,19 +31,41 @@ class file_processor(object):
                      'now']
         self.tb_index, self.all_sents, self.vec, self.tfidf_matrix,self.response_file_processing, self.metadata_all=self.files_processor_tb(files)
     
-    @staticmethod
-    def ngrams(string):
-        n=4
-        string = re.sub(r'[,-./]|\sBD', r'', string)
-        words= string.split()
-        ngram=[]
-        for word in words:
-            ngrams= zip(*[word[i:] for i in range(n)])
-            ret= [''.join(ngram) for ngram in ngrams]
-            [ngram.append(i) for i in ret]
+    # @staticmethod
+    # def ngrams(string):
+    #     n=4
+    #     string = re.sub(r'[,-./]|\sBD', r'', string)
+    #     words= string.split()
+    #     ngram=[]
+    #     for word in words:
+    #         ngrams= zip(*[word[i:] for i in range(n)])
+    #         ret= [''.join(ngram) for ngram in ngrams]
+    #         [ngram.append(i) for i in ret]
             
         
+    #     return ngram
+
+    @staticmethod
+    def ngrams(string):
+        string = re.sub(r'[,-./]|\sBD', r'', string)
+        ngram=[]
+        words= string.split()
+        for word in words:
+            #break
+            
+            if len(word)>3:
+            
+                for i in range(3):
+                    nw=word[:len(word)-i]
+                    
+                    if len(nw)>2:
+                        ngram.append(nw)
+            else:
+                ngram.append(word)
         return ngram
+
+
+
 
     @staticmethod
     def clean(sent):
@@ -255,9 +277,11 @@ class file_processor(object):
         all_sents= [i['sentence'] for i in tb_index]
         self.all_sents= all_sents
         
-        vec= TfidfVectorizer(analyzer= file_processor.ngrams)
+        
+        vec= TfidfVectorizer(analyzer= file_processor.ngrams, stop_words=self.stopwords, lowercase=True)
         
         vec.fit([i.lower() for i in all_sents])
+        
         self.vec=vec
         
         tfidf_matrix= vec.transform([i.lower() for i in all_sents])
@@ -512,7 +536,7 @@ import glob
 files=glob.glob(r"C:\Users\ELECTROBOT\Desktop\data\*")
 
 fp= file_processor(files)
-
+#tb_index, all_sents, vec, tfidf_matrix,response_file_processing, metadata_all=file_processor(files)
 
 words= "federer+wimbledon"
 

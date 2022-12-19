@@ -131,7 +131,7 @@ def search():
         with open(os.path.join(app.config['UPLOAD_FOLDER'], 'qna'), 'rb') as handle:
             qna_loaded= pickle.load(handle)
 
-        responses= qna_loaded.get_top_n(search_data, top=10, max_length=7)
+        responses= qna_loaded.get_top_n(search_data, top=10, max_length=7, lm=True)
         return render_template('search.html', responses=responses, search_data= search_data)
     except Exception as e:
         print(e)
