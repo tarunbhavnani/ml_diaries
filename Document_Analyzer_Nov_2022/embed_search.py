@@ -45,13 +45,21 @@ def get_embed(sent):
     else:
         return [0]*50
     
+
+#get embeddings for all
+%%time
+embed= [get_embed(i["sentence"]) for i in tb]
+
+
+
+
 #get_embed(qes)
 
 kl=dict(zip(fp.vec.get_feature_names(), fp.tfidf_matrix.toarray()[0]))
 
 
 
-[i for i,j in enumerate(tb) if "federer" in j["sentence"].lower()]
+#[i for i,j in enumerate(tb) if "federer" in j["sentence"].lower()]
 #Out[394]: [23288, 24655, 25652]
 
 def tfidf_word(num_sent,word):
@@ -60,27 +68,27 @@ def tfidf_word(num_sent,word):
     
     return fp.tfidf_matrix.T[ind].toarray()[0][num_sent]
     
-tfidf_word(26032,"federer")
+#tfidf_word(26032,"federer")
     
 
 
-[j for i,j in zip(fp.vec.get_feature_names(), fp.tfidf_matrix.toarray()[0])  if i=="federer"]
+#[j for i,j in zip(fp.vec.get_feature_names(), fp.tfidf_matrix.toarray()[0])  if i=="federer"]
 
-[i for i,j in enumerate(fp.vec.get_feature_names()) if j=="married"]
-
-
-fp.tfidf_matrix[0,204682]
+#[i for i,j in enumerate(fp.vec.get_feature_names()) if j=="married"]
 
 
+#fp.tfidf_matrix[0,204682]
 
+
+#get embeddings for all
 embed= [get_embed(i["sentence"]) for i in tb]
 
 
 qes="who is federer married to"
 
-embed_q= get_embed(qes)
+embed_q= np.asarray(get_embed(qes))
 
-scores = cosine_similarity(embed, q_embed.reshape(1,-1))
+scores = cosine_similarity(embed, embed_q.reshape(1,-1))
 scores = [i[0] for i in scores]
 dict_scores = {i: j for i, j in enumerate(scores)}
 dict_scores = {k: v for k, v in sorted(dict_scores.items(), key=lambda item: item[1], reverse=True)}
@@ -186,6 +194,104 @@ embed= [get_embed(num, i["sentence"]) for num, i in enumerate(tb)]
     
 
 # ind=[i for i,j in enumerate(fp.vec.get_feature_names()) if j=="federer"]
+
+
+
+io=[i[1].tolist() for i in embeddings_index.items()]
+io_=[i[0] for i in embeddings_index.items()]
+
+#similar words
+
+word= "federer"
+
+word=embeddings_index[word]
+
+
+
+scores = cosine_similarity(io, word.reshape(1,-1))
+scores = [i[0] for i in scores]
+dict_scores = {i: j for i, j in enumerate(scores)}
+dict_scores = {k: v for k, v in sorted(dict_scores.items(), key=lambda item: item[1], reverse=True)}
+# get top n sentences
+# final_response_dict=[self.tb_index[i] for i in dict_scores]
+final_response_dict = [io_[i] for i, j in dict_scores.items() if j > 0.5]
+
+all_words= final_response_dict[0:20]
+
+
+#get close words
+io=[i[1].tolist() for i in embeddings_index.items()]
+io_=[i[0] for i in embeddings_index.items()]
+
+def related_(word,embeddings_index,io,io_):
+    word=embeddings_index[word]
+    
+    scores = cosine_similarity(io, word.reshape(1,-1))
+    scores = [i[0] for i in scores]
+    dict_scores = {i: j for i, j in enumerate(scores)}
+    dict_scores = {k: v for k, v in sorted(dict_scores.items(), key=lambda item: item[1], reverse=True)}
+    # get top n sentences
+    # final_response_dict=[self.tb_index[i] for i in dict_scores]
+    final_response_dict = [io_[i] for i, j in dict_scores.items() if j > 0.5]
+
+    return final_response_dict[0:20]
+
+
+        
+
+
+def check_w(sent, words):
+    
+
+
+
+
+
+qes="who is federer married to"
+
+qes= clean_(qes, embeddings_index, stopwords)
+
+all_words= [related_(i,embeddings_index,io,io_) for i in qes.split()]
+
+
+all_words= sum(all_words, [])
+
+
+chosen=[i for i in tb if len(re.findall("|".join([i for i in all_words]), i["sentence"]))>0]
+
+#from here we can do fuzzy as well
+
+
+embed_q= np.asarray(get_embed(qes))
+
+embed_chosen= [get_embed( i["sentence"]) for num, i in enumerate(chosen)]
+
+scores = cosine_similarity(embed_chosen, embed_q.reshape(1,-1))
+scores = [i[0] for i in scores]
+dict_scores = {i: j for i, j in enumerate(scores)}
+dict_scores = {k: v for k, v in sorted(dict_scores.items(), key=lambda item: item[1], reverse=True)}
+# get top n sentences
+# final_response_dict=[self.tb_index[i] for i in dict_scores]
+final_response_dict = [chosen[i] for i, j in dict_scores.items() if j > 0.1]
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+    
+
+
 
 
 

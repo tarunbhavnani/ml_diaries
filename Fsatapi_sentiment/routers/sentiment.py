@@ -4,41 +4,19 @@ Created on Thu Dec 22 18:43:35 2022
 
 @author: ELECTROBOT
 """
+from typing import Union
 from fastapi import APIRouter, Depends, HTTPException, Request
 #from functions import get_sentiment
 from pydantic import BaseModel, Field
-
+from functions import get_sentiment
 from transformers import AutoModelForSequenceClassification
-#from transformers import TFAutoModelForSequenceClassification
 from transformers import AutoTokenizer, AutoConfig
-import numpy as np
-from typing import Union
-
-
-
-Model_path=r"C:\Users\ELECTROBOT\Desktop\model_dump\sentiment_roberta"
+Model_path = r"C:\Users\ELECTROBOT\Desktop\model_dump\sentiment_roberta"
 
 tokenizer = AutoTokenizer.from_pretrained(Model_path)
-#config = AutoConfig.from_pretrained(Model_path)
+# config = AutoConfig.from_pretrained(Model_path)
 # PT
 model = AutoModelForSequenceClassification.from_pretrained(Model_path)
-
-
-def softmax(x):
-    e_x= np.exp(x-np.max(x))
-    return e_x/e_x.sum(axis=0)
-
-def get_sentiment(sent, model, tokenizer):
-    encoded_input = tokenizer(sent, return_tensors='pt')
-    output = model(**encoded_input)
-    scores = output[0][0].detach().numpy().astype("float64")
-    neg, neutral, pos = softmax(scores)
-    
-    return {"Negative":neg, "Neutral":neutral,"Positive":pos}
-
-
-
-
 
 
 router= APIRouter(
@@ -80,4 +58,3 @@ async def sentiment(item:Item):
         return response
     except Exception as e:
         raise HTTPException(status_code=404, details=str(e))
-        
