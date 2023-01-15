@@ -34,3 +34,42 @@ def say_whee():
     print("Whee!")
 
 say_whee()
+
+
+# =============================================================================
+# 
+# =============================================================================
+def smart_divide(func):
+    def inner(a, b):
+        print("I am going to divide", a, "and", b)
+        if b == 0:
+            print("Whoops! cannot divide")
+            return
+
+        return func(a, b)
+    return inner
+
+
+@smart_divide
+def divide(a, b):
+    print(a/b)
+
+
+
+
+
+def try_catch(func):
+    def inner(*args):
+        try:
+            func(*args)
+        except Exception as e:
+            return str(e)
+    return inner
+        
+@try_catch
+def divide(a, b):
+    print(a/b)
+
+
+divide(2,3)
+divide(2,0)

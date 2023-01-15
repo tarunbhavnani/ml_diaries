@@ -105,14 +105,14 @@ class qnatb(object):
                 sentences = qnatb.split_into_sentences(text)
                 for sent in sentences:
                     tb_index.append({
-                        "doc": file,
+                        "filename": file,
                         "page": num,
                         "sentence": sent
     
                     })
             except:
                 tb_index.append({
-                    "doc": file,
+                    "filename": file,
                     "page": num,
                     "sentence": ""
     
@@ -145,14 +145,14 @@ class qnatb(object):
             sentences = qnatb.split_into_sentences(text)
             for sent in sentences:
                 tb_index.append({
-                    "doc": file,
+                    "filename": file,
                     "page": "-",
                     "sentence": sent
         
                 })
         except:
             tb_index.append({
-                "doc": file,
+                "filename": file,
                 "page": "-",
                 "sentence": "Not read"
     
@@ -177,14 +177,14 @@ class qnatb(object):
                         [all_text.append(i) for i in sentences]
                 all_text= " ".join(i for i in all_text)        
                 tb_index.append({
-                    "doc": file,
+                    "filename": file,
                     "page": num,
                     "sentence": all_text
                 })
     
             except:
                 tb_index.append({
-                    "doc": file,
+                    "filename": file,
                     "page": num,
                     "sentence": ""
     
@@ -267,16 +267,16 @@ class qnatb(object):
             tb_index_reg=[i for i in self.tb_index if len(re.findall(words, i['sentence'].lower()))>0]
         
         
-        docs= list(set([i['doc'] for i in tb_index_reg]))
+        docs= list(set([i['filename'] for i in tb_index_reg]))
         
-        overall_dict={i:sum([1 for j in tb_index_reg if j['doc']==i]) for i in docs}
+        overall_dict={i:sum([1 for j in tb_index_reg if j['filename']==i]) for i in docs}
         #number of sentences not occurances
         
         return tb_index_reg, overall_dict, docs
     
     @staticmethod
     def extract_doc_reg_index(tb_index_reg, doc):
-        reg_tb_index= [i for i in tb_index_reg if i['doc']==doc]
+        reg_tb_index= [i for i in tb_index_reg if i['filename']==doc]
         req_df= pd.DataFrame(reg_tb_index)
         req_df.drop('doc', axis=1, inplace=True)
         return req_df
@@ -368,13 +368,13 @@ class qnatb(object):
         return response_sents
     
     def stats(self):
-        docs= list(set([i['doc'] for i in self.tb_index]))
+        docs= list(set([i['filename'] for i in self.tb_index]))
         stats=[]
         for doc in docs:
             st={}
             st['doc']=doc
-            st['pages']=len(set([i['page'] for i in self.tb_index if i['doc']==doc]))
-            st['words']= sum([len(i['sentence'].split()) for i in self.tb_index if i['doc']==doc])
+            st['pages']=len(set([i['page'] for i in self.tb_index if i['filename']==doc]))
+            st['words']= sum([len(i['sentence'].split()) for i in self.tb_index if i['filename']==doc])
             stats.append(st)
         return stats
     
@@ -385,8 +385,8 @@ class qnatb(object):
             for metadata_file in md:
                 try:
                     filename= metadata_file['filename']
-                    metadata_file['pages']=len(set([i['page'] for i in self.tb_index if i['doc']==filename]))
-                    metadata_file['words']=sum([len(i['sentence'].split()) for i in self.tb_index if i['doc']==filename])
+                    metadata_file['pages']=len(set([i['page'] for i in self.tb_index if i['filename']==filename]))
+                    metadata_file['words']=sum([len(i['sentence'].split()) for i in self.tb_index if i['filename']==filename])
                 except:
                     metadata_file['pages']=None
                     metadata_file['words']=None
