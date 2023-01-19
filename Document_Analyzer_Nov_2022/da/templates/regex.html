@@ -5,11 +5,12 @@
 <h2> Keywords: {{reg_data}}</h2>
 
     {%for resp, table in zip(overall_dict.items(), tables)%}
-        <h2>Documents: {{resp[0]}}</h2>>
-        <h2>Occurances: {{resp[1]}}</h2>>
+        <h2>Documents: {{resp[0]}}</h2>
+        <h2>Occurances: {{resp[1]}}</h2>
+        <hr>
         {{table|safe}}
         <hr>
-        <hr>
+
     {%endfor%}
 {%endif%}
 
