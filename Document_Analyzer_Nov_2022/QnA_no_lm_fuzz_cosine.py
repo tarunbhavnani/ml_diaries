@@ -34,23 +34,24 @@ class qnatb(object):
                      'all', 'any', 'both', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not',
                      'only', 'own', 'same', 'so', 'than', 'too', 'very', 's', 't', 'can', 'will', 'just', 'don', 'should',
                      'now']
-    @staticmethod
-    def ngrams(string):
+    
+    def ngrams(self,string):
         string = re.sub(r'[,-./]|\sBD', r'', string)
         ngram=[]
         words= string.split()
         for word in words:
             #break
+            if word not in self.stopwords:
             
-            if len(word)>3:
-            
-                for i in range(3):
-                    nw=word[:len(word)-i]
-                    
-                    if len(nw)>2:
-                        ngram.append(nw)
-            else:
-                ngram.append(word)
+                if len(word)>3:
+                
+                    for i in range(3):
+                        nw=word[:len(word)-i]
+                        
+                        if len(nw)>2:
+                            ngram.append(nw)
+                else:
+                    ngram.append(word)
         return ngram
     @staticmethod
     def clean(sent):
@@ -263,7 +264,7 @@ class qnatb(object):
         self.all_sents= all_sents
         
         
-        vec= TfidfVectorizer(analyzer= qnatb.ngrams, stop_words=self.stopwords, lowercase=True)
+        vec= TfidfVectorizer(analyzer= self.ngrams, stop_words=self.stopwords, lowercase=True)
         
         vec.fit([i.lower() for i in all_sents])
         
