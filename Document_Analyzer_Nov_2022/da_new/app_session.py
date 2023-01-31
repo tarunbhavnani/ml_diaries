@@ -4,11 +4,16 @@ from werkzeug.utils import secure_filename
 import os
 
 import _pickle as pickle
-from endpoints.QnA_no_lm import qnatb
+from endpoints.QnA_no_lm2 import qnatb
 import shutil
 
+#from autocorrect import Speller
+#spell = Speller(lang='en')
+
+
 app = Flask(__name__)
-qna = qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\Bert-qa\model')
+#qna = qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\Bert-qa\model')
+qna = qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\minilm-uncased-squad2')
 # Get current path
 path = os.getcwd()
 print(path)
@@ -22,14 +27,7 @@ if not os.path.isdir(UPLOAD_FOLDER):
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 allowed_ext = [".pdf"]
-qna_cached = None
 
-def load_qna_cached():
-    global qna_cached
-    if qna_cached is None:
-        with open(os.path.join(app.config['UPLOAD_FOLDER'], 'qna'), 'rb') as handle:
-            qna_cached = pickle.load(handle)
-    return qna_cached
 
 def allowed_file(file):
     return True in [file.endswith(i) for i in allowed_ext]
@@ -53,7 +51,7 @@ def get_files():
             files = request.files.getlist('files[]')
             print(files)
         except Exception as e:
-            print(f"Error occurred while retrieving files: {e}")
+            print(e)
             #app.logger.error(e)
         Folder = app.config['UPLOAD_FOLDER']
         if not os.path.isdir(Folder):
@@ -65,19 +63,18 @@ def get_files():
                     filename = secure_filename(file.filename)
                     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 except Exception as e:
-                    print(f"Error occurred while saving files: {e}")
+                    print(e)
+                    print('not saved')
                     #app.logger.error(e)
         try:
             names = [os.path.join(app.config['UPLOAD_FOLDER'], i) for i in os.listdir(app.config['UPLOAD_FOLDER'])]
             qna.files_processor_tb(names)
             with open(os.path.join(app.config['UPLOAD_FOLDER'], 'qna'), 'wb') as handle:
                 pickle.dump(qna, handle)
-            qna_cached = None  # reset the cache
-            _ = load_qna_cached()
+
         except Exception as e:
-            print(f"Error occurred while processing files: {e}")
+            print(e)
             print("No readable files")
-            # app.logger.error(e)
 
     return redirect('/')
 
@@ -100,14 +97,18 @@ def reset_files():
 @app.route('/search', methods=["GET", "POST"])
 def search():
     try:
-        search_data = request.form.get("search")
-        qna_loaded = load_qna_cached()
+        search_data= request.form.get("search")
+        #search_data=" ".join([spell(i) for i in search_data.split()])
+        with open(os.path.join(app.config['UPLOAD_FOLDER'], 'qna'), 'rb') as handle:
+            qna_loaded= pickle.load(handle)
 
-        responses, answer = qna_loaded.get_response_sents(question=search_data, max_length=10)
+        #responses= qna_loaded.get_top_n(search_data, top=5, max_length=10, lm=True)
+        responses, answer = qna.get_response_sents(question=search_data, max_length=10)
         return render_template('search.html', responses=responses, search_data= search_data, answer=answer)
     except Exception as e:
         print(e)
         return redirect('/')
+
 
 
 
