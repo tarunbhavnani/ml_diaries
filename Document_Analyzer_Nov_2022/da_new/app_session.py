@@ -118,5 +118,7 @@ def upload(filename):
 
 
 
-
+@app.route('/static/<path:filename>')
+def serve_static(filename):
+    return send_from_directory(app.static_folder, filename)
 

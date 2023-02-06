@@ -5,8 +5,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AdA</title>
-    <link rel="icon" href="/static/cs.png" type="image/gif" sizes="16x16">
-    <link rel="stylesheet" href="/static/CSS/style.css" />
+    <!--<link rel="icon" href="/static/cs.png" type="image/gif" sizes="16x16">--!>
+    <link rel="icon" href="{{ url_for('serve_static', filename='cs.png',_external=True, scheme='https') }}" type="image/gif" sizes="16x16">
+    <!--<link rel="stylesheet" href="/static/CSS/style.css" />--!>
+    <link rel="stylesheet" href="{{ url_for('serve_static', filename='CSS/style.css',_external=True, scheme='https') }}" />
 </head>
 
 
@@ -32,7 +34,7 @@
         
     </main>
     <footer class="footer">
-        <li class="footer-item"><a class ="footer-link" href="\" class=footer__link>Home</a></li>
+        <li class="footer-item"><a class ="footer-link" href="{{url_for('index_page', _external=True, scheme='https')}}" class=footer__link>Home</a></li>
         <li class="footer-item"><a class ="footer-link" href="\about" class=footer__link>About</a></li>
 
     </footer>
