@@ -16,7 +16,8 @@
     {%endif%}
     {%for name in names%}
     <div class="entry">
-        <h3 class="entry__item"><a href="/uploads/{{name}}">{{name | truncate(30, true)}}</a></h3>
+        <!--<h3 class="entry__item"><a href="/uploads/{{name}}">{{name | truncate(30, true)}}</a></h3>--!>
+        <h3 class="entry__item"><a href="{{ url_for('upload', filename=name,_external=True, scheme='https') }}">{{name | truncate(30, true)}}</a></h3>
 
 
 
