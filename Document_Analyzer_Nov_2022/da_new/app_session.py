@@ -76,7 +76,8 @@ def get_files():
             print(e)
             print("No readable files")
 
-    return redirect('/')
+    #return redirect('/')
+    return redirect(url_for('redirect_to_index'))
 
 
 @app.route('/about')
@@ -92,7 +93,8 @@ def reset_files():
     except Exception as e:
         print(e)
         print("No resetting")
-    return redirect('/')
+    #return redirect('/')
+    return redirect(url_for('redirect_to_index'))
 
 @app.route('/search', methods=["GET", "POST"])
 def search():
@@ -107,7 +109,9 @@ def search():
         return render_template('search.html', responses=responses, search_data= search_data, answer=answer)
     except Exception as e:
         print(e)
-        return redirect('/')
+        #return redirect('/')
+        return redirect(url_for('redirect_to_index'))
+
 
 
 
@@ -122,3 +126,6 @@ def upload(filename):
 def serve_static(filename):
     return send_from_directory(app.static_folder, filename)
 
+@app.route('/redirect_to_index')
+def redirect_to_index():
+    return redirect(url_for('index_page'))
