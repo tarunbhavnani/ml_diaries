@@ -3,27 +3,16 @@ from werkzeug.utils import secure_filename
 import os
 import _pickle as pickle
 from endpoints.QnA_gpt import qnatb
+import gc
 
 app = Flask(__name__)
-qna = qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\minilm-uncased-squad2')
+qna = qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\Bert-qa\model')
 
-uploads = os.path.join(os.getcwd(), 'uploads')
-
-
-def get_user_name():
-    return "m554417"
-
-UPLOAD_FOLDER= os.path.join(uploads,get_user_name())
-
-
+UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-if not os.path.isdir(app.config['UPLOAD_FOLDER']):
-    os.mkdir(app.config['UPLOAD_FOLDER'])
 
 allowed_ext = [".pdf"]
 qna_cached = None
-
 
 def load_qna_cached():
     global qna_cached
@@ -45,12 +34,9 @@ def index_page():
     if request.method == "POST":
         try:
             reset_files()
-            
             files = request.files.getlist('files[]')
             if not os.path.isdir(app.config['UPLOAD_FOLDER']):
                 os.mkdir(app.config['UPLOAD_FOLDER'])
-            
-            
             for file in files:
                 if file and allowed_file(file.filename):
                     try:
@@ -59,7 +45,14 @@ def index_page():
                     except Exception as e:
                         print(f"Error occurred while processing file: {e}")
             names = [os.path.join(app.config['UPLOAD_FOLDER'], i) for i in os.listdir(app.config['UPLOAD_FOLDER']) if i.endswith('.pdf')]
-            qna.files_processor_tb(names)
+            
+            batch_size = 10
+            for i in range(0, len(names), batch_size):
+                batch = names[i:i + batch_size]
+                qna.files_processor_tb(batch)
+                del batch  # explicitly release memory used by the batch
+                gc.collect()  # trigger the
+            
             with open(os.path.join(app.config['UPLOAD_FOLDER'], 'qna'), 'wb') as handle:
                 pickle.dump(qna, handle)
             #global qna_cached
@@ -85,20 +78,6 @@ def reset_files():
         print("No resetting")
     return redirect('/')
 
-
-# #if we can make the user folder every time than this is  better
-# @app.route('/delete')
-# def reset_files():
-#     # removes files from upload folder and then cleans the session
-#     try:
-#         shutil.rmtree(app.config['UPLOAD_FOLDER'])
-#         #session.pop('Folder', None)
-#         os.mkdir(app.config['UPLOAD_FOLDER'])
-#     except Exception as e:
-#         print(e)
-#         print("No resetting")
-
-#     return redirect('/')
 
 
 @app.route('/search', methods=["GET", "POST"])

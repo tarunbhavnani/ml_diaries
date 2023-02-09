@@ -20,8 +20,8 @@ class qnatb(object):
         self.model_path = model_path
         self.model = AutoModelForQuestionAnswering.from_pretrained(model_path)
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
-        self.tb_index = None
-        self.all_sents = None
+        self.tb_index = []
+        self.all_sents = []
         self.vec = None
         self.tfidf_matrix = None
         self.stopwords = ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your', 'yours',
@@ -98,7 +98,6 @@ class qnatb(object):
         sent = re.sub(r'<.*?>|h\s*t\s*t\s*p\s*s?://\S+|www\.\S+', " ", sent)  # html tags and urls
         sent = re.sub('\n|\(.*?\)|\[.*?\]', " ", sent)  # newlines and content inside parentheses and brackets
         sent = re.sub(r'[^A-Za-z0-9\.,\?\(\)\[\]\/ ]', " ", sent)
-        sent = re.sub(r"\.+", ".", sent)
         sent = re.sub('\s+', " ", sent)
         return sent
 
@@ -170,7 +169,6 @@ class qnatb(object):
     def files_processor_tb(self, files):
         tb_index = []
         all_sents = []
-        # unread=[]
         for file in files:
             try:
                 doc = fitz.open(file)
@@ -193,20 +191,20 @@ class qnatb(object):
                             "sentence": ""
                         })
             except:
-                # print(file)
-                # unread.append(file)
                 pass
-
-        self.tb_index = tb_index
-        self.all_sents = all_sents
-        vec = TfidfVectorizer(analyzer=self.ngrams, lowercase=True)
-        vec.fit(all_sents)
-        self.vec = vec
-        tfidf_matrix = vec.transform(all_sents)
+    
+        self.tb_index.extend(tb_index)
+        self.all_sents.extend(all_sents)
+        if self.vec is None:
+            vec = TfidfVectorizer(analyzer=self.ngrams, lowercase=True)
+            vec.fit(self.all_sents)
+            self.vec = vec
+        else:
+            self.vec.fit_transform(self.all_sents)
+        tfidf_matrix = self.vec.transform(self.all_sents)
         self.tfidf_matrix = tfidf_matrix
 
         return tb_index, all_sents, vec, tfidf_matrix
-
     def answer_question(self, question, answer_text):
         question = re.sub(r"[^a-z0-9 ]", " ", question)
         question = re.sub(r"\s+", " ", question)
@@ -303,3 +301,15 @@ class qnatb(object):
 
 
 # responses=qna.get_top_n(question)
+import gc
+batch_size = 10
+for i in range(0, len(files), batch_size):
+    print(".")
+    batch = files[i:i + batch_size]
+    qna.files_processor_tb(batch)
+    del batch  # explicitly release memory used by the batch
+    gc.collect()  # trigger the
+
+
+
+
