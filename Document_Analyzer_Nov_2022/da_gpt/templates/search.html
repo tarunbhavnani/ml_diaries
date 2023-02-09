@@ -1,12 +1,8 @@
 {% extends "layout.html" %}
 {% block content %}
     <h1>{{search_data}}</h1>
-    {%if responses[0]['answer']!='Please rephrase'%}
-
-    <h1>{{responses[0]['answer']}}</h1>
-
-    {%endif%}
     {%for resp in responses%}
+    <h1>{{resp['answer']}}</h1>
     <h2>{{resp['sentence']}}</h2>
     <h3><a href="/uploads/{{resp['doc']}}">{{resp['doc']}}</a></h3>
     <h4>Page No.:{{resp['page']}}</h4>

@@ -1,19 +1,29 @@
 from flask import Flask, render_template, request, session, redirect, url_for, send_from_directory, jsonify, Response
-
+#from flask_cors import CORS
 from werkzeug.utils import secure_filename
 import os
-
+import uuid
 import _pickle as pickle
-from endpoints.QnA_no_lm2 import qnatb
+from endpoints.QnA_no_lm_fuzz_cosine import qnatb
+
+from endpoints.functions import PyMuPDF_all, doc_all
+
+import pandas as pd
 import shutil
+import json
 
-#from autocorrect import Speller
-#spell = Speller(lang='en')
-
+# from QnA_full_class_no_lm import qnatb
 
 app = Flask(__name__)
-#qna = qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\Bert-qa\model')
-qna = qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\minilm-uncased-squad2')
+app.config["SECRET_KEY"] = "OCML3BRawWEUeaxcuKHLpw"
+# to use sesison secret key is needed
+
+
+qna = qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\Bert-qa\model')
+#qna= qnatb()
+
+
+# app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 # Get current path
 path = os.getcwd()
 print(path)
@@ -38,6 +48,7 @@ def index_page():
     try:
         s = os.listdir(app.config['UPLOAD_FOLDER'])
         names=[i for i in s if i.split('.')[-1] in ['pdf']]
+        #names = [i for i in s if i.endswith(".png") != True]
         return render_template('index.html', names=names)
     except:
         return render_template('index.html')
@@ -53,15 +64,23 @@ def get_files():
         except Exception as e:
             print(e)
             #app.logger.error(e)
+
+
+
         Folder = app.config['UPLOAD_FOLDER']
         if not os.path.isdir(Folder):
             os.mkdir(Folder)
+
         app.config['UPLOAD_FOLDER'] = Folder
+
+
         for file in files:
             if file and allowed_file(file.filename):
                 try:
                     filename = secure_filename(file.filename)
                     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+
                 except Exception as e:
                     print(e)
                     print('not saved')
@@ -76,8 +95,8 @@ def get_files():
             print(e)
             print("No readable files")
 
-    #return redirect('/')
-    return redirect(url_for('redirect_to_index', _external=True, scheme='https'))
+    return redirect('/')
+    #return redirect(url_for('index_page'))
 
 
 @app.route('/about')
@@ -87,31 +106,32 @@ def about():
 
 @app.route('/delete')
 def reset_files():
+    # removes files from upload folder and then cleans the session
     try:
         shutil.rmtree(app.config['UPLOAD_FOLDER'])
+        #session.pop('Folder', None)
         os.mkdir(app.config['UPLOAD_FOLDER'])
     except Exception as e:
         print(e)
         print("No resetting")
-    #return redirect('/')
-    return redirect(url_for('redirect_to_index', _external=True, scheme='https'))
+
+    return redirect('/')
+
+
+
 
 @app.route('/search', methods=["GET", "POST"])
 def search():
     try:
         search_data= request.form.get("search")
-        #search_data=" ".join([spell(i) for i in search_data.split()])
         with open(os.path.join(app.config['UPLOAD_FOLDER'], 'qna'), 'rb') as handle:
             qna_loaded= pickle.load(handle)
 
-        #responses= qna_loaded.get_top_n(search_data, top=5, max_length=10, lm=True)
-        responses, answer = qna.get_response_sents(question=search_data, max_length=10)
-        return render_template('search.html', responses=responses, search_data= search_data, answer=answer)
+        responses= qna_loaded.get_top_n(search_data, top=5, max_length=10, lm=True)
+        return render_template('search.html', responses=responses, search_data= search_data)
     except Exception as e:
         print(e)
-        #return redirect('/')
-        return redirect(url_for('redirect_to_index', _external=True, scheme='https'))
-
+        return redirect('/')
 
 
 
@@ -122,10 +142,5 @@ def upload(filename):
 
 
 
-@app.route('/static/<path:filename>')
-def serve_static(filename):
-    return send_from_directory(app.static_folder, filename)
 
-@app.route('/redirect_to_index')
-def redirect_to_index():
-    return redirect(url_for('index_page', _external=True, scheme='https'))
+

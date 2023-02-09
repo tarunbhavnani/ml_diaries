@@ -4,8 +4,8 @@ from werkzeug.utils import secure_filename
 import os
 import uuid
 import _pickle as pickle
-from endpoints.QnA_no_lm_fuzz_cosine import qnatb
-
+from endpoints.QnA_no_lm_fuzz_cosine2 import qnatb
+#from endpoints.qna_gpu import qnatb
 from endpoints.functions import PyMuPDF_all, doc_all
 
 import pandas as pd
@@ -19,7 +19,8 @@ app.config["SECRET_KEY"] = "OCML3BRawWEUeaxcuKHLpw"
 # to use sesison secret key is needed
 
 
-qna = qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\Bert-qa\model')
+#qna = qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\Bert-qa\model')
+qna = qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\minilm-uncased-squad2')
 #qna= qnatb()
 
 
@@ -137,7 +138,7 @@ def search():
         with open(os.path.join(app.config['UPLOAD_FOLDER'], 'qna'), 'rb') as handle:
             qna_loaded= pickle.load(handle)
 
-        responses= qna_loaded.get_top_n(search_data, top=5, max_length=10, lm=True)
+        responses= qna_loaded.get_top_n(search_data, top=20, max_length=10, lm=True)
         return render_template('search.html', responses=responses, search_data= search_data)
     except Exception as e:
         print(e)

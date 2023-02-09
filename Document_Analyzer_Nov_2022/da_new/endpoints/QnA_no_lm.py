@@ -48,6 +48,63 @@ class qnatb(object):
         return sent
 
 
+    @staticmethod
+    def split_into_sentences(text):
+        alphabets = "([A-Za-z])"
+        prefixes = "(Mr|St|Mrs|Ms|Dr|No)[.]"
+        suffixes = "(Inc|Ltd|Jr|Sr|Co)"
+        starters = "(Mr|Mrs|Ms|Dr|He\s|She\s|It\s|They\s|Their\s|Our\s|We\s|But\s|However\s|That\s|This\s|Wherever)"
+        acronyms = "([A-Z][.][A-Z][.](?:[A-Z][.])?)"
+        decimals = "(\d*[.]\d*)"
+        websites = "[.](com|net|org|io|gov|co|in)"
+        decimals = r'\d\.\d'
+        starts = ["The", "Them", "Their"]
+        http = r'h\s*t\s*t\s*p\s*s?://\S+|www\.\S+'
+
+        text = " " + text + "  "
+        text = text.replace("\n", " ")
+        text = re.sub(decimals, lambda g: re.sub(r'\.', '<prd>', g[0]), text)
+        text = re.sub(http, lambda g: re.sub(r'\.', '<prd>', g[0]), text)
+        # text= re.sub(r'(?<=\[).+?(?=\])', "", text) # remove everything inside square brackets
+        # text= re.sub(r'(?<=\().+?(?=\))', "", text) # remove everything inside  brackets
+        text = re.sub(r'\[(\w*)\]', "", text)  # remove evrything in sq brackets with sq brackets
+        text = re.sub(prefixes, "\\1<prd>", text)
+        text = re.sub(websites, "<prd>\\1", text)
+        if "i.e." in text: text = text.replace("i.e.", "i<prd>e<prd>")
+        if "e.g" in text: text = text.replace("e.g", "e<prd>g")
+        if "www." in text: text = text.replace("www.", "www<prd>")
+        text = re.sub("\s" + alphabets + "[.] ", " \\1<prd> ", text)
+        text = re.sub(acronyms + " " + starters, "\\1<stop> \\2", text)
+        text = re.sub(alphabets + "[.]" + alphabets + "[.]" + alphabets + "[.]", "\\1<prd>\\2<prd>\\3<prd>", text)
+        text = re.sub(alphabets + "[.]" + alphabets + "[.]", "\\1<prd>\\2<prd>", text)
+        text = re.sub(" " + suffixes + "[.] " + starters, " \\1<stop> \\2", text)
+        text = re.sub(" " + suffixes + "[.]", " \\1<prd>", text)
+        text = re.sub(" " + alphabets + "[.]", " \\1<prd>", text)
+        if "”" in text: text = text.replace(".”", "”.")
+        if "\"" in text: text = text.replace(".\"", "\".")
+        if "!" in text: text = text.replace("!\"", "\"!")
+        if "?" in text: text = text.replace("?\"", "\"?")
+        text = text.replace(".", ".<stop>")
+        text = text.replace("?", "?<stop>")
+        text = text.replace("!", "!<stop>")
+        for i in starts:
+            text = text.replace("{}".format(i), ".<stop>{}".format(i))
+        text = text.replace("<prd>", ".")
+        sentences = text.split("<stop>")
+        # sentences = sentences[:-1]
+
+        #sentences = [s.strip() for s in sentences]
+        final = []
+        temp = ""
+        for sent in sentences:
+            temp += sent.strip() + " "
+            if len(temp.split()) > 100:
+                final.append(temp)
+                temp = ""
+
+        return final
+
+
     def files_processor_tb(self, files):
         tb_index = []
         for file in files:
@@ -55,10 +112,11 @@ class qnatb(object):
                 doc = fitz.open(file)
                 for num, page in enumerate(doc):
                     try:
-                        text = page.getText().encode('utf8')
-                        text = text.decode('utf8')
+                        text = page.get_text().encode('utf8').decode('utf8')
+                        
                         text = qnatb.clean(text)
-                        sentences = text.split(".")
+                        sentences=qnatb.split_into_sentences(text)
+                        #sentences = text.split(".")
                         for sent in sentences:
                             tb_index.append({
                                 "doc": file.split('\\')[-1],

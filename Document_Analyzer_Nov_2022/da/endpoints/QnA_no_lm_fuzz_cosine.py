@@ -7,23 +7,22 @@ Created on Fri Jan 20 14:02:43 2023
 import re
 import fitz
 import torch
-from transformers import AutoModelForQuestionAnswering,  AutoTokenizer
+from transformers import BertForQuestionAnswering
+from transformers import BertTokenizer
 from docx import Document
 from pptx import Presentation
 
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
 from fuzzywuzzy import fuzz
-from fuzzywuzzy import process
 
 
 class qnatb(object):
 
     def __init__(self, model_path):
         self.model_path = model_path
-        self.model = AutoModelForQuestionAnswering.from_pretrained(model_path)
-        self.tokenizer = AutoTokenizer.from_pretrained(model_path)
-        
+        self.model = BertForQuestionAnswering.from_pretrained(model_path)
+        self.tokenizer = BertTokenizer.from_pretrained(model_path)
         self.stopwords = ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your', 'yours',
                           'yourself',
                           'yourselves', 'he', 'him', 'his', 'himself', 'she', 'her', 'hers', 'herself', 'it', 'its',
@@ -56,8 +55,7 @@ class qnatb(object):
 
                 if len(word) > 3:
 
-                    for i in range(len(word)):
-                       
+                    for i in range(3):
                         nw = word[:len(word) - i]
 
                         if len(nw) > 2:
@@ -422,7 +420,7 @@ class qnatb(object):
 
     def answer_question(self, question, answer_text):
         # question = qnatb.clean(question)
-        encoded_dict = self.tokenizer.encode_plus(text=question, text_pair=answer_text)#, add_special=True)
+        encoded_dict = self.tokenizer.encode_plus(text=question, text_pair=answer_text, add_special=True)
         input_ids = encoded_dict['input_ids']
         segment_ids = encoded_dict['token_type_ids']
         assert len(segment_ids) == len(input_ids)
@@ -464,41 +462,19 @@ class qnatb(object):
         return correct_answer, answer_extracted, max_logit, logits
 
     def get_top_n(self, question,  top=10, max_length=None, lm=False):
-        #response_sents = self.get_response_fuzz(question, max_length=max_length)
-        response_sents = self.get_response_cosine(question, max_length=max_length)
+        response_sents = self.get_response_fuzz(question, max_length=max_length)
         top_responses = []
-        
-        any_answer_recieved=0
-        bad_answer_recieved=0
         if lm:
             for num, answer_text in enumerate(response_sents[0:top]):
                 answer, start_logit = self.answer_question(question, answer_text['sentence'])
-                
-                
-                if answer[0]!="[":
-                    any_answer_recieved=1
-                    top_response = {}
-                    top_response = response_sents[num]
-                    top_response['start_logit'] = start_logit
-                    top_response['answer'] = answer
-                    top_responses.append(top_response)
-                    
-                else:
-                    bad_answer_recieved=1
-                
-                
+                top_response = {}
+                top_response = response_sents[num]
+                top_response['start_logit'] = start_logit
+                top_response['answer'] = answer
+                top_responses.append(top_response)
 
             top_responses = sorted(top_responses, key=lambda item: item['start_logit'], reverse=True)
-            
-            if bad_answer_recieved==0:
-                responses = top_responses + response_sents[top:]
-            elif any_answer_recieved==0:
-                responses= response_sents
-            else:
-                responses = top_responses
-            
-            
-                
+            responses = top_responses + response_sents[top:]
         else:
             responses= response_sents
         return responses
@@ -515,21 +491,15 @@ class qnatb(object):
         return stats
 
 # =============================================================================
-# qna= qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\minilm-uncased-squad2')
+# qna= qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\Bert-qa\model')
 # 
 # import glob
 # files=glob.glob(r"C:\Users\ELECTROBOT\Desktop\data\*")
 # 
 # fp= qna.files_processor_tb(files)
-# question="who did federer marry"
-# question="what does drill down need?"
-# question="what is needed for drill down"
-# question="federer married who"
-# kl=qna.get_response_cosine(question, max_length=10)
-# kl1=qna.get_response_fuzz(question, max_length=10)
-
-# final_response_dict= qna.get_top_n(question, top=20, max_length=10, lm=True)
-# top_n= qna.get_top_n(question, top=5, max_length=10, lm=True)
+# question="who is federers wife"
+# final_response_dict= qna.get_response_fuzz(question=question)
+# top_n= qna.get_top_n(question=question,response_sents=final_response_dict.copy())
 
 #      
 # =============================================================================
@@ -545,6 +515,3 @@ class qnatb(object):
 
 # kl=chunks(sentences, 100)
 # final1=[i for i in kl]
-
-
-

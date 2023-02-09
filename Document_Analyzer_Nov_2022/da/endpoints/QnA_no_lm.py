@@ -10,6 +10,7 @@ from pptx import Presentation
 import pandas as pd
 from fuzzywuzzy import fuzz
 
+
 class qnatb(object):
     stopwords = ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your', 'yours', 'yourself',
                  'yourselves', 'he', 'him', 'his', 'himself', 'she', 'her', 'hers', 'herself', 'it', 'its', 'itself',
@@ -24,11 +25,10 @@ class qnatb(object):
                  'now']
 
     def __init__(self, model_path):
-        #pass
+        # pass
         self.model_path = model_path
         self.model = BertForQuestionAnswering.from_pretrained(model_path)
         self.tokenizer = BertTokenizer.from_pretrained(model_path)
-
 
     @staticmethod
     def clean(sent):
@@ -84,7 +84,7 @@ class qnatb(object):
 
         sentences = [s.strip() for s in sentences]
         return sentences
-    
+
     @staticmethod
     def tb_index_pdf(file, tb_index):
         doc = fitz.open(file)
@@ -99,26 +99,26 @@ class qnatb(object):
                         "doc": file.split('\\')[-1],
                         "page": num,
                         "sentence": sent
-    
+
                     })
             except:
                 tb_index.append({
                     "doc": file.split('\\')[-1],
                     "page": num,
                     "sentence": ""
-    
+
                 })
         return tb_index
 
     @staticmethod
     def tb_index_docx(file, tb_index):
-        doc= Document(file)
-        text=[]
+        doc = Document(file)
+        text = []
         try:
             for para in doc.paragraphs:
                 text.append(para.text)
-            text=" ".join([i for i in text if i.strip()!=""])
-            #text=text.encode('utf8')
+            text = " ".join([i for i in text if i.strip() != ""])
+            # text=text.encode('utf8')
             text = qnatb.clean(text)
             sentences = qnatb.split_into_sentences(text)
             for sent in sentences:
@@ -126,51 +126,50 @@ class qnatb(object):
                     "doc": file.split('\\')[-1],
                     "page": "-",
                     "sentence": sent
-        
+
                 })
         except:
             tb_index.append({
                 "doc": file.split('\\')[-1],
                 "page": "-",
                 "sentence": "Not read"
-    
+
             })
         return tb_index
 
     @staticmethod
     def tb_index_pptx(file, tb_index):
-        ppt= Presentation(file)
-        
+        ppt = Presentation(file)
+
         for num, slide in enumerate(ppt.slides):
             try:
-                all_text=[]
+                all_text = []
                 for shape in slide.shapes:
                     if shape.has_text_frame:
-                        text= shape.text
+                        text = shape.text
                         text = qnatb.clean(text)
                         sentences = qnatb.split_into_sentences(text)
                         [all_text.append(i) for i in sentences]
-                all_text= " ".join(i for i in all_text)        
+                all_text = " ".join(i for i in all_text)
                 tb_index.append({
                     "doc": file.split('\\')[-1],
                     "page": num,
                     "sentence": all_text
                 })
-    
+
             except:
                 tb_index.append({
                     "doc": file.split('\\')[-1],
                     "page": num,
                     "sentence": ""
-    
+
                 })
         return tb_index
-
 
     def files_processor_tb(self, files):
         tb_index = []
         for file in files:
-            
+
             if file.endswith('pdf'):
                 try:
                     qnatb.tb_index_pdf(file, tb_index)
@@ -188,68 +187,63 @@ class qnatb(object):
                     print(file)
             else:
                 print(file)
-            
-        
-        self.tb_index=tb_index
-        all_sents= [i['sentence'] for i in tb_index]
-        self.all_sents= all_sents
-        
-        
+
+        self.tb_index = tb_index
+        all_sents = [i['sentence'] for i in tb_index]
+        self.all_sents = all_sents
+
         return tb_index, all_sents
-    
-    
+
     def reg_ind(self, words):
         if "," in words:
-            #words= words.split(',')
-            words= [i.strip().lower() for i in words.split(",")]
-            reg= "|".join(words)
-            tb_index_reg=self.tb_index
-            tb_index_reg=[i for i in self.tb_index if len(re.findall(reg, i['sentence'].lower()))>0]
-            
+            # words= words.split(',')
+            words = [i.strip().lower() for i in words.split(",")]
+            reg = "|".join(words)
+            tb_index_reg = self.tb_index
+            tb_index_reg = [i for i in self.tb_index if len(re.findall(reg, i['sentence'].lower())) > 0]
+
         elif "+" in words:
-            words= [i.strip().lower() for i in words.split("+")]
-            tb_index_reg=self.tb_index
-            for word in words:   
-                tb_index_reg=[i for i in tb_index_reg if len(re.findall(word, i['sentence'].lower()))>0]
+            words = [i.strip().lower() for i in words.split("+")]
+            tb_index_reg = self.tb_index
+            for word in words:
+                tb_index_reg = [i for i in tb_index_reg if len(re.findall(word, i['sentence'].lower())) > 0]
         else:
-            words= words.strip().lower()
-            tb_index_reg=[i for i in self.tb_index if len(re.findall(words, i['sentence'].lower()))>0]
-        
-        
-        docs= list(set([i['doc'] for i in tb_index_reg]))
-        
-        overall_dict={i:sum([1 for j in tb_index_reg if j['doc']==i]) for i in docs}
-        #number of sentences not occurances
-        
+            words = words.strip().lower()
+            tb_index_reg = [i for i in self.tb_index if len(re.findall(words, i['sentence'].lower())) > 0]
+
+        docs = list(set([i['doc'] for i in tb_index_reg]))
+
+        overall_dict = {i: sum([1 for j in tb_index_reg if j['doc'] == i]) for i in docs}
+        # number of sentences not occurances
+
         return tb_index_reg, overall_dict, docs
-    
+
     @staticmethod
     def extract_doc_reg_index(tb_index_reg, doc):
-        reg_tb_index= [i for i in tb_index_reg if i['doc']==doc]
-        req_df= pd.DataFrame(reg_tb_index)
+        reg_tb_index = [i for i in tb_index_reg if i['doc'] == doc]
+        req_df = pd.DataFrame(reg_tb_index)
         req_df.drop('doc', axis=1, inplace=True)
         return req_df
-    
+
     @staticmethod
     def get_score(question_tfidf, sent):
-        scr=0
-        counter=0
+        scr = 0
+        counter = 0
         sent = " ".join([i for i in sent.lower().split() if i not in qnatb.stopwords])
-        
+
         for token in question_tfidf.split():
-            scr+=fuzz.partial_ratio(token,sent)
-            counter+=1
-        return scr/counter          
-            
-            
+            scr += fuzz.partial_ratio(token, sent)
+            counter += 1
+        return scr / counter
+
     def get_response_sents(self, question, max_length=None):
 
         question = " ".join([i for i in question.split() if i not in qnatb.stopwords])
-        
-        dict_scores={num:qnatb.get_score(question,i['sentence']) for num,i in enumerate(self.tb_index)}
-        
+
+        dict_scores = {num: qnatb.get_score(question, i['sentence']) for num, i in enumerate(self.tb_index)}
+
         dict_scores = {k: v for k, v in sorted(dict_scores.items(), key=lambda item: item[1], reverse=True)}
-        
+
         final_response_dict = [self.tb_index[i] for i, j in dict_scores.items()]
 
         if max_length:
@@ -315,25 +309,20 @@ class qnatb(object):
             top_responses = sorted(top_responses, key=lambda item: item['start_logit'], reverse=True)
             responses = top_responses + response_sents[top:]
         else:
-            responses=response_sents
+            responses = response_sents
         return responses
-        #return response_sents
-    
+        # return response_sents
+
     def stats(self):
-        docs= list(set([i['doc'] for i in self.tb_index]))
-        stats=[]
+        docs = list(set([i['doc'] for i in self.tb_index]))
+        stats = []
         for doc in docs:
-            st={}
-            st['doc']=doc
-            st['pages']=len(set([i['page'] for i in self.tb_index if i['doc']==doc]))
-            st['words']= sum([len(i['sentence'].split()) for i in self.tb_index if i['doc']==doc])
+            st = {}
+            st['doc'] = doc
+            st['pages'] = len(set([i['page'] for i in self.tb_index if i['doc'] == doc]))
+            st['words'] = sum([len(i['sentence'].split()) for i in self.tb_index if i['doc'] == doc])
             stats.append(st)
         return stats
-    
-            
-        
-
-
 
 # qna = qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\Bert-qa\model')
 # import os
@@ -344,13 +333,3 @@ class qnatb(object):
 
 # search_data="who did federer marry"
 # responses = qna.get_top_n(search_data, top=10, max_length=7)
-
-
-
-
-
-
-
-
-
-
