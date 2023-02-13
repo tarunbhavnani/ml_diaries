@@ -100,12 +100,8 @@ class qnatb(object):
         sent = re.sub(r'[^A-Za-z0-9\.,\?\(\)\[\]\/ ]', " ", sent)
 
         sent = re.sub(r"\.+", ".", sent)
-
-
-
-
         sent = re.sub('\s+', " ", sent)
-
+        sent = re.sub(r'For internal use only \d{1,2} (of|\/) \d{1,2}', " ", sent)
 
         return sent
 
