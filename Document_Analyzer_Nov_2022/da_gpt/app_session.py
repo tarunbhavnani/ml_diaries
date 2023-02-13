@@ -3,6 +3,8 @@ from werkzeug.utils import secure_filename
 import os
 import _pickle as pickle
 from endpoints.QnA_gpt import qnatb
+import shutil
+
 
 app = Flask(__name__)
 qna = qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\minilm-uncased-squad2')
@@ -18,8 +20,8 @@ UPLOAD_FOLDER= os.path.join(uploads,get_user_name())
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-if not os.path.isdir(app.config['UPLOAD_FOLDER']):
-    os.mkdir(app.config['UPLOAD_FOLDER'])
+#if not os.path.isdir(app.config['UPLOAD_FOLDER']):
+#    os.mkdir(app.config['UPLOAD_FOLDER'])
 
 allowed_ext = [".pdf"]
 qna_cached = None
@@ -72,33 +74,35 @@ def index_page():
     return render_template('index.html', names=[i for i in os.listdir(app.config['UPLOAD_FOLDER']) if i.endswith('.pdf')])
 
 
+#@app.route('/delete')
+#def reset_files():
+#    try:
+#        delete_qna_cached()
+#        for filename in os.listdir(app.config['UPLOAD_FOLDER']):
+#            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+#            if os.path.isfile(file_path):
+#                os.unlink(file_path)
+#
+#    except Exception as e:
+#        print(e)
+#        print("No resetting")
+#    return redirect('/')
+
+
 @app.route('/delete')
 def reset_files():
+    # removes files from upload folder and then cleans the session
     try:
-        for filename in os.listdir(app.config['UPLOAD_FOLDER']):
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            if os.path.isfile(file_path):
-                os.unlink(file_path)
         delete_qna_cached()
+        shutil.rmtree(app.config['UPLOAD_FOLDER'])
+        #session.pop('Folder', None)
+        os.mkdir(app.config['UPLOAD_FOLDER'])
     except Exception as e:
         print(e)
         print("No resetting")
+
     return redirect('/')
 
-
-# #if we can make the user folder every time than this is  better
-# @app.route('/delete')
-# def reset_files():
-#     # removes files from upload folder and then cleans the session
-#     try:
-#         shutil.rmtree(app.config['UPLOAD_FOLDER'])
-#         #session.pop('Folder', None)
-#         os.mkdir(app.config['UPLOAD_FOLDER'])
-#     except Exception as e:
-#         print(e)
-#         print("No resetting")
-
-#     return redirect('/')
 
 
 @app.route('/search', methods=["GET", "POST"])
@@ -107,7 +111,7 @@ def search():
         search_data = request.form.get("search")
         qna_loaded = load_qna_cached()
         #responses, answer = qna_loaded.get_response_sents(question=search_data, max_length=10)
-        responses=qna.get_top_n( search_data, top=10, lm=True)
+        responses=qna.get_top_n( search_data, top=30, lm=True)
         #responses=qna.get_response_cosine(search_data)
         return render_template('search.html', responses=responses, search_data=search_data)
     except Exception as e:

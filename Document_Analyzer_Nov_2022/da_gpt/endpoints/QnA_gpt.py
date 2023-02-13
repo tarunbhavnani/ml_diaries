@@ -98,8 +98,15 @@ class qnatb(object):
         sent = re.sub(r'<.*?>|h\s*t\s*t\s*p\s*s?://\S+|www\.\S+', " ", sent)  # html tags and urls
         sent = re.sub('\n|\(.*?\)|\[.*?\]', " ", sent)  # newlines and content inside parentheses and brackets
         sent = re.sub(r'[^A-Za-z0-9\.,\?\(\)\[\]\/ ]', " ", sent)
+
         sent = re.sub(r"\.+", ".", sent)
+
+
+
+
         sent = re.sub('\s+', " ", sent)
+
+
         return sent
 
     @staticmethod
@@ -119,7 +126,7 @@ class qnatb(object):
                   'Has',
                   'Have', 'Had', 'Is', 'Are', 'Was', 'Were', 'Am', 'Be', 'Being', 'Been', 'If', 'Then', 'Else',
                   'Whether',
-                  'Because', 'Since', 'So', 'Although', 'Despite', 'Until', 'While']
+                  'Because', 'Since', 'So', 'Although', 'Despite', 'Until', 'While', "For", "We", "About"]
 
         http = r'h\s*t\s*t\s*p\s*s?://\S+|www\.\S+'
 
@@ -160,10 +167,14 @@ class qnatb(object):
         final = []
         temp = ""
         for sent in sentences:
-            temp += sent.strip() + " "
-            if len(temp.split()) > 100:
-                final.append(temp)
-                temp = ""
+            if len(sent)>10:
+                sent = re.sub(r'\d+\.(\d+)', '', sent)
+                temp += sent.strip() + " "
+                if len(temp.split()) > 200:
+                    final.append(temp)
+                    temp = ""
+            else:
+                pass
 
         return final
 
