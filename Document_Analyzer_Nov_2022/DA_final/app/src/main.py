@@ -1,10 +1,9 @@
 from flask import Flask, render_template, request
 import os
 
+from . import app
+from .endpoints.functions import Qnatb, get_file_names, process_uploaded_files, delete_files, load_fp, send_file, get_final_responses
 
-from endpoints.functions import Qnatb,get_file_names,process_uploaded_files,delete_files,get_fp_loaded,send_file
-
-app = Flask(__name__)
 qna = Qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\minilm-uncased-squad2')
 
 UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
@@ -36,7 +35,7 @@ def index_page():
             print("No readable files")
             file_names= get_file_names()
 
-    return render_template('index.html', file_names)
+    return render_template('index.html', names=file_names)
 
 
 
@@ -52,7 +51,7 @@ def reset_files():
         print("No resetting")
         file_names= get_file_names()
 
-    return render_template('index.html', file_names)
+    return render_template('index.html', names=file_names)
 
 
 
@@ -61,11 +60,8 @@ def reset_files():
 def search():
     try:
         search_data = request.form.get("search")
-        
-        fp = get_fp_loaded()
-        response_sents= fp.get_response_cosine(search_data)
-        
-        responses=qna.get_top_n(question=search_data,response_sents=response_sents, top=10)
+
+        responses=get_final_responses(qna, search_data)
         
         return render_template('search.html', responses=responses, search_data=search_data)
     
@@ -74,7 +70,7 @@ def search():
         print(f"Error occurred while searching: {e}")
         file_names= get_file_names()
         
-        return render_template('index.html', file_names)
+        return render_template('index.html', names=file_names)
 
 
 

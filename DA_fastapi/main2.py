@@ -9,7 +9,6 @@ import os, glob
 import os
 import pickle
 path= os.getcwd()
-
 upload_path= os.path.join(path, "uploads")
 from fastapi.responses import HTMLResponse
 
@@ -35,36 +34,20 @@ async def read_main():
 
 @app.post("/files")
 async def upload_files(files: List[UploadFile] = File(...)):
-    file_paths = await save_files(files)
-    try:
-        fp = await process_files(file_paths)
-        await save_file(fp)
-    except Exception as e:
-        file_paths.append(str(e))
-        await delete_files(file_paths)
-        raise e
-
-    return {"file_name": "Good"}
-
-async def save_files(files):
-    file_paths = []
     for file in files:
-        file_path = f"./uploads/{file.filename}"
-        with open(file_path, "wb") as buffer:
+        with open(f"./uploads/{file.filename}", "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
-        file_paths.append(file_path)
-    return file_paths
+        files= [os.path.join(upload_path, i) for i in os.listdir("./uploads")]
+        try:
+            fp = file_processor(files)
+            #with open(f"./uploads/fp", "wb") as buffer:
+            #    shutil.copyfileobj(fp, buffer)
+            with open(f"./uploads/fpp", "wb") as buffer:
+                pickle.dump(fp, buffer)
 
-async def process_files(file_paths):
-    return file_processor(file_paths)
-
-async def save_file(fp):
-    with open(f"./uploads/fpp", "wb") as buffer:
-        pickle.dump(fp, buffer)
-
-async def delete_files(file_paths):
-    for file_path in file_paths:
-        os.remove(file_path)
+        except Exception as e:
+            files.append(str(e))
+    return {"file_name": "Good"}
 
 
 class request_body(BaseModel):
@@ -78,7 +61,6 @@ def predict(data: request_body):
         with open(f"./uploads/fpp", 'rb') as handle:
             fp = pickle.load(handle)
         # Predicting the Class
-
         final_response_dict = get_response_fuzz(question=data.text,
                                                 vec=fp.vec,
                                                 tfidf_matrix=fp.tfidf_matrix,

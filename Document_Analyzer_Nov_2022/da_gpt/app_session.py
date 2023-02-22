@@ -111,7 +111,7 @@ def search():
         search_data = request.form.get("search")
         qna_loaded = load_qna_cached()
         #responses, answer = qna_loaded.get_response_sents(question=search_data, max_length=10)
-        responses=qna.get_top_n( search_data, top=30, lm=True)
+        responses=qna.get_top_n( search_data, top=100, lm=True)
         #responses=qna.get_response_cosine(search_data)
         return render_template('search.html', responses=responses, search_data=search_data)
     except Exception as e:
