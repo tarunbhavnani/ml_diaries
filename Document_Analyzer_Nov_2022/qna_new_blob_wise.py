@@ -13,7 +13,6 @@ from sklearn.metrics.pairwise import cosine_similarity
 import fitz
 import numpy as np
 
-
 class Filetb(object):
 
     def __init__(self):
@@ -75,13 +74,15 @@ class Filetb(object):
     def clean(sent):
         sent = re.sub(r'<.*?>|h\s*t\s*t\s*p\s*s?://\S+|www\.\S+', " ", sent)  # html tags and urls
         sent = re.sub('\n|\(.*?\)|\[.*?\]', " ", sent)  # newlines and content inside parentheses and brackets
-        sent = re.sub(r'[^A-Za-z0-9\.,\?\(\)\[\]\/ ]', " ", sent)
+        #sent = re.sub(r'[^A-Za-z0-9\.,\?\(\)\[\]\/ ]', " ", sent)
         sent = re.sub(r"\.+", ".", sent)
         sent = re.sub('\s+', " ", sent)
         sent = re.sub(r'For internal use only \d{1,2} (of|\/) \d{1,2}', " ", sent)
-
         return sent
-
+    
+        
+        
+    
     @staticmethod
     def split_into_sentences(text):
         # Define regular expressions for various patterns to be replaced
@@ -134,22 +135,14 @@ class Filetb(object):
             text = text.replace("{}".format(i), ".<stop>{}".format(i))
         text = text.replace("<prd>", ".")
         sentences = text.split("<stop>")
-        # sentences = sentences[:-1]
-
-        # sentences = [s.strip() for s in sentences]
-        final = []
-        temp = ""
-        for sent in sentences:
-            if len(sent)>10:
-                sent = re.sub(r'\d+\.(\d+)', '', sent)
-                temp += sent.strip() + " "
-                if len(temp.split()) > 200:
-                    final.append(temp)
-                    temp = ""
-            else:
-                pass
-
-        return final
+        
+        
+        sentences=[ re.sub(r'\d+\.(\d+)', '', i) for i in sentences if len(i)>20]
+        sentences=[ i.strip() for i in sentences]
+        
+        return sentences
+        
+ 
 
     def files_processor_tb(self, files):
         self.files=files
@@ -205,6 +198,7 @@ class Filetb(object):
         return final_response_dict
 
 
+    
 
 
 class Qnatb(object):
@@ -219,10 +213,10 @@ class Qnatb(object):
         question = re.sub(r"\s+", " ", question)
         question = question.strip() + " ?"
         if model=="bert":
-            encoded_dict = self.tokenizer.encode_plus(text=question, text_pair=answer_text, add_special=True)
+            encoded_dict = self.tokenizer.encode_plus(text=question, text_pair=answer_text,  truncation=True, max_length=512)
         
         elif model=="minilm":
-            encoded_dict = self.tokenizer.encode_plus(text=question, text_pair=answer_text)
+            encoded_dict = self.tokenizer.encode_plus(text=question, text_pair=answer_text, truncation=True, max_length=512)
         input_ids = torch.tensor([encoded_dict['input_ids']])
         segment_ids = torch.tensor([encoded_dict['token_type_ids']])
 
@@ -254,27 +248,72 @@ class Qnatb(object):
         return top_responses + response_sents[top:]
 
 
-
+    def extract_answer_blobs(self, question, responses, model="minilm"):
+        
+        #responses= self.get_response_cosine(question)
+        
+        final=[]
+        temp=[]
+        for i in responses:
+            if len(i["sentence"].split())>200:
+                final.append(i["sentence"])
+            else:
+                temp.append(i["sentence"])
+                if len(" ".join(i for i in temp).split())>200:
+                    final.append(" ".join(i for i in temp))
+                    temp=[]
+                    #break
+                else:
+                    pass
+        
+        final.append(" ".join(i for i in temp))
+        
+        result=[]
+        for sentence in final:
+            answer, start_logit=self.answer_question(question, sentence, model=model)
+            result.append((answer, start_logit, sentence))
+        
+        result=sorted(result, key=lambda x:x[1])[::-1]
+        return result[0]
+            
+        
+        
+        
     
 # =============================================================================
 #
 # =============================================================================
 
 # qna= Qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\minilm-uncased-squad2')
+# qna= Qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\Bert-qa')
 #
 # import glob
 # files_path=r"C:\Users\ELECTROBOT\Desktop\data\*"
 # files=glob.glob(files_path)
 
+# %%time
 # fp= Filetb()
 # fp.files_processor_tb(files)
 # jk=fp.tb_index
 
 
+qna= Qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\minilm-uncased-squad2')
+#question="who married federer"
+#question="when did federer win his first wimbledon"
+question="when did federer win his first us open"
+responses= fp.get_response_cosine(question)
+results=qna.extract_answer_blobs(question, responses[:50])
 
-# question="who married federer"
 
-# responses= fp.get_response_cosine(question)
+qna= Qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\Bert-qa\model')
+question="who married federer"
+question="when did federer win his first wimbledon"
+question="when did federer win his first us open"
+responses= fp.get_response_cosine(question)
+%%time
+results=qna.extract_answer_blobs(question, responses[:50], model="bert")
+
+
 
 #%%time
 #responses=qna.get_top_n(question=question,response_sents=responses, top=10)

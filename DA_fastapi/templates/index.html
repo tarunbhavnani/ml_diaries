@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h2>Select files</h2>
+    <p>
+        <form method="POST" action="/files" enctype="multipart/form-data">
+            <input type="file" name="files" multiple="true" autocomplete="off" required />
+            <input type="submit" value="Upload" />
+        </form>
+    </p>
+    {% if names %}
+        <h2>Uploaded Files</h2>
+        {% for name in names %}
+            <div class="entry">
+                <h3 class="entry__item"><a href="/uploads/{{ name }}">{{ name | truncate(30, true) }}</a></h3>
+            </div>
+            <hr>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

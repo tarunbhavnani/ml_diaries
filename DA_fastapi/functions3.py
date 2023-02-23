@@ -273,7 +273,7 @@ def get_file_names():
         user_folder = os.path.join(UPLOAD_FOLDER, get_user_name())
         return [i for i in os.listdir(user_folder) if i.endswith('.pdf')]
     except:
-        pass
+        return []
 
 
 def send_file(filename):

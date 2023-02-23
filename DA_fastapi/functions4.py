@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Feb  9 10:24:21 2023
+Created on Tue Feb 21 14:11:28 2023
 
 @author: ELECTROBOT
 """
@@ -12,12 +12,22 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import fitz
 import numpy as np
+import os
+import shutil
+import _pickle as pickle
+from gensim import parsing
+from fastapi.responses import FileResponse
+import shutil
+import _pickle as pickle
+
+
+UPLOAD_FOLDER=r'C:\Users\ELECTROBOT\Desktop\git\ml_diaries\DA_fastapi\uploads'
 
 
 class Filetb(object):
 
     def __init__(self):
-        self.files=None
+        self.files = None
         self.tb_index = None
         self.all_sents = None
         self.vec = None
@@ -44,32 +54,37 @@ class Filetb(object):
                           'should',
                           'now']
 
+    # def ngrams(self,string):
+    #     cleaned_string = re.sub(r'[,-./]|\sBD', '', string)
+    #     ngrams = []
+    #     words = cleaned_string.split()
+    #     for word in words:
+    #         if word not in self.stopwords and len(word) > 3:
+    #             # dont break  words that contain numbers
+    #             if not any(char.isdigit() for char in word):
+    #                 # Create n-grams by taking substrings of the word
+    #                 for i in range(3):
+    #                     ngram = word[:len(word) - i]
+    #                     if len(ngram) > 2:
+    #                         ngrams.append(ngram)
+    #             else:
+    #                 ngrams.append(word)
+    #         elif word not in self.stopwords:
+    #             ngrams.append(word)
 
-    def ngrams(self,string):
-        cleaned_string = re.sub(r'[,-./]|\sBD', '', string)
-        ngrams = []
-        words = cleaned_string.split()
-        for word in words:
-            if word not in self.stopwords and len(word) > 3:
-                # dont break  words that contain numbers
-                if not any(char.isdigit() for char in word):
-                    # Create n-grams by taking substrings of the word
-                    for i in range(3):
-                        ngram = word[:len(word) - i]
-                        if len(ngram) > 2:
-                            ngrams.append(ngram)
-                else:
-                    ngrams.append(word)
-            elif word not in self.stopwords:
-                ngrams.append(word)
-        
-        for i in range(len(words) - 1):
-            if words[i] not in self.stopwords and words[i + 1] not in self.stopwords:
-                bigram = f'{words[i]} {words[i + 1]}'
-                ngrams.append(bigram)
-        
-        
-        return ngrams
+    #     for i in range(len(words) - 1):
+    #         if words[i] not in self.stopwords and words[i + 1] not in self.stopwords:
+    #             bigram = f'{words[i]} {words[i + 1]}'
+    #             ngrams.append(bigram)
+
+    #     return ngrams
+
+    @staticmethod
+    def stem(sent):
+
+        sent = re.sub(r'[^a-z0-9 ]', " ", sent.lower())
+        sent = re.sub(r'\s+', " ", sent.lower())
+        return parsing.stem_text(sent)
 
     @staticmethod
     def clean(sent):
@@ -134,25 +149,14 @@ class Filetb(object):
             text = text.replace("{}".format(i), ".<stop>{}".format(i))
         text = text.replace("<prd>", ".")
         sentences = text.split("<stop>")
-        # sentences = sentences[:-1]
 
-        # sentences = [s.strip() for s in sentences]
-        final = []
-        temp = ""
-        for sent in sentences:
-            if len(sent)>10:
-                sent = re.sub(r'\d+\.(\d+)', '', sent)
-                temp += sent.strip() + " "
-                if len(temp.split()) > 200:
-                    final.append(temp)
-                    temp = ""
-            else:
-                pass
+        sentences = [re.sub(r'\d+\.(\d+)', '', i) for i in sentences if len(i) > 20]
+        sentences = [i.strip() for i in sentences]
 
-        return final
+        return sentences
 
     def files_processor_tb(self, files):
-        self.files=files
+        self.files = files
         tb_index = []
         all_sents = []
         # unread=[]
@@ -170,7 +174,8 @@ class Filetb(object):
                                 "page": num,
                                 "sentence": sent
                             })
-                            all_sents.append(sent.lower())
+                            # all_sents.append(sent.lower())
+                            all_sents.append(Filetb.stem(sent))
                     except:
                         tb_index.append({
                             "doc": file.split('\\')[-1],
@@ -184,18 +189,20 @@ class Filetb(object):
 
         self.tb_index = tb_index
         self.all_sents = all_sents
-        vec = TfidfVectorizer(analyzer=self.ngrams, lowercase=True)
+        # vec = TfidfVectorizer(analyzer=self.ngrams, lowercase=True)
+        vec = TfidfVectorizer(stop_words=self.stopwords, lowercase=True)
         vec.fit(all_sents)
         self.vec = vec
         tfidf_matrix = vec.transform(all_sents)
         self.tfidf_matrix = tfidf_matrix
 
         return tb_index, all_sents, vec, tfidf_matrix
-    
+
     def get_response_cosine(self, question, min_length=7, score_threshold=0.1):
 
         question = Filetb.clean(question)
-        question = re.sub(r'[^a-z0-9 ]', " ", question.lower())
+        # question = re.sub(r'[^a-z0-9 ]', " ", question.lower())
+        question = Filetb.stem(question)
 
         question_tfidf = " ".join([i for i in question.split() if i not in self.stopwords])
         question_vec = self.vec.transform([question_tfidf])
@@ -205,24 +212,23 @@ class Filetb(object):
         return final_response_dict
 
 
-
-
 class Qnatb(object):
     def __init__(self, model_path):
         self.model_path = model_path
         self.model = AutoModelForQuestionAnswering.from_pretrained(model_path)
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
 
-
     def answer_question(self, question, answer_text, model="minilm"):
         question = re.sub(r"[^a-z0-9 ]", " ", question)
         question = re.sub(r"\s+", " ", question)
         question = question.strip() + " ?"
-        if model=="bert":
-            encoded_dict = self.tokenizer.encode_plus(text=question, text_pair=answer_text, add_special=True)
-        
-        elif model=="minilm":
-            encoded_dict = self.tokenizer.encode_plus(text=question, text_pair=answer_text)
+        if model == "bert":
+            encoded_dict = self.tokenizer.encode_plus(text=question, text_pair=answer_text, truncation=True,
+                                                      max_length=512)
+
+        elif model == "minilm":
+            encoded_dict = self.tokenizer.encode_plus(text=question, text_pair=answer_text, truncation=True,
+                                                      max_length=512)
         input_ids = torch.tensor([encoded_dict['input_ids']])
         segment_ids = torch.tensor([encoded_dict['token_type_ids']])
 
@@ -240,8 +246,7 @@ class Qnatb(object):
 
         return answer, start_logit
 
-
-    def get_top_n(self, question,response_sents, top=10):
+    def get_top_n(self, question, response_sents, top=10):
         top_responses = []
         for num, answer_text in enumerate(response_sents[:top]):
             answer, start_logit = self.answer_question(question, answer_text['sentence'])
@@ -253,28 +258,112 @@ class Qnatb(object):
         top_responses = sorted(top_responses, key=lambda item: item['start_logit'], reverse=True)
         return top_responses + response_sents[top:]
 
+    def extract_answer_blobs(self, question, responses, model="minilm"):
+
+        # responses= self.get_response_cosine(question)
+
+        final = []
+        temp = []
+        for i in responses:
+            if len(i["sentence"].split()) > 200:
+                final.append(i["sentence"])
+            else:
+                temp.append(i["sentence"])
+                if len(" ".join(i for i in temp).split()) > 200:
+                    final.append(" ".join(i for i in temp))
+                    temp = []
+                    # break
+                else:
+                    pass
+
+        final.append(" ".join(i for i in temp))
+
+        result = []
+        for sentence in final:
+            answer, start_logit = self.answer_question(question, sentence, model=model)
+            result.append((answer, start_logit, sentence))
+
+        result = sorted(result, key=lambda x: x[1])[::-1]
+        return result[0]
 
 
-    
 # =============================================================================
-#
+# helper functions below
 # =============================================================================
 
-# qna= Qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\minilm-uncased-squad2')
-#
-# import glob
-# files_path=r"C:\Users\ELECTROBOT\Desktop\data\*"
-# files=glob.glob(files_path)
 
-# fp= Filetb()
-# fp.files_processor_tb(files)
-# jk=fp.tb_index
+def allowed_file(file):
+    allowed_ext = [".pdf"]
+    return True in [file.endswith(i) for i in allowed_ext]
 
 
+def get_user_name():
+    return "m554417"
 
-# question="who married federer"
 
-# responses= fp.get_response_cosine(question)
+def get_file_names():
+    try:
+        user_folder = os.path.join(UPLOAD_FOLDER, get_user_name())
+        return [i for i in os.listdir(user_folder) if i.endswith('.pdf')]
+    except:
+        return []
 
-#%%time
-#responses=qna.get_top_n(question=question,response_sents=responses, top=10)
+
+def send_file(filename):
+    user_folder = os.path.join(UPLOAD_FOLDER, get_user_name())
+    file_path = os.path.join(user_folder, filename)
+    return FileResponse(file_path)
+
+
+def delete_files():
+    user_folder = os.path.join(UPLOAD_FOLDER, get_user_name())
+    shutil.rmtree(user_folder)
+    os.mkdir(user_folder)
+    return
+
+
+def process_uploaded_files(files):
+    user_folder = os.path.join(UPLOAD_FOLDER, get_user_name())
+
+    if not os.path.isdir(user_folder):
+        os.mkdir(user_folder)
+
+    for file in files:
+        if file and allowed_file(file.filename):
+            try:
+                file_path = os.path.join(user_folder, file.filename)
+                with open(file_path, "wb") as buffer:
+                    shutil.copyfileobj(file.file, buffer)
+            except Exception as e:
+                print(f"Error occurred while processing file: {e}")
+
+    names = [os.path.join(user_folder, i) for i in os.listdir(user_folder) if i.endswith(".pdf")]
+
+    fp = Filetb()
+    fp.files_processor_tb(names)
+
+    with open(os.path.join(user_folder, "fp"), "wb") as handle:
+        pickle.dump(fp, handle)
+    return
+
+
+def load_fp():
+    user_folder = os.path.join(UPLOAD_FOLDER, get_user_name())
+    with open(os.path.join(user_folder, "fp"), 'rb') as handle:
+        return pickle.load(handle)
+
+
+def get_final_responses(qna, question):
+    fp = load_fp()
+    response_sents = fp.get_response_cosine(question)
+    #responses = qna.get_top_n(question=search_data, response_sents=response_sents, top=10)
+    result=qna.extract_answer_blobs(question, response_sents[:50])
+    return result
+
+def upload_fp(file):
+    user_folder = os.path.join(UPLOAD_FOLDER, get_user_name())
+    file_location = f"{user_folder}/{file.filename}"
+    with open(file_location, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+    return
+

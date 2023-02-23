@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>{{search_data}}</h1>
+    {%for resp in responses%}
+    <h1>{{resp['answer']}}</h1>
+    <h2>{{resp['sentence']}}</h2>
+    <h3><a href="/uploads/{{resp['doc']}}">{{resp['doc']}}</a></h3>
+    <h4>Page No.:{{resp['page']}}</h4>
+    
+    {%endfor%}
+
+{% endblock %}
