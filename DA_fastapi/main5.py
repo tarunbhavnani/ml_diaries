@@ -25,7 +25,7 @@ async def read_main():
 
 ########################################################################################################################
 
-@app.post("/files")
+@app.post("/uploadfiles")
 async def upload_files(files: List[UploadFile] = File(...)):
     try:
         process_uploaded_files(files)
@@ -66,14 +66,14 @@ def reset():
 ########################################################################################################################
 
 @app.get("/filename")
-def filenames():
+def file_name():
     file_names = get_file_names()
     return {"file_names": file_names}
 
 ########################################################################################################################
 
-@app.post("/uploadfile/")
-async def create_upload_file(file: UploadFile = File(...)):
+@app.post("/uploadobject/")
+async def upload_object(file: UploadFile = File(...)):
     delete_files()
     upload_fp(file)
     return {"filename": file.filename}
