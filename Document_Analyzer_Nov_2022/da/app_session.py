@@ -3,13 +3,14 @@ from flask import Flask, render_template, request, session, redirect, url_for, s
 from werkzeug.utils import secure_filename
 import os
 import uuid
-import pickle
-from endpoints.QnA_no_lm import qnatb
-
+import _pickle as pickle
+from endpoints.QnA_no_lm_fuzz_cosine2 import qnatb
+#from endpoints.qna_gpu import qnatb
 from endpoints.functions import PyMuPDF_all, doc_all
 
 import pandas as pd
 import shutil
+import json
 
 # from QnA_full_class_no_lm import qnatb
 
@@ -18,7 +19,8 @@ app.config["SECRET_KEY"] = "OCML3BRawWEUeaxcuKHLpw"
 # to use sesison secret key is needed
 
 
-qna = qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\Bert-qa\model')
+#qna = qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\Bert-qa\model')
+qna = qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\minilm-uncased-squad2')
 #qna= qnatb()
 
 
@@ -88,12 +90,17 @@ def get_files():
             names = [os.path.join(app.config['UPLOAD_FOLDER'], i) for i in os.listdir(app.config['UPLOAD_FOLDER'])]
             # glob.glob()
             #_, _, _, _ = qna.files_processor_tb(names)
-            _, _ = qna.files_processor_tb(names)
+
+            qna.files_processor_tb(names)
 
             session['stats']=qna.stats()
 
+
+
             with open(os.path.join(app.config['UPLOAD_FOLDER'], 'qna'), 'wb') as handle:
-                pickle.dump(qna, handle, protocol=pickle.HIGHEST_PROTOCOL)
+                pickle.dump(qna, handle)
+                #pickle.dump(qna, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
         except Exception as e:
             print(e)
             #app.logger.error(e)
@@ -131,7 +138,7 @@ def search():
         with open(os.path.join(app.config['UPLOAD_FOLDER'], 'qna'), 'rb') as handle:
             qna_loaded= pickle.load(handle)
 
-        responses= qna_loaded.get_top_n(search_data, top=10, max_length=7, lm=True)
+        responses= qna_loaded.get_top_n(search_data, top=20, max_length=10, lm=True)
         return render_template('search.html', responses=responses, search_data= search_data)
     except Exception as e:
         print(e)
@@ -147,6 +154,7 @@ def regex():
 
         tb_index_reg, overall_dict, docs= qna_loaded.reg_ind(reg_data)
 
+
         audit_trail= session['audit_trail']
         audit_trail[reg_data]=overall_dict
         session['audit_trail']=audit_trail
@@ -156,15 +164,18 @@ def regex():
             try:
                 cut= [i for i in tb_index_reg if i['doc']==doc]
                 cut= pd.DataFrame(cut)
-                pd.set_option('display.max_colwidth', 40)
-                tables.append(cut.to_html(classes='data', justify='left', col_space='100px'))
+                #cut.drop("doc")
+                pd.set_option('display.max_colwidth', 400)
+
+
+                tables.append(cut.to_html(classes='data',columns=["page", "sentence"], justify='left',border=0, col_space='50px',index=False))
             except:
                 pass
 
     except Exception as e:
         print(e)
         return redirect('/')
-    return render_template("regex.html", overall_dict=overall_dict, tables=tables, reg_data=reg_data, zip=zip)
+    return render_template("regex.html", overall_dict=overall_dict, tables=tables, reg_data=reg_data, cut=cut,zip=zip)
 
 @app.route('/get_audit_trail')
 def get_trail():
