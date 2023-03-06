@@ -20,17 +20,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="487646ed-d5f0-4af0-92b9-7c4b7ba4c4ea" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/tests.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/functions.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/functions3.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/functions4.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main2.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main3.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main4.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main5.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/m554417/New Text Document.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Document_Analyzer_Nov_2022/DA_final/app/src/endpoints/functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/../Document_Analyzer_Nov_2022/DA_final/app/src/endpoints/functions.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

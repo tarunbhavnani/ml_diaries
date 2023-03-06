@@ -346,7 +346,7 @@ def delete_files():
     user_folder = os.path.join(UPLOAD_FOLDER, get_user_name())
     shutil.rmtree(user_folder)
     os.mkdir(user_folder)
-    return
+    return ["anme1", "name2"]
 
 
 def process_uploaded_files(files, collection=None):

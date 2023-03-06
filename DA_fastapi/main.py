@@ -76,17 +76,23 @@ async def predict(data: request_body)-> Response:
     try:
         load_qna()
         responses = get_final_responses(qna, question=data.text, collection=data.collection)
-        return responses
+        response_items = []
+        for item in responses:
+            response_items.append(ResponseItem(answer=item['answer'], blob=item['blob'], logits=item['logits'],doc=item['doc'],page=item['page'],sentence=item['sentence']))
+        return Response(responses=response_items)
     except Exception as e:
         print(str(e))
         raise e
 
 ########################################################################################################################
+class ResetResponse(BaseModel):
+    names: List[str]
 
-@app.delete("/reset")
+@app.delete("/reset", response_model=ResetResponse)
 def reset():
     try:
-        delete_files()
+        names = delete_files()
+        return ResetResponse(names=names)
     except Exception as e:
         raise e
 
