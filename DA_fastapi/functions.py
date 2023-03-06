@@ -293,7 +293,7 @@ class Qnatb(object):
                 if len(res[0])>5:
                     ext=[i for i in responses if re.sub(r'[^a-z]', "", res[0]) in re.sub(r'[^a-z]', "", i["sentence"].lower())][0]
                 else:
-                    ext={'doc':"", 'page':'', 'sentence':''}
+                    ext={'doc':"", 'page':0, 'sentence':''}
                 
                 if res[0]=="":
                     ext["answer"]="No answer"
@@ -302,7 +302,7 @@ class Qnatb(object):
                 ext["logits"]=res[1]
                 ext["blob"] = res[2]
             except:
-                ext={'doc':"", 'page':'', 'sentence':''}
+                ext={'doc':"", 'page':0, 'sentence':''}
                 if res[0]=="":
                     ext["answer"]="No answer"
                 else:

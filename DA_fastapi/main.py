@@ -64,7 +64,7 @@ class ResponseItem(BaseModel):
     page: int
     sentence: str
     answer: str
-    logits: int
+    logits: float
     blob: str
 
 class Response(BaseModel):
