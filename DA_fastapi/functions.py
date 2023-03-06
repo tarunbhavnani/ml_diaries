@@ -399,7 +399,7 @@ def upload_fp(file):
     file_location = f"{user_folder}/{file.filename}"
     with open(file_location, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
-    return
+    return file_location
 
 
 

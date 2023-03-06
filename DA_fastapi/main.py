@@ -86,13 +86,13 @@ async def predict(data: request_body)-> Response:
 
 ########################################################################################################################
 class ResetResponse(BaseModel):
-    names: List[str]
+    files: List[str]
 
 @app.delete("/reset", response_model=ResetResponse)
-def reset():
+def reset() -> ResetResponse:
     try:
-        names = delete_files()
-        return ResetResponse(names=names)
+        files = delete_files()
+        return ResetResponse(files=files)
     except Exception as e:
         raise e
 
@@ -104,9 +104,11 @@ def file_name():
     return {"file_names": file_names}
 
 ########################################################################################################################
+class UploadResponse(BaseModel):
+    file_location: str
 
-@app.post("/uploadobject/")
-async def upload_object(file: UploadFile = File(...)):
+@app.post("/uploadobject/",response_model=UploadResponse)
+async def upload_object(file: UploadFile = File(...))-> UploadResponse:
     delete_files()
-    upload_fp(file)
-    return {"filename": file.filename}
+    file_location=upload_fp(file)
+    return UploadResponse(file_location=file_location)
