@@ -1,75 +1,102 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Nov 18 12:10:17 2022
-
+Created on Tue Feb 21 14:11:28 2023
 @author: ELECTROBOT
 """
+
+import torch
+from transformers import AutoModelForQuestionAnswering, AutoTokenizer
 import re
-import fitz
-from docx import Document
-from fuzzywuzzy import fuzz
-from pptx import Presentation
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-stopwords = ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your', 'yours', 'yourself',
-             'yourselves', 'he', 'him', 'his', 'himself', 'she', 'her', 'hers', 'herself', 'it', 'its', 'itself',
-             'they', 'them', 'their', 'theirs', 'themselves', 'what', 'which', 'who', 'whom', 'this', 'that',
-             'these', 'those', 'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had',
-             'having', 'do', 'does', 'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because', 'as',
-             'until', 'while', 'of', 'at', 'by', 'for', 'with', 'about', 'against', 'between', 'into', 'through',
-             'during', 'before', 'after', 'above', 'below', 'to', 'from', 'up', 'down', 'in', 'out', 'on', 'off',
-             'over', 'under', 'again', 'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how',
-             'all', 'any', 'both', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not',
-             'only', 'own', 'same', 'so', 'than', 'too', 'very', 's', 't', 'can', 'will', 'just', 'don', 'should',
-             'now']
+import fitz
+import numpy as np
+import os
+import shutil
+import _pickle as pickle
+from gensim import parsing
+from fastapi.responses import FileResponse
 
 
+UPLOAD_FOLDER=r'C:\Users\ELECTROBOT\Desktop\git\ml_diaries\DA_fastapi\uploads'
 
-class file_processor(object):
-    def __init__(self, files):
-        # self.files=files
-        # self.tb_index, self.all_sents, self.vec, self.tfidf_matrix= self.files_processor_tb(files)
-        self.stopwords=stopwords = ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your', 'yours', 'yourself',
-             'yourselves', 'he', 'him', 'his', 'himself', 'she', 'her', 'hers', 'herself', 'it', 'its', 'itself',
-             'they', 'them', 'their', 'theirs', 'themselves', 'what', 'which', 'who', 'whom', 'this', 'that',
-             'these', 'those', 'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had',
-             'having', 'do', 'does', 'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because', 'as',
-             'until', 'while', 'of', 'at', 'by', 'for', 'with', 'about', 'against', 'between', 'into', 'through',
-             'during', 'before', 'after', 'above', 'below', 'to', 'from', 'up', 'down', 'in', 'out', 'on', 'off',
-             'over', 'under', 'again', 'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how',
-             'all', 'any', 'both', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not',
-             'only', 'own', 'same', 'so', 'than', 'too', 'very', 's', 't', 'can', 'will', 'just', 'don', 'should',
-             'now']
-        self.tb_index, self.all_sents, self.vec, self.tfidf_matrix, self.response_file_processing, self.metadata_all = self.files_processor_tb(
-            files)
+
+class Filetb(object):
+
+    def __init__(self):
+        self.files = None
+        self.tb_index = None
+        self.all_sents = None
+        self.vec = None
+        self.tfidf_matrix = None
+        self.stopwords = ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your', 'yours',
+                          'yourself',
+                          'yourselves', 'he', 'him', 'his', 'himself', 'she', 'her', 'hers', 'herself', 'it', 'its',
+                          'itself',
+                          'they', 'them', 'their', 'theirs', 'themselves', 'what', 'which', 'who', 'whom', 'this',
+                          'that',
+                          'these', 'those', 'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has',
+                          'had',
+                          'having', 'do', 'does', 'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because',
+                          'as',
+                          'until', 'while', 'of', 'at', 'by', 'for', 'with', 'about', 'against', 'between', 'into',
+                          'through',
+                          'during', 'before', 'after', 'above', 'below', 'to', 'from', 'up', 'down', 'in', 'out', 'on',
+                          'off',
+                          'over', 'under', 'again', 'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why',
+                          'how',
+                          'all', 'any', 'both', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor',
+                          'not',
+                          'only', 'own', 'same', 'so', 'than', 'too', 'very', 's', 't', 'can', 'will', 'just', 'don',
+                          'should',
+                          'now']
+
+    # def ngrams(self,string):
+    #     cleaned_string = re.sub(r'[,-./]|\sBD', '', string)
+    #     ngrams = []
+    #     words = cleaned_string.split()
+    #     for word in words:
+    #         if word not in self.stopwords and len(word) > 3:
+    #             # dont break  words that contain numbers
+    #             if not any(char.isdigit() for char in word):
+    #                 # Create n-grams by taking substrings of the word
+    #                 for i in range(3):
+    #                     ngram = word[:len(word) - i]
+    #                     if len(ngram) > 2:
+    #                         ngrams.append(ngram)
+    #             else:
+    #                 ngrams.append(word)
+    #         elif word not in self.stopwords:
+    #             ngrams.append(word)
+
+    #     for i in range(len(words) - 1):
+    #         if words[i] not in self.stopwords and words[i + 1] not in self.stopwords:
+    #             bigram = f'{words[i]} {words[i + 1]}'
+    #             ngrams.append(bigram)
+
+    #     return ngrams
 
     @staticmethod
-    def ngrams(string):
-        n = 4
-        string = re.sub(r'[,-./]|\sBD', r'', string)
-        words = string.split()
-        ngram = []
-        for word in words:
-            ngrams = zip(*[word[i:] for i in range(n)])
-            ret = [''.join(ngram) for ngram in ngrams]
-            [ngram.append(i) for i in ret]
+    def stem(sent):
 
-        return ngram
+        sent = re.sub(r'[^a-z0-9 ]', " ", sent.lower())
+        sent = re.sub(r'\s+', " ", sent.lower())
+        return parsing.stem_text(sent)
 
     @staticmethod
     def clean(sent):
-        sent = re.sub(r'<.*?>', " ", sent)  # html tags
-        sent = re.sub(r'h\s*t\s*t\s*p\s*s?://\S+|www\.\S+', " ", sent)  # remove urls
-
-        sent = re.sub('\n', " ", sent)
-        sent = re.sub(r'\(.*?\)', " ", sent)  # all inside ()
-        sent = re.sub(r'\[.*?\]', " ", sent)  # all inside ()
+        sent = re.sub(r'<.*?>|h\s*t\s*t\s*p\s*s?://\S+|www\.\S+', " ", sent)  # html tags and urls
+        sent = re.sub('\n|\(.*?\)|\[.*?\]', " ", sent)  # newlines and content inside parentheses and brackets
         sent = re.sub(r'[^A-Za-z0-9\.,\?\(\)\[\]\/ ]', " ", sent)
+        sent = re.sub(r"\.+", ".", sent)
         sent = re.sub('\s+', " ", sent)
+        sent = re.sub(r'For internal use only \d{1,2} (of|\/) \d{1,2}', " ", sent)
+
         return sent
 
     @staticmethod
     def split_into_sentences(text):
+        # Define regular expressions for various patterns to be replaced
         alphabets = "([A-Za-z])"
         prefixes = "(Mr|St|Mrs|Ms|Dr|No)[.]"
         suffixes = "(Inc|Ltd|Jr|Sr|Co)"
@@ -78,10 +105,21 @@ class file_processor(object):
         decimals = "(\d*[.]\d*)"
         websites = "[.](com|net|org|io|gov|co|in)"
         decimals = r'\d\.\d'
+        starts = ["The", "Them", "Their", 'What', 'How', 'Why', 'Where', 'When', 'Who', 'Whom', 'Whose', 'Which',
+                  'Whether',
+                  'Can', 'Could', 'May', 'Might', 'Must', 'Shall', 'Should', 'Will', 'Would', 'Do', 'Does', 'Did',
+                  'Has',
+                  'Have', 'Had', 'Is', 'Are', 'Was', 'Were', 'Am', 'Be', 'Being', 'Been', 'If', 'Then', 'Else',
+                  'Whether',
+                  'Because', 'Since', 'So', 'Although', 'Despite', 'Until', 'While', "For", "We", "About"]
 
+        http = r'h\s*t\s*t\s*p\s*s?://\S+|www\.\S+'
+
+        # Clean and prepare the text
         text = " " + text + "  "
         text = text.replace("\n", " ")
         text = re.sub(decimals, lambda g: re.sub(r'\.', '<prd>', g[0]), text)
+        text = re.sub(http, lambda g: re.sub(r'\.', '<prd>', g[0]), text)
         # text= re.sub(r'(?<=\[).+?(?=\])', "", text) # remove everything inside square brackets
         # text= re.sub(r'(?<=\().+?(?=\))', "", text) # remove everything inside  brackets
         text = re.sub(r'\[(\w*)\]', "", text)  # remove evrything in sq brackets with sq brackets
@@ -104,370 +142,281 @@ class file_processor(object):
         text = text.replace(".", ".<stop>")
         text = text.replace("?", "?<stop>")
         text = text.replace("!", "!<stop>")
+        for i in starts:
+            text = text.replace("{}".format(i), ".<stop>{}".format(i))
         text = text.replace("<prd>", ".")
         sentences = text.split("<stop>")
-        # sentences = sentences[:-1]
 
-        sentences = [s.strip() for s in sentences]
+        sentences = [re.sub(r'\d+\.(\d+)', '', i) for i in sentences if len(i) > 20]
+        sentences = [i.strip() for i in sentences]
+
         return sentences
 
-    @staticmethod
-    def tb_index_pdf(file, tb_index):
-        doc = fitz.open(file)
-
-        try:
-            metadata = {i: j for i, j in doc.metadata.items() if
-                        i in ["format", "title", "author", "creationDate", "modDate"]}
-        except:
-            metadata = {'format': 'PDF', 'title': "", "author": "", "creationDate": "", "modDate": ""}
-
-        metadata['filename'] = file
-
-        for num, page in enumerate(doc):
-            try:
-                text = page.get_text().encode('utf8')
-                text = text.decode('utf8')
-                text = file_processor.clean(text)
-                sentences = file_processor.split_into_sentences(text)
-                for sent in sentences:
-                    tb_index.append({
-                        "doc": file.split('\\')[-1],
-                        "page": num,
-                        "sentence": sent
-
-                    })
-            except:
-                tb_index.append({
-                    "doc": file.split('\\')[-1],
-                    "page": num,
-                    "sentence": ""
-
-                })
-        return tb_index, metadata
-
-    @staticmethod
-    def tb_index_docx(file, tb_index):
-        doc = Document(file)
-        try:
-            metadata = {}
-            prop = doc.core_properties
-            metadata['format'] = "docx"
-            metadata['title'] = prop.subject
-            metadata['author'] = prop.author
-            metadata['creationDate'] = prop.created
-            metadata['modDate'] = prop.modified
-        except:
-            metadata = {'format': 'docx', 'title': "", "author": "", "creationDate": "", "modDate": ""}
-
-        metadata['filename'] = file
-
-        text = []
-        try:
-            for para in doc.paragraphs:
-                text.append(para.text)
-            text = " ".join([i for i in text if i.strip() != ""])
-            # text=text.encode('utf8')
-            text = file_processor.clean(text)
-            sentences = file_processor.split_into_sentences(text)
-            for sent in sentences:
-                tb_index.append({
-                    "doc": file.split('\\')[-1],
-                    "page": "-",
-                    "sentence": sent
-
-                })
-        except:
-            tb_index.append({
-                "doc": file.split('\\')[-1],
-                "page": "-",
-
-                "sentence": "Not read"
-
-            })
-        return tb_index, metadata
-
-    @staticmethod
-    def tb_index_pptx(file, tb_index):
-        ppt = Presentation(file)
-        metadata = {'format': 'pptx', 'title': "", "author": "", "creationDate": "", "modDate": ""}
-        metadata['filename'] = file
-
-        for num, slide in enumerate(ppt.slides):
-            try:
-                all_text = []
-                for shape in slide.shapes:
-                    if shape.has_text_frame:
-                        text = shape.text
-                        text = file_processor.clean(text)
-                        sentences = file_processor.split_into_sentences(text)
-                        [all_text.append(i) for i in sentences]
-                all_text = " ".join(i for i in all_text)
-
-                tb_index.append({
-                    "doc": file.split('\\')[-1],
-                    "page": num,
-                    "sentence": all_text
-                })
-
-            except:
-                tb_index.append({
-                    "doc": file.split('\\')[-1],
-                    "page": num,
-                    "sentence": ""
-
-                })
-        return tb_index, metadata
-
     def files_processor_tb(self, files):
+        self.files = files
         tb_index = []
-
-        metadata_all = []
-
-        response_file_processing = []
-
-        for file in files:
-
-            if file.endswith('pdf'):
-                try:
-                    _, metadata = file_processor.tb_index_pdf(file, tb_index)
-                    metadata_all.append(metadata)
-                    response = {"filename": file, "msg": "", "status": "success"}
-                    response_file_processing.append(response)
-                except Exception as e:
-                    response = {"filename": file, "msg": str(e), "status": "failed"}
-                    response_file_processing.append(response)
-
-
-            elif file.endswith('docx'):
-                try:
-                    _, metadata = file_processor.tb_index_docx(file, tb_index)
-                    metadata_all.append(metadata)
-                    response = {"filename": file, "msg": "", "status": "success"}
-                    response_file_processing.append(response)
-                except Exception as e:
-                    response = {"filename": file, "msg": str(e), "status": "failed"}
-                    response_file_processing.append(response)
-
-            elif file.endswith('pptx'):
-                try:
-                    _, metadata = file_processor.tb_index_pptx(file, tb_index)
-                    metadata_all.append(metadata)
-                    response = {"filename": file, "msg": "", "status": "success"}
-                    response_file_processing.append(response)
-                except Exception as e:
-                    response = {"filename": file, "msg": str(e), "status": "failed"}
-                    response_file_processing.append(response)
-            else:
-                print(file)
+        all_sents = []
+        # unread=[]
+        for file in self.files:
+            try:
+                doc = fitz.open(file)
+                for num, page in enumerate(doc):
+                    try:
+                        text = page.get_text().encode('utf8').decode('utf8')
+                        text = Filetb.clean(text)
+                        sentences = Filetb.split_into_sentences(text)
+                        for sent in sentences:
+                            tb_index.append({
+                                "doc": file.split('\\')[-1],
+                                "page": num,
+                                "sentence": sent
+                            })
+                            # all_sents.append(sent.lower())
+                            all_sents.append(Filetb.stem(sent))
+                    except:
+                        tb_index.append({
+                            "doc": file.split('\\')[-1],
+                            "page": num,
+                            "sentence": ""
+                        })
+            except:
+                # print(file)
+                # unread.append(file)
+                pass
 
         self.tb_index = tb_index
-        self.metadata_all = metadata_all
-        all_sents = [i['sentence'] for i in tb_index]
         self.all_sents = all_sents
-
-        vec = TfidfVectorizer(analyzer=file_processor.ngrams)
-
-        vec.fit([i.lower() for i in all_sents])
+        # vec = TfidfVectorizer(analyzer=self.ngrams, lowercase=True)
+        vec = TfidfVectorizer(stop_words=self.stopwords, lowercase=True)
+        vec.fit(all_sents)
         self.vec = vec
-
-        tfidf_matrix = vec.transform([i.lower() for i in all_sents])
+        tfidf_matrix = vec.transform(all_sents)
         self.tfidf_matrix = tfidf_matrix
 
-        return tb_index, all_sents, vec, tfidf_matrix, response_file_processing, metadata_all
+        return tb_index, all_sents, vec, tfidf_matrix
+
+    def get_response_cosine(self, question, min_length=7, score_threshold=0.1):
+
+        question = Filetb.clean(question)
+        # question = re.sub(r'[^a-z0-9 ]', " ", question.lower())
+        question = Filetb.stem(question)
+
+        question_tfidf = " ".join([i for i in question.split() if i not in self.stopwords])
+        question_vec = self.vec.transform([question_tfidf])
+        scores = cosine_similarity(self.tfidf_matrix, question_vec).flatten()
+        relevant_sentences = [self.tb_index[i] for i in np.argsort(scores)[::-1] if scores[i] > score_threshold]
+        final_response_dict = [sent for sent in relevant_sentences if len(sent['sentence'].split()) >= min_length]
+        return final_response_dict
 
 
-# =============================================================================
-
-
-# def get_response_sents(question, vec,tfidf_matrix,tb_index,stopwords, max_length=None):
-
-#     question_tfidf = " ".join([i for i in question.split() if i not in stopwords])
-#     question_vec = vec.transform([question_tfidf])
-
-#     scores = cosine_similarity(tfidf_matrix, question_vec)
-#     scores = [i[0] for i in scores]
-#     dict_scores = {i: j for i, j in enumerate(scores)}
-#     dict_scores = {k: v for k, v in sorted(dict_scores.items(), key=lambda item: item[1], reverse=True)}
-#     # get top n sentences
-#     # final_response_dict=[self.tb_index[i] for i in dict_scores]
-#     final_response_dict = [tb_index[i] for i, j in dict_scores.items() if j > 0.1]
-
-#     # final_responses=[self.all_sents[i] for i in dict_scores]
-
-#     # final_responses= [i for i in final_responses if len(i.split())>3]
-#     if max_length:
-#         final_response_dict = [i for i in final_response_dict if len(i['sentence'].split()) > 7]
-
-#     return final_response_dict
-
-
-# # =============================================================================
-# from fuzzywuzzy import fuzz
-# def get_score(question, sent):
-#     src=0
-#     counter=0
-#     sent= " ".join([i for i in sent.lower().split() if i not in stopwords])
-
-#     for token in question.split():
-#         src+=fuzz.partial_ratio(token, sent)
-#         counter+=1
-#     return src/counter
-
-
-# def get_response_sents(question, max_length=None):
-#     question= " ".join([i for i in question.split() if i not in stopwords])
-#     dict_scores= {num:get_score(question, i["sentence"]) for num,i in enumerate(tb_index)}
-
-#     dict_scores=sorted(dict_scores.items(), key= lambda x:x[1], reverse=True)
-
-
-#     final_response_dict= [tb_index[i] for i,j in dict_scores]
-
-#     if max_length:
-#         final_response_dict= [i for i in final_response_dict if len(i['sentence'].split())>max_length]
-#     return final_response_dict
-
-
-# =============================================================================
-# Get the response for a question/query
-# =============================================================================
-
-
-# =============================================================================
-# faster method is to cut the data using cosine-superfast, and then fiund answers using fuzzy, way better than cosine
-# =============================================================================
-def get_response_cosine(question, vec, tfidf_matrix, tb_index, stopwords, max_length=None):
-    question_tfidf = " ".join([i for i in question.split() if i not in stopwords])
-    question_vec = vec.transform([question_tfidf])
-
-    scores = cosine_similarity(tfidf_matrix, question_vec)
-    scores = [i[0] for i in scores]
-    dict_scores = {i: j for i, j in enumerate(scores)}
-    dict_scores = {k: v for k, v in sorted(dict_scores.items(), key=lambda item: item[1], reverse=True)}
-    # get top n sentences
-    # final_response_dict=[self.tb_index[i] for i in dict_scores]
-    final_response_dict = [tb_index[i] for i, j in dict_scores.items() if j > 0.1]
-
-    # final_responses=[self.all_sents[i] for i in dict_scores]
-
-    # final_responses= [i for i in final_responses if len(i.split())>3]
-    if max_length:
-        final_response_dict = [i for i in final_response_dict if len(i['sentence'].split()) > 7]
-
-    return final_response_dict
-
-
-def get_score(question, sent):
-    src = 0
-    counter = 0
-    sent = " ".join([i for i in sent.lower().split() if i not in stopwords])
-
-    for token in question.split():
-        src += fuzz.partial_ratio(token, sent)
-        counter += 1
-    return src / counter
-
-
-def get_response_fuzz(question, vec, tfidf_matrix, tb_index, stopwords, max_length=None):
-    question = " ".join([i for i in question.split() if i not in stopwords])
-
-    data_ = get_response_cosine(question, vec, tfidf_matrix, tb_index, stopwords, max_length=None)
-
-    dict_scores = {num: get_score(question, i["sentence"]) for num, i in enumerate(data_)}
-
-    dict_scores = sorted(dict_scores.items(), key=lambda x: x[1], reverse=True)
-
-    final_response_dict = [data_[i] for i, j in dict_scores]
-
-    if max_length:
-        final_response_dict = [i for i in final_response_dict if len(i['sentence'].split()) > max_length]
-    return final_response_dict
-
-
-# =============================================================================
-#  Get the final real answer using QnA
-# =============================================================================
-import torch
-from transformers import BertForQuestionAnswering
-from transformers import BertTokenizer
-
-
-class qnatb(object):
-
+class Qnatb(object):
     def __init__(self, model_path):
         self.model_path = model_path
-        self.model = BertForQuestionAnswering.from_pretrained(model_path)
-        self.tokenizer = BertTokenizer.from_pretrained(model_path)
+        self.model = AutoModelForQuestionAnswering.from_pretrained(model_path)
+        self.tokenizer = AutoTokenizer.from_pretrained(model_path)
 
-    # @staticmethod
-    # def clean(sent):
-    #     sent = re.sub(r'<.*?>', " ", sent)  # html tags
-    #     sent = re.sub(r'h\s*t\s*t\s*p\s*s?://\S+|www\.\S+', " ", sent)  # remove urls
+    def answer_question(self, question, answer_text, model="minilm"):
+        question = re.sub(r"[^a-z0-9 ]", " ", question)
+        question = re.sub(r"\s+", " ", question)
+        question = question.strip() + " ?"
+        if model == "bert":
+            encoded_dict = self.tokenizer.encode_plus(text=question, text_pair=answer_text, truncation=True,
+                                                      max_length=512)
 
-    #     sent = re.sub('\n', " ", sent)
-    #     sent = re.sub(r'\(.*?\)', " ", sent)  # all inside ()
-    #     sent = re.sub(r'\[.*?\]', " ", sent)  # all inside ()
-    #     sent = re.sub(r'[^A-Za-z0-9\.,\?\(\)\[\]\/ ]', " ", sent)
-    #     sent = re.sub('\s+', " ", sent)
-    #     return sent
+        elif model == "minilm":
+            encoded_dict = self.tokenizer.encode_plus(text=question, text_pair=answer_text, truncation=True,max_length=512)
+        input_ids = torch.tensor([encoded_dict['input_ids']])
+        segment_ids = torch.tensor([encoded_dict['token_type_ids']])
 
-    def answer_question(self, question, answer_text):
-        # question = qnatb.clean(question)
-        encoded_dict = self.tokenizer.encode_plus(text=question, text_pair=answer_text, add_special=True)
-        input_ids = encoded_dict['input_ids']
-        segment_ids = encoded_dict['token_type_ids']
-        assert len(segment_ids) == len(input_ids)
-        output = self.model(torch.tensor([input_ids]),  # The tokens representing our input text.
-                            token_type_ids=torch.tensor(
-                                [segment_ids]))  # The segment IDs to differentiate question from answer_text
+        output = self.model(input_ids, token_type_ids=segment_ids)
 
-        answer_start = torch.argmax(output['start_logits'])
-        start_logit = output['start_logits'][0][answer_start].detach().numpy()
-        answer_end = torch.argmax(output['end_logits'])
+        answer_start = torch.argmax(output['start_logits'][0])
+        start_logit = float(output['start_logits'][0][answer_start].detach().numpy())
+        answer_end = torch.argmax(output['end_logits'][0])
 
-        tokens = self.tokenizer.convert_ids_to_tokens(input_ids)
-        answer = tokens[answer_start]
-        for i in range(answer_start + 1, answer_end + 1):
+        tokens = self.tokenizer.convert_ids_to_tokens(input_ids[0])
+        
+        answer = ' '.join(tokens[answer_start:answer_end + 1]).replace(' ##', '')
+        answer_surround= ' '.join(tokens[answer_start-3:answer_end + 3]).replace(' ##', '')
+        if "[" in answer:
+            answer = ""
+            answer_surround=""
+            start_logit = 0
+        
+        return answer, start_logit, answer_surround
 
-            if tokens[i][0:2] == '##':
-                answer += tokens[i][2:]
-            else:
-                answer += ' ' + tokens[i]
-        return answer, start_logit
-
-    def retrieve_answer(self, question, get_response_sents, top=10, max_length=None):
-
-        response_sents = [i for i in get_response_sents if len(i['sentence'].split()) > 6]
-        max_logit = 3
-        logits = []
-        correct_answer = "Please rephrase"
-        answer_extracted = "Please rephrase"
-
-        for num, answer_text in enumerate(response_sents[0:top]):
-            answer, start_logit = self.answer_question(question, answer_text['sentence'])
-            logits.append(start_logit)
-            if start_logit > max_logit:
-                max_logit = start_logit
-                correct_answer = answer
-                answer_extracted = answer_text
-                # answer_num=num
-
-        return correct_answer, answer_extracted, max_logit, logits
-
-    def get_top_n(self, question, response_sents, top=10, max_length=None):
-
+    def get_top_n(self, question, response_sents, top=10):
         top_responses = []
-
-        for num, answer_text in enumerate(response_sents[0:top]):
-            answer, start_logit = self.answer_question(question, answer_text['sentence'])
+        for num, answer_text in enumerate(response_sents[:top]):
+            answer, start_logit,_ = self.answer_question(question, answer_text['sentence'])
             top_response = {}
-            top_response = response_sents[num]
+            top_response = response_sents[num].copy()
             top_response['start_logit'] = start_logit
             top_response['answer'] = answer
             top_responses.append(top_response)
-
         top_responses = sorted(top_responses, key=lambda item: item['start_logit'], reverse=True)
-        responses = top_responses + response_sents[top:]
-        return responses
+        return top_responses + response_sents[top:]
+
+    def extract_answer_blobs(self, question, responses, model="minilm"):
+
+        # responses= self.get_response_cosine(question)
+
+        final = []
+        temp = []
+        for i in responses:
+            if len(i["sentence"].split()) > 200:
+                final.append(i["sentence"])
+            else:
+                temp.append(i["sentence"])
+                if len(" ".join(i for i in temp).split()) > 200:
+                    final.append(" ".join(i for i in temp))
+                    temp = []
+                    # break
+                else:
+                    pass
+
+        final.append(" ".join(i for i in temp))
+
+        result = []
+        for sentence in final:
+            answer, start_logit,_ = self.answer_question(question, sentence, model=model)
+            result.append((answer, start_logit, sentence))
+
+        result = sorted(result, key=lambda x: x[1])[::-1]
+
+        final=[]
+        for res in result:
+            
+            
+            ext=[]
+            try:
+                if len(res[0])>5:
+                    ext=[i for i in responses if re.sub(r'[^a-z]', "", res[0]) in re.sub(r'[^a-z]', "", i["sentence"].lower())][0]
+                else:
+                    ext={'doc':"", 'page':'', 'sentence':''}
+                
+                if res[0]=="":
+                    ext["answer"]="No answer"
+                else:
+                    ext["answer"]=res[0]
+                ext["logits"]=res[1]
+                ext["blob"] = res[2]
+            except:
+                ext={'doc':"", 'page':'', 'sentence':''}
+                if res[0]=="":
+                    ext["answer"]="No answer"
+                else:
+                    ext["answer"]=res[0]
+                ext["logits"]=res[1]
+                ext["blob"] = res[2]
+            
+            final.append(ext)
+        return final
 
 
+# =============================================================================
+# helper functions below
+# =============================================================================
+
+
+def allowed_file(file):
+    allowed_ext = [".pdf"]
+    return True in [file.endswith(i) for i in allowed_ext]
+
+
+def get_user_name():
+    return "m554417"
+
+
+def get_file_names():
+    try:
+        user_folder = os.path.join(UPLOAD_FOLDER, get_user_name())
+        return [i for i in os.listdir(user_folder) if i.endswith('.pdf')]
+    except:
+        return []
+
+
+def send_file(filename):
+    user_folder = os.path.join(UPLOAD_FOLDER, get_user_name())
+    file_path = os.path.join(user_folder, filename)
+    return FileResponse(file_path)
+
+
+def delete_files():
+    user_folder = os.path.join(UPLOAD_FOLDER, get_user_name())
+    shutil.rmtree(user_folder)
+    os.mkdir(user_folder)
+    return
+
+
+def process_uploaded_files(files, collection=None):
+    if collection:
+        user_folder = os.path.join(UPLOAD_FOLDER, collection)
+    else:
+        user_folder = os.path.join(UPLOAD_FOLDER, get_user_name())
+
+    if not os.path.isdir(user_folder):
+        os.mkdir(user_folder)
+
+    for file in files:
+        if file and allowed_file(file.filename):
+            try:
+                file_path = os.path.join(user_folder, file.filename)
+                with open(file_path, "wb") as buffer:
+                    shutil.copyfileobj(file.file, buffer)
+            except Exception as e:
+                print(f"Error occurred while processing file: {e}")
+
+    names = [os.path.join(user_folder, i) for i in os.listdir(user_folder) if i.endswith(".pdf")]
+
+    fp = Filetb()
+    fp.files_processor_tb(names)
+
+    with open(os.path.join(user_folder, "fp"), "wb") as handle:
+        pickle.dump(fp, handle)
+    return
+
+
+def load_fp(collection=None):
+    if collection:
+        user_folder = os.path.join(UPLOAD_FOLDER, collection)
+    else:
+        user_folder = os.path.join(UPLOAD_FOLDER, get_user_name())
+
+    with open(os.path.join(user_folder, "fp"), 'rb') as handle:
+        return pickle.load(handle)
+
+
+def get_final_responses(qna, question, collection=None):
+    fp = load_fp(collection=collection)
+    response_sents = fp.get_response_cosine(question)
+    #responses = qna.get_top_n(question=search_data, response_sents=response_sents, top=10)
+    result=qna.extract_answer_blobs(question, response_sents[:50])
+    return result
+
+def upload_fp(file):
+    user_folder = os.path.join(UPLOAD_FOLDER, get_user_name())
+    file_location = f"{user_folder}/{file.filename}"
+    with open(file_location, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+    return
+
+
+
+
+# =============================================================================
+# 
+# =============================================================================
+
+import glob
+
+files= glob.glob(r"C:\Users\ELECTROBOT\Desktop\data\*.pdf")
+
+fp= Filetb()
+fp.files_processor_tb(files)
+
+
+question= "who married federer"
+responses= fp.get_response_cosine(question)
+qna= Qnatb(r"C:\Users\ELECTROBOT\Desktop\model_dump\minilm-uncased-squad2")
+final=qna.extract_answer_blobs(question, responses)
