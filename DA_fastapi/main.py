@@ -1,113 +1,114 @@
-from typing import List
-import shutil
+from typing import List, Union
+
 from fastapi import FastAPI, File, UploadFile
 from pydantic import BaseModel
-from functions import *
-import os, glob
-#from pathlib import *
-#current_dir = Path.cwd()
+from functions import process_uploaded_files, Qnatb, delete_files,get_final_responses,get_file_names,upload_fp
 import os
-import pickle
+from fastapi import FastAPI, HTTPException
+import shutil
+
 path= os.getcwd()
 
-upload_path= os.path.join(path, "uploads")
-from fastapi.responses import HTMLResponse
+UPLOAD_FOLDER=r'C:\Users\ELECTROBOT\Desktop\git\ml_diaries\DA_fastapi\uploads'
 
-import torch
-from transformers import BertForQuestionAnswering
-from transformers import BertTokenizer
-qna= qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\Bert-qa\model')
+#qna= Qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\minilm-uncased-squad2')
+qna= Qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\Bert-qa\model')
+
 
 app = FastAPI()
 
 
-# @app.post("/")
-# async def root(file: UploadFile = File(...)):
-#    with open(f"./uploads/{file.filename}", "wb") as buffer:
-#        shutil.copyfileobj(file.file, buffer)
-#    return {"file_name": file.filename}
-
+########################################################################################################################
 @app.get("/")
 async def read_main():
     return {"msg": "Hello World"}
 
+########################################################################################################################
 
-
-@app.post("/files")
+@app.post("/uploadfiles")
 async def upload_files(files: List[UploadFile] = File(...)):
-    file_paths = await save_files(files)
     try:
-        fp = await process_files(file_paths)
-        await save_file(fp)
+        process_uploaded_files(files)
     except Exception as e:
-        file_paths.append(str(e))
-        await delete_files(file_paths)
+        delete_files()
         raise e
 
-    return {"file_name": "Good"}
+@app.post("/upload_folder/")
+async def upload_folder(folder: UploadFile = File(...)):
+    # process the uploaded folder
+    # here you can write code to save the uploaded folder to disk or process it in memory
+    return {"message": "Folder uploaded successfully"}
 
-async def save_files(files):
-    file_paths = []
-    for file in files:
-        file_path = f"./uploads/{file.filename}"
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
-        file_paths.append(file_path)
-    return file_paths
 
-async def process_files(file_paths):
-    return file_processor(file_paths)
+@app.post("/uploadfiles_collection/<collection_var>")
+async def upload_files(collection_var,files: List[UploadFile] = File(...)):
+    try:
+        process_uploaded_files(files, collection=collection_var)
+    except Exception as e:
+        delete_files()
+        raise e
 
-async def save_file(fp):
-    with open(f"./uploads/fpp", "wb") as buffer:
-        pickle.dump(fp, buffer)
+########################################################################################################################
 
-async def delete_files(file_paths):
-    for file_path in file_paths:
-        os.remove(file_path)
-
+def load_qna():
+    global qna
+    if qna is None:
+        qna = Qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\minilm-uncased-squad2')
 
 class request_body(BaseModel):
     text: str
+    collection: Union[str, None]=None
 
+class ResponseItem(BaseModel):
+    doc: str
+    page: int
+    sentence: str
+    answer: str
+    logits: float
+    blob: str
+
+class Response(BaseModel):
+    responses: List[ResponseItem]
 
 @app.post('/predict')
-def predict(data: request_body):
-    #load file processor object
+async def predict(data: request_body)-> Response:
+    # load file processor object
     try:
-        with open(f"./uploads/fpp", 'rb') as handle:
-            fp = pickle.load(handle)
-        # Predicting the Class
-
-        final_response_dict = get_response_fuzz(question=data.text,
-                                                vec=fp.vec,
-                                                tfidf_matrix=fp.tfidf_matrix,
-                                                tb_index=fp.tb_index,
-                                                stopwords=fp.stopwords,
-                                                max_length=7)
-        LM_final = qna.get_top_n(data.text, final_response_dict, top=10, max_length=None)
-
-
-
-        # Return the Result
-        if len(LM_final)>0:
-            return {'class': LM_final[0]["answer"]}
-        else:
-            return {'class': "No Results"}
+        load_qna()
+        responses = get_final_responses(qna, question=data.text, collection=data.collection)
+        response_items = []
+        for item in responses:
+            response_items.append(ResponseItem(answer=item['answer'], blob=item['blob'], logits=item['logits'],doc=item['doc'],page=item['page'],sentence=item['sentence']))
+        return Response(responses=response_items)
     except Exception as e:
-        return {'class': "No files"}
-        #return {'class': str(e)}
+        print(str(e))
+        raise e
 
+########################################################################################################################
+class ResetResponse(BaseModel):
+    files: List[str]
 
+@app.delete("/reset", response_model=ResetResponse)
+def reset() -> ResetResponse:
+    try:
+        files = delete_files()
+        return ResetResponse(files=files)
+    except Exception as e:
+        raise e
 
+########################################################################################################################
 
-@app.get("/reset")
-def reset():
-    for file in os.listdir("./uploads"):
-        print(file)
-        try:
-            path="./uploads/"+ file
-            os.remove(path)
-        except Exception as e:
-            print(e)
-    return {"file_name": "Good"}
+@app.get("/filename")
+def file_name():
+    file_names = get_file_names()
+    return {"file_names": file_names}
+
+########################################################################################################################
+class UploadResponse(BaseModel):
+    file_location: str
+
+@app.post("/uploadobject/",response_model=UploadResponse)
+async def upload_object(file: UploadFile = File(...))-> UploadResponse:
+    delete_files()
+    file_location=upload_fp(file)
+    return UploadResponse(file_location=file_location)

@@ -1,11 +1,16 @@
 from typing import List
 
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, Request, Form
 from pydantic import BaseModel
 from functions4 import process_uploaded_files, Qnatb, delete_files,get_final_responses,get_file_names,upload_fp
 import os
 from fastapi import FastAPI, HTTPException
 import shutil
+
+
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 
 path= os.getcwd()
 
@@ -16,7 +21,8 @@ qna= Qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\Bert-qa\model')
 
 
 app = FastAPI()
-
+app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="templates")
 
 ########################################################################################################################
 @app.get("/")
@@ -77,3 +83,12 @@ async def upload_object(file: UploadFile = File(...)):
     delete_files()
     upload_fp(file)
     return {"filename": file.filename}
+
+########################################################################################################################
+
+@app.post("/search", response_class=HTMLResponse)
+async def search(request: Request, search: str = Form(...)):
+    # Implement the search functionality here
+    results = get_final_responses(qna, search_data=search)
+    context = {"request": request, "results": results, "search_query": search}
+    return templates.TemplateResponse("search.html", context)
