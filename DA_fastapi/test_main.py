@@ -36,3 +36,17 @@ def test_get_final_responses():
 
     # Assert the expected output
     assert result == {"some_result"}
+
+@pytest.fixture()
+def file_processor():
+    return True
+
+
+class Filetb:
+
+    @pytest.fixture(autouse=True)
+    def _file_processor(self, file_processor):
+        self._response = file_processor
+
+    def files_processor_tb(self):
+        assert self._response == True
