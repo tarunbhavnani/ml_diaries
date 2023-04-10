@@ -6,7 +6,7 @@ Created on Tue Mar  7 13:47:30 2023
 """
 import pandas as pd
 import numpy as np
-data= pd.read_csv(r'C:\Users\tarun\Desktop\kaggle\telco\WA_Fn-UseC_-Telco-Customer-Churn.csv')
+data= pd.read_csv(r"C:\Users\ELECTROBOT\Desktop\git\ml_diaries\kaggle\WA_Fn-UseC_-Telco-Customer-Churn.csv")
 
 
 hd= data.head()
@@ -57,6 +57,7 @@ import lightgbm as lgbm  # standard alias
 
 clf = lgbm.LGBMClassifier(objective="binary", n_estimators=1000)  # or 'mutliclass'
 
+%time
 clf.fit(X_train,y_train)
 
 preds=clf.predict(X_test)
@@ -129,7 +130,8 @@ params = {'learning_rate': [0.01, 0.05, 0.1],
 xgb_clf = xgb.XGBClassifier(objective=objective,tree_method="hist")
 
 # Perform grid search with cross-validation on training set
-grid_search = GridSearchCV(xgb_clf, param_grid=params, cv=5, scoring='roc_auc')
+%time
+grid_search = GridSearchCV(xgb_clf, param_grid=params, cv=2, scoring='roc_auc')
 
 %%time
 grid_search.fit(X_train,y_train)

@@ -108,6 +108,9 @@ class CleanData(object):
 # Create data
 # =============================================================================
 
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import f1_score, auc,roc_curve,roc_auc_score
+
 kl= CleanData(train_transaction)
 
 data= kl.full_data
@@ -125,8 +128,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random
 # Lightgbm 
 # =============================================================================
 
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import f1_score, auc,roc_curve,roc_auc_score
+
 import lightgbm as lgbm  # standard alias
 
 

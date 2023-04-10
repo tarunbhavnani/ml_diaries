@@ -28,3 +28,30 @@ def test_process_uploaded_files(mock_files, mock_upload_folder):
     assert os.path.exists(file_path3)
 
 
+import unittest
+from unittest.mock import mock_open, patch
+
+# Import the function to be tested
+from my_module import load_fp
+
+class TestLoadFP(unittest.TestCase):
+
+    def test_load_fp(self):
+
+        # Define a mock file path
+        file_path = "/path/to/mock/fp"
+
+        # Define a mock Filetb object
+        mock_fp = Filetb()
+
+        # Define the expected return value
+        expected_return_value = mock_fp
+
+        # Use mock_open to mock the file contents
+        with patch("builtins.open", mock_open(read_data=pickle.dumps(mock_fp))):
+
+            # Call the function with the mocked inputs
+            actual_return_value = load_fp(collection=None)
+
+        # Assert that the actual return value matches the expected return value
+        self.assertEqual(actual_return_value, expected_return_value)

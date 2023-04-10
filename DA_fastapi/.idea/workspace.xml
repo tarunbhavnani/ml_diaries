@@ -20,8 +20,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="487646ed-d5f0-4af0-92b9-7c4b7ba4c4ea" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/main_new.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/functions.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_main.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../kaggle/Fraud_.py" beforeDir="false" afterPath="$PROJECT_DIR$/../kaggle/Fraud_.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../kaggle/basketball.py" beforeDir="false" afterPath="$PROJECT_DIR$/../kaggle/basketball.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../kaggle/churn_cohort.py" beforeDir="false" afterPath="$PROJECT_DIR$/../kaggle/churn_cohort.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../kaggle/telco.py" beforeDir="false" afterPath="$PROJECT_DIR$/../kaggle/telco.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,7 +54,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="configurable.group.tools" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunManager">
     <configuration name="main5" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
@@ -110,26 +117,26 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="960" y="436" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog/0.0.2560.1400/2560.0.1920.1040@0.0.2560.1400" timestamp="1677753406503" />
-    <state width="2539" height="401" key="GridCell.Tab.0.bottom" timestamp="1677753314927">
+    <state width="2539" height="401" key="GridCell.Tab.0.bottom" timestamp="1678421710571">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2539" height="401" key="GridCell.Tab.0.bottom/0.0.2560.1400/2560.0.1920.1040@0.0.2560.1400" timestamp="1677753314927" />
-    <state width="2539" height="401" key="GridCell.Tab.0.center" timestamp="1677753314926">
+    <state width="2539" height="401" key="GridCell.Tab.0.bottom/0.0.2560.1400/2560.0.1920.1040@0.0.2560.1400" timestamp="1678421710571" />
+    <state width="2539" height="401" key="GridCell.Tab.0.center" timestamp="1678421710570">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2539" height="401" key="GridCell.Tab.0.center/0.0.2560.1400/2560.0.1920.1040@0.0.2560.1400" timestamp="1677753314926" />
-    <state width="2539" height="401" key="GridCell.Tab.0.left" timestamp="1677753314926">
+    <state width="2539" height="401" key="GridCell.Tab.0.center/0.0.2560.1400/2560.0.1920.1040@0.0.2560.1400" timestamp="1678421710570" />
+    <state width="2539" height="401" key="GridCell.Tab.0.left" timestamp="1678421710570">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2539" height="401" key="GridCell.Tab.0.left/0.0.2560.1400/2560.0.1920.1040@0.0.2560.1400" timestamp="1677753314926" />
-    <state width="2539" height="401" key="GridCell.Tab.0.right" timestamp="1677753314927">
+    <state width="2539" height="401" key="GridCell.Tab.0.left/0.0.2560.1400/2560.0.1920.1040@0.0.2560.1400" timestamp="1678421710570" />
+    <state width="2539" height="401" key="GridCell.Tab.0.right" timestamp="1678421710571">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2539" height="401" key="GridCell.Tab.0.right/0.0.2560.1400/2560.0.1920.1040@0.0.2560.1400" timestamp="1677753314927" />
-    <state x="781" y="345" key="SettingsEditor" timestamp="1677753400817">
+    <state width="2539" height="401" key="GridCell.Tab.0.right/0.0.2560.1400/2560.0.1920.1040@0.0.2560.1400" timestamp="1678421710571" />
+    <state x="781" y="345" key="SettingsEditor" timestamp="1679655438426">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="781" y="345" key="SettingsEditor/0.0.2560.1400/2560.0.1920.1040@0.0.2560.1400" timestamp="1677753400817" />
-    <state x="781" y="345" key="SettingsEditor/0.0.2560.1400@0.0.2560.1400" timestamp="1677075985074" />
+    <state x="781" y="345" key="SettingsEditor/0.0.2560.1400/2560.0.1920.1040@0.0.2560.1400" timestamp="1678343094635" />
+    <state x="781" y="345" key="SettingsEditor/0.0.2560.1400@0.0.2560.1400" timestamp="1679655438426" />
   </component>
 </project>

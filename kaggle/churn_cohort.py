@@ -221,6 +221,7 @@ xgb_clf = xgb.XGBClassifier(
 
 eval_set = [(X_test, y_test)]
 
+%time
 xgb_clf.fit(
     X_train,
     y_train,

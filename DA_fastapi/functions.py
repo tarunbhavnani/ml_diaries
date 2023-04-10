@@ -183,17 +183,19 @@ class Filetb(object):
                 # print(file)
                 # unread.append(file)
                 pass
+        if len(all_sents)>0:
+            self.tb_index = tb_index
+            self.all_sents = all_sents
+            # vec = TfidfVectorizer(analyzer=self.ngrams, lowercase=True)
+            vec = TfidfVectorizer(stop_words=self.stopwords, lowercase=True)
+            vec.fit(all_sents)
+            self.vec = vec
+            tfidf_matrix = vec.transform(all_sents)
+            self.tfidf_matrix = tfidf_matrix
 
-        self.tb_index = tb_index
-        self.all_sents = all_sents
-        # vec = TfidfVectorizer(analyzer=self.ngrams, lowercase=True)
-        vec = TfidfVectorizer(stop_words=self.stopwords, lowercase=True)
-        vec.fit(all_sents)
-        self.vec = vec
-        tfidf_matrix = vec.transform(all_sents)
-        self.tfidf_matrix = tfidf_matrix
-
-        return tb_index, all_sents, vec, tfidf_matrix
+            return tb_index, all_sents, vec, tfidf_matrix
+        else:
+            return
 
     def get_response_cosine(self, question, min_length=7, score_threshold=0.1):
 
@@ -388,7 +390,14 @@ def load_fp(collection=None):
 
 
 def get_final_responses(qna, question, collection=None):
-    fp = load_fp(collection=collection)
+    if collection:
+        user_folder = os.path.join(UPLOAD_FOLDER, collection)
+    else:
+        user_folder = os.path.join(UPLOAD_FOLDER, get_user_name())
+    #fp = load_fp(collection=collection)
+    with open(os.path.join(user_folder, "fp"), 'rb') as handle:
+        fp= pickle.load(handle)
+
     response_sents = fp.get_response_cosine(question)
     #responses = qna.get_top_n(question=search_data, response_sents=response_sents, top=10)
     result=qna.extract_answer_blobs(question, response_sents[:50])
