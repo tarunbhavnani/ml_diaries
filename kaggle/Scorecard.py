@@ -7,16 +7,16 @@ Created on Wed Apr  5 11:27:00 2023
 
 import os
 import pandas as pd
-os.chdir(r'C:\Users\ELECTROBOT\Desktop\kaggle\scorecards')
+os.chdir(r'D:\kaggle\scorecards')
 
 
-rejected=pd.read_csv(r"C:\Users\ELECTROBOT\Desktop\kaggle\scorecards\rejected_2007_to_2018Q4.csv")
+rejected=pd.read_csv(r"D:\kaggle\scorecards\rejected_2007_to_2018Q4.csv")
 
 
 hd=rejected.sample(frac=1).head(2000)
 null_r=pd.DataFrame(rejected.isnull().sum())
 
-accepted= pd.read_csv(r"C:\Users\ELECTROBOT\Desktop\kaggle\scorecards\accepted_2007_to_2018Q4.csv")
+accepted= pd.read_csv(r"D:\kaggle\scorecards\accepted_2007_to_2018Q4.csv")
 hd1= accepted.sample(frac=1).head(2000)
 list(hd1)
 hd1.settlement_status.value_counts()
