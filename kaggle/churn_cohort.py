@@ -9,7 +9,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime
 
-df= pd.read_csv(r"C:\Users\ELECTROBOT\Desktop\MIT-Optmization\Churn\data.csv", encoding="ISO-8859-1")
+df= pd.read_csv(r"C:\Users\tarun\Desktop\MIT-Optmization\Churn\data.csv", encoding="ISO-8859-1")
 
 df= df[~df.CustomerID.isnull()]
 

@@ -12,7 +12,7 @@ import seaborn as sns
 import warnings
 warnings.filterwarnings('ignore')
 
-data= pd.read_csv(r"C:\Users\ELECTROBOT\Desktop\MIT-Optmization\Churn\data.csv", encoding="ISO-8859-1")
+data= pd.read_csv(r"C:\Users\tarun\Desktop\MIT-Optmization\Churn\data.csv", encoding="ISO-8859-1")
 list(data)
 hd= data.head()
 

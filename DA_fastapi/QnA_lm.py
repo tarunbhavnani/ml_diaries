@@ -293,11 +293,11 @@ class qnatb(object):
 #
 # =============================================================================
 
-# qna= qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\minilm-uncased-squad2')
+# qna= qnatb(model_path=r'D:\model_dump\minilm-uncased-squad2')
 #
 # import glob
 # files_path=r"C:\Users\ELECTROBOT\Desktop\git\ml_diaries\Document_Analyzer_Nov_2022\da_gpt\uploads\*"
-# files_path=r"C:\Users\ELECTROBOT\Desktop\data\*"
+# files_path=r"C:\Users\tarun\Desktop\Books\*.pdf"
 # files=glob.glob(files_path)
 
 # fp= qna.files_processor_tb(files)

@@ -6,7 +6,7 @@ Created on Tue Mar  7 13:47:30 2023
 """
 import pandas as pd
 import numpy as np
-data= pd.read_csv(r"C:\Users\ELECTROBOT\Desktop\git\ml_diaries\kaggle\WA_Fn-UseC_-Telco-Customer-Churn.csv")
+data= pd.read_csv(r"C:\Users\tarun\Desktop\git\ml_diaries\kaggle\WA_Fn-UseC_-Telco-Customer-Churn.csv")
 
 
 hd= data.head()
