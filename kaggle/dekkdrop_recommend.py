@@ -26,10 +26,13 @@ import matplotlib.pyplot as plt
 articles_df = pd.read_csv(r"D:\kaggle\Deskdrop\shared_articles.csv")
 articles_df = articles_df[articles_df['eventType'] == 'CONTENT SHARED']
 articles_df.head(5)
-
+list(articles_df)
 interactions_df = pd.read_csv(r"D:\kaggle\Deskdrop\users_interactions.csv")
 interactions_df.head(10)
+list(interactions_df)
 
+# sum(interactions_df.contentId.isin(articles_df.contentId))/len(interactions_df)
+# sum(articles_df.contentId.isin(interactions_df.contentId))/len(articles_df)
 
 #assign severity
 event_type_strength = {

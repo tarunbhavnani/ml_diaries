@@ -20,7 +20,7 @@ hd= data.head()
 features = ['CustomerID', 'InvoiceNo', 'InvoiceDate', 'Quantity', 'UnitPrice']
 data_clv = data[features]
 data_clv['TotalSales'] = data_clv['Quantity'].multiply(data_clv['UnitPrice'])
-print(data_clv.shape)
+print(data_clv.shape)                                                                                                                                                                                                      
 data_clv.head()
 
 data_clv['InvoiceDate']=[datetime.strptime(i.split()[0], "%m/%d/%Y") for i in data_clv['InvoiceDate']]
