@@ -14,6 +14,7 @@ import random
 import sklearn
 from nltk.corpus import stopwords
 from scipy.sparse import csr_matrix
+
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -43,6 +44,7 @@ event_type_strength = {
    'COMMENT CREATED': 4.0,  
 }
 
+
 interactions_df['eventStrength'] = interactions_df["eventType"].apply(lambda x: event_type_strength[x])
 
 list(interactions_df)
@@ -54,6 +56,7 @@ users_interactions_count_df = interactions_df.groupby(['personId', 'contentId'])
 print('# users: %d' % len(users_interactions_count_df))
 users_with_enough_interactions_df = users_interactions_count_df[users_interactions_count_df >= 5].reset_index()[['personId']]
 print('# users with at least 5 interactions: %d' % len(users_with_enough_interactions_df))
+
 
 
 interactions_from_selected_users_df= interactions_df.merge(users_with_enough_interactions_df, left_on="personId", right_on="personId", how="right")
@@ -128,8 +131,8 @@ related_text=articles_df[articles_df["contentId"].isin(related_content)]["text"]
 #rated_text=pd.DataFrame([0]*len(articles_df),columns=["score"])
 rated_text=articles_df.copy()
 rated_text["score"]=0
-for text in related_text.text:
-    text=related_text.text.iloc[1]
+for num in range(len(related_text)):
+    text=related_text.text.iloc[num]
     text_vec= vectorizer.transform([text])
     scores= cosine_similarity(X,text_vec)
     scores=[i[0] for i in scores]
@@ -209,25 +212,29 @@ svd = SVD()
 
 cross_validate(svd, data, measures=['RMSE', 'MAE'])
 
-df_785314 = interactions_full_df[(interactions_full_df['personId'] == -1479311724257856983)]
 
+#id=1479311724257856983
 
-df_785314 = df_785314.set_index('contentId')
+df_785314=interactions_full_df.copy()
+
+df_785314['Estimate_Score']=[svd.predict(-1479311724257856983,i).est for i in df_785314['contentId']]
+
+related_content=list(set(interactions_full_df[interactions_full_df["personId"]==-1479311724257856983]["contentId"]))
+
+df_785314=df_785314[~df_785314.contentId.isin(related_content)]
+df_785314=df_785314[["contentId","Estimate_Score"] ].drop_duplicates()
+df_785314=df_785314[["contentId","Estimate_Score"] ].drop_duplicates()
 df_785314 = df_785314.merge(articles_df, left_on="contentId", right_on="contentId", how="left")
 
+df_785314=df_785314.sort_values(by="Estimate_Score", ascending=False)[0:1000]
 
 print(df_785314.text)
 
 
-df_785314['Estimate_Score']=[svd.predict(i,j).est for i,j in zip(df_785314["personId"],df_785314['contentId'])]
-df_785314=df_785314.sort_values(by="Estimate_Score", ascending=False)
 
-df_785314.text
-
-#why am inot able to remove the related content form this.
-
-
-
+# =============================================================================
+# 
+# =============================================================================
 trainset = data.build_full_trainset()
 svd.fit(trainset)
 svd.predict(uid=-1479311724257856983, iid=-8949113594875411859 )

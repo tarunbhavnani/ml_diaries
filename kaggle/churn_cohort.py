@@ -128,7 +128,7 @@ for start_date in sorted(months):
 # =============================================================================
 
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import f1_score, auc,roc_curve,roc_auc_score
+from sklearn.metrics import f1_score, auc,roc_curve,roc_auc_score, confusion_matrix
 
 data= final_churn_data.copy()
 
@@ -190,6 +190,11 @@ for thresh in range(0,100):
         best_f1=f1
 
 
+preds=[1 if i>.02 else 0 for i in probs]
+sns.kdeplot(probs)
+
+confusion_matrix(y_test, preds)
+
 
 import matplotlib.pyplot as plt
 
@@ -203,6 +208,13 @@ plt.ylabel('True Positive Rate')
 plt.legend()
 # show the plot
 plt.show()
+
+
+#lets see ks
+
+from scipy.stats import ks_2samp
+predicted_probabilities = [p for _, p in sorted(zip(probs, y_test), reverse=True)]
+ks_statistic, p_value = ks_2samp(predicted_probabilities, true_values)
 
 
 # =============================================================================

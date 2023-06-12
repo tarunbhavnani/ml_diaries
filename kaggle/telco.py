@@ -196,3 +196,167 @@ lgb_model.fit(train_data.drop('binary_outcome', axis=1).append(val_data.drop('bi
 y_test_pred = lgb_model.predict_proba(test_data.drop('binary_outcome', axis=1))[:, 1]
 test_auc = roc_auc_score(test_data['binary_outcome'], y_test_pred)
 print(f'Test AUC: {test_auc}')
+
+
+
+
+
+
+
+
+
+
+
+
+# =============================================================================
+# gain curve/lift curve
+# =============================================================================
+
+
+
+def plot_gain(y_real, y_proba, ax=None, color='b', title='gain curve'):
+    # sort the predictions by descending probability
+    sorted_indices = np.argsort(y_proba)[::-1]
+    y_real_sorted = y_real[sorted_indices]
+    
+    # calculate the cumulative number of positive samples and the total number of samples
+    cum_positives = np.cumsum(y_real_sorted)
+    total_samples = np.arange(1, len(y_real_sorted) + 1)
+    
+    # calculate the cumulative gain and the perfect gain
+    cum_gain = cum_positives / np.sum(y_real)
+    perfect_gain = np.linspace(0, 1, len(y_real_sorted))
+    
+    # plot the gain curve
+    if ax is None:
+        fig, ax = plt.subplots()
+    ax.plot(total_samples, cum_gain, color=color, label='cumulative gain')
+    ax.plot(total_samples, perfect_gain, color='k', linestyle='--', label='perfect gain')
+    ax.set_xlabel('Total samples')
+    ax.set_ylabel('Cumulative gain')
+    ax.set_title(title)
+    ax.legend()
+
+
+import seaborn as sns
+
+
+def plot_gain(y_real, y_proba, ax=None, color='b', title='gain curve'):
+    aux_df= pd.DataFrame()
+    aux_df['y_real']=y_real
+    aux_df['y_proba']=y_proba
+    aux_df= aux_df.sort_values("y_proba", ascending=False)
+    total_positive_count= sum(aux_df["y_real"]==1)
+    
+    gain=0
+    subset_positive_count=0
+    gain_values=[]
+    for i in aux_df.index:
+        if aux_df.loc[i]['y_real']==1:
+            subset_positive_count+=1
+        gain= subset_positive_count/total_positive_count
+        gain_values.append(gain)
+    if ax==None:
+        ax=plt.axes()
+    ax.set_xlabel("proportion of sample")
+    ax.set_ylabel("Gain")
+    ax.set_title(title)
+    sns.lineplot(x=[0,1],y=[0,1], color='gray', linestyle='dashed', linewidth=1, ax=ax)
+    sns.lineplot(x=[x/len(gain_values) for x in range(len(gain_values))], y=gain_values, ax=ax, color=color)
+    
+
+
+plot_gain(y_test, lr_probs, ax=None, color='b', title='gain curve')
+
+
+
+def plot_lift(y_real, y_proba, ax=None, color='b', title='lift curve'):
+    # sort the predictions by descending probability
+    sorted_indices = np.argsort(y_proba)[::-1]
+    y_real_sorted = y_real[sorted_indices]
+    
+    # calculate the cumulative number of positive samples and the total number of samples
+    cum_positives = np.cumsum(y_real_sorted)
+    total_samples = np.arange(1, len(y_real_sorted) + 1)
+    
+    # calculate the proportion of positive samples and the random expectation
+    prop_positives = cum_positives / np.sum(y_real)
+    random_expectation = total_samples / len(y_real_sorted)
+    
+    # calculate the lift and the perfect lift
+    lift = prop_positives / random_expectation
+    perfect_lift = np.ones_like(lift) * np.sum(y_real) / len(y_real)
+    
+    # plot the lift curve
+    if ax is None:
+        fig, ax = plt.subplots()
+    ax.plot(total_samples, lift, color=color, label='lift curve')
+    ax.plot(total_samples, perfect_lift, color='k', linestyle='--', label='perfect lift')
+    ax.set_xlabel('Total samples')
+    ax.set_ylabel('Lift')
+    ax.set_title(title)
+    ax.legend()
+
+
+plot_lift(y_test, lr_probs, ax=None, color='b', title='lift curve')
+
+# =============================================================================
+# decile calculation 
+# =============================================================================
+
+
+
+
+
+
+def decile_lift(y_real, y_proba):
+    # sort the predictions by descending probability
+    sorted_indices = np.argsort(y_proba)[::-1]
+    y_real_sorted = y_real[sorted_indices]
+    
+    # calculate the number of positive samples in each decile
+    num_deciles = 10
+    num_samples = len(y_real_sorted)
+    decile_size = num_samples // num_deciles
+    decile_positives = np.zeros(num_deciles)
+    for i in range(num_deciles):
+        start_index = i * decile_size
+        end_index = start_index + decile_size
+        decile_positives[i] = np.sum(y_real_sorted[start_index:end_index])
+    
+    # calculate the lift in each decile
+    total_positives = np.sum(y_real)
+    lift = decile_positives / (total_positives / num_deciles)
+    
+    return lift
+
+
+
+lift_decile=pd.DataFrame({"true":list(y_test), "preds":list(lr_probs)})
+lift_decile=lift_decile.sort_values("preds", ascending=False).reset_index(drop=True)
+lift_decile["rank"]=lift_decile.index
+
+lift_decile["decile"]=pd.qcut(lift_decile['rank'], q=10, labels=False)
+lift_decile.groupby("decile")["true"].sum()
+
+
+kl=lift_decile.groupby("decile").agg({"decile":lambda x: list(set(x))[0],
+                                   "true": lambda x: sum(x),
+
+    
+    
+    })
+
+kl["cum"]=np.cumsum(kl.true)
+kl["lift"]=kl.cum/sum(y_test)
+
+
+
+
+
+
+
+
+
+
+
