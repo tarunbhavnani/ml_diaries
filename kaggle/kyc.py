@@ -132,7 +132,7 @@ for sent in sentences:
 
 
 
-
+print(df.head())
 
 
 

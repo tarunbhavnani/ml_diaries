@@ -12,7 +12,7 @@ path= os.getcwd()
 UPLOAD_FOLDER=r'C:\Users\ELECTROBOT\Desktop\git\ml_diaries\DA_fastapi\uploads'
 
 #qna= Qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\minilm-uncased-squad2')
-qna= Qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\Bert-qa\model')
+qna= Qnatb(model_path=r'D:\model_dump\Bert-qa\model')
 
 
 app = FastAPI()

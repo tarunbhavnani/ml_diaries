@@ -38,6 +38,8 @@ hd= df.sample(frac=1).head(1000)
 
 df_=df.groupby(["CustomerID","date"]).agg({'InvoiceNo': 'nunique','ret_invoice': 'nunique', "Bill":'sum', "refund": 'sum' }).reset_index()
 
+
+
 cumulative_spend = df_.groupby('CustomerID')['Bill'].cumsum()
 df_['Cum_bill'] = cumulative_spend
 
@@ -90,6 +92,7 @@ final_churn_data=pd.DataFrame()
 temp= fd.copy()
 
 for start_date in sorted(months):
+#    break
 
     cutoff_date = start_date + pd.DateOffset(months=4)
     if cutoff_date in months:
@@ -131,6 +134,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import f1_score, auc,roc_curve,roc_auc_score, confusion_matrix
 
 data= final_churn_data.copy()
+final_churn_data.churn.value_counts()
 
 data["churn"]=[1 if i else 0 for i in data["churn"]]
 hd= data.head()
@@ -151,6 +155,8 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random
 import lightgbm as lgbm  # standard alias
 
 
+
+
 clf = lgbm.LGBMClassifier(objective="binary", n_estimators=1000)  # or 'mutliclass'
 
 clf.fit(X_train,y_train)
@@ -158,6 +164,8 @@ clf.fit(X_train,y_train)
 preds=clf.predict(X_test)
 
 f1_score(y_test, preds)#.49
+confusion_matrix(y_test, preds)
+
 
 probs= clf.predict_proba(X_test)
 
@@ -179,6 +187,7 @@ lgbm_fpr, lgbm_tpr, thresholds = roc_curve(y_test, probs)
 
 #def best_thresh():
 best_f1=0
+best_thresh=0
 probs= clf.predict_proba(X_test)
 probs=probs[:,1]
 for thresh in range(0,100):
@@ -186,11 +195,12 @@ for thresh in range(0,100):
     preds=[1 if i>thresh else 0 for i in probs]
     f1= f1_score(y_test, preds)
     if f1>best_f1:
-        print(thresh)
+        print(f1)
+        best_thresh=thresh
         best_f1=f1
 
 
-preds=[1 if i>.02 else 0 for i in probs]
+preds=[1 if i>best_thresh else 0 for i in probs]
 sns.kdeplot(probs)
 
 confusion_matrix(y_test, preds)
@@ -216,6 +226,66 @@ from scipy.stats import ks_2samp
 predicted_probabilities = [p for _, p in sorted(zip(probs, y_test), reverse=True)]
 ks_statistic, p_value = ks_2samp(predicted_probabilities, true_values)
 
+
+# =============================================================================
+# grid search lgbm
+# =============================================================================
+
+model = lgbm.LGBMClassifier(objective="binary", n_estimators=1000)  # or 'mutliclass'
+# Define the hyperparameter grid for GridSearchCV
+param_grid = {
+    'learning_rate': [0.1, 0.05, 0.01],
+    'num_leaves': [31, 63, 127],
+    'max_depth': [-1, 5, 10],
+    'min_child_samples': [20, 50, 100],
+    'subsample': [0.8, 0.9, 1.0],
+    'colsample_bytree': [0.8, 0.9, 1.0]
+}
+
+# Perform grid search
+from sklearn.model_selection import GridSearchCV
+
+grid_search = GridSearchCV(estimator=model, param_grid=param_grid, cv=5, scoring='accuracy')
+grid_search.fit(X_train, y_train)  # X_train and y_train are your training data
+
+# Print the best parameters and best score
+print("Best Parameters: ", grid_search.best_params_)
+#Best Parameters:  {'colsample_bytree': 0.8, 'learning_rate': 0.01, 'max_depth': 5, 'min_child_samples': 20, 'num_leaves': 63, 'subsample': 0.8}
+print("Best Score: ", grid_search.best_score_)
+
+best_params = grid_search.best_params_
+
+# Create a new LightGBM model with the best parameters
+model = lgbm.LGBMClassifier(objective="binary", n_estimators=1000)
+model.set_params(**best_params)
+
+# Train the model on your training data
+model.fit(X_train, y_train)
+
+preds=model.predict(X_test)
+
+f1_score(y_test, preds)#.49
+confusion_matrix(y_test, preds)
+
+#def best_thresh():
+best_f1=0
+best_thresh=0
+probs= model.predict_proba(X_test)
+probs=probs[:,1]
+for thresh in range(0,100):
+    thresh= thresh/100    
+    preds=[1 if i>thresh else 0 for i in probs]
+    f1= f1_score(y_test, preds)
+    if f1>best_f1:
+        print(f1)
+        best_thresh=thresh
+        best_f1=f1
+
+
+preds=[1 if i>best_thresh else 0 for i in probs]
+
+f1_score(y_test, preds)#.61
+confusion_matrix(y_test, preds)
 
 # =============================================================================
 # xg

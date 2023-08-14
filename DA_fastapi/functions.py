@@ -417,15 +417,15 @@ def upload_fp(file):
 # 
 # =============================================================================
 
-import glob
+#import glob
 
-files= glob.glob(r"C:\Users\ELECTROBOT\Desktop\data\*.pdf")
+#files= glob.glob(r"C:\Users\ELECTROBOT\Desktop\data\*.pdf")
 
-fp= Filetb()
-fp.files_processor_tb(files)
+#fp= Filetb()
+#fp.files_processor_tb(files)
 
 
-question= "who married federer"
-responses= fp.get_response_cosine(question)
-qna= Qnatb(r"C:\Users\ELECTROBOT\Desktop\model_dump\minilm-uncased-squad2")
-final=qna.extract_answer_blobs(question, responses)
+#question= "who married federer"
+#responses= fp.get_response_cosine(question)
+#qna= Qnatb(r"C:\Users\ELECTROBOT\Desktop\model_dump\minilm-uncased-squad2")
+#final=qna.extract_answer_blobs(question, responses)

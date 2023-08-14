@@ -20,8 +20,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="929aac5e-a631-4661-9aed-237af9e525f0" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../../DA_fastapi/main5.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../DA_fastapi/main5.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../DA_fastapi/uploads/m554417/New Text Document.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../DA_fastapi/functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../DA_fastapi/functions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../DA_fastapi/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../DA_fastapi/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../kaggle/churn_cohort.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../kaggle/churn_cohort.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../kaggle/kyc.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../kaggle/kyc.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,11 +46,14 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">
-    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../DA_fastapi" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
-  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "master",
+    "last_opened_file_path": "C:/Users/tarun/Desktop/git/ml_diaries/DA_fastapi"
+  }
+}]]></component>
   <component name="RunManager">
     <configuration name="wsgi" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -98,32 +103,5 @@
         </entry>
       </map>
     </option>
-    <option name="oldMeFiltersMigrated" value="true" />
-  </component>
-  <component name="WindowStateProjectService">
-    <state x="1060" y="455" key="FileChooserDialogImpl" timestamp="1677076107873">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state x="1060" y="455" key="FileChooserDialogImpl/0.0.2560.1400@0.0.2560.1400" timestamp="1677076107873" />
-    <state width="2539" height="401" key="GridCell.Tab.0.bottom" timestamp="1677215164058">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state width="2539" height="401" key="GridCell.Tab.0.bottom/0.0.2560.1400@0.0.2560.1400" timestamp="1677215164058" />
-    <state width="2539" height="401" key="GridCell.Tab.0.center" timestamp="1677215164058">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state width="2539" height="401" key="GridCell.Tab.0.center/0.0.2560.1400@0.0.2560.1400" timestamp="1677215164058" />
-    <state width="2539" height="401" key="GridCell.Tab.0.left" timestamp="1677215164058">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state width="2539" height="401" key="GridCell.Tab.0.left/0.0.2560.1400@0.0.2560.1400" timestamp="1677215164058" />
-    <state width="2539" height="401" key="GridCell.Tab.0.right" timestamp="1677215164058">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state width="2539" height="401" key="GridCell.Tab.0.right/0.0.2560.1400@0.0.2560.1400" timestamp="1677215164058" />
-    <state x="781" y="345" key="SettingsEditor" timestamp="1677076036229">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state x="781" y="345" key="SettingsEditor/0.0.2560.1400@0.0.2560.1400" timestamp="1677076036229" />
   </component>
 </project>
