@@ -1,0 +1,1 @@
+uvicorn run:app --reload --port 8080
