@@ -370,8 +370,10 @@ def get_final_responses(qna, question, collection, user_id):
         results=[{"doc":"None", "page":0, "sentence":"None", "logits":0, "blob":"None"}]
 
         final= {"results": results, "error":"No Response", "status": "error"}
+    return final
 
-def get_redis_keys(collection_var, user_id):
+
+def get_redis_keys(collection, user_id):
     collection_var=get_collection(collection, user_id)
     names= cache.keys()
     names= [name.decode() for name in names]
@@ -433,64 +435,64 @@ def send_file(filename):
     return FileResponse(file_path)
 
 
-def delete_files():
-    user_folder = os.path.join(UPLOAD_FOLDER, get_user_name())
-    shutil.rmtree(user_folder)
-    os.mkdir(user_folder)
-    return ["anme1", "name2"]
+# def delete_files():
+#     user_folder = os.path.join(UPLOAD_FOLDER, get_user_name())
+#     shutil.rmtree(user_folder)
+#     os.mkdir(user_folder)
+#     return ["anme1", "name2"]
 
 
-def process_uploaded_files(files, collection=None):
-    if collection:
-        user_folder = os.path.join(UPLOAD_FOLDER, collection)
-    else:
-        user_folder = os.path.join(UPLOAD_FOLDER, get_user_name())
+# def process_uploaded_files(files, collection=None):
+#     if collection:
+#         user_folder = os.path.join(UPLOAD_FOLDER, collection)
+#     else:
+#         user_folder = os.path.join(UPLOAD_FOLDER, get_user_name())
 
-    if not os.path.isdir(user_folder):
-        os.mkdir(user_folder)
+#     if not os.path.isdir(user_folder):
+#         os.mkdir(user_folder)
 
-    for file in files:
-        if file and allowed_file(file.filename):
-            try:
-                file_path = os.path.join(user_folder, file.filename)
-                with open(file_path, "wb") as buffer:
-                    shutil.copyfileobj(file.file, buffer)
-            except Exception as e:
-                print(f"Error occurred while processing file: {e}")
+#     for file in files:
+#         if file and allowed_file(file.filename):
+#             try:
+#                 file_path = os.path.join(user_folder, file.filename)
+#                 with open(file_path, "wb") as buffer:
+#                     shutil.copyfileobj(file.file, buffer)
+#             except Exception as e:
+#                 print(f"Error occurred while processing file: {e}")
 
-    names = [os.path.join(user_folder, i) for i in os.listdir(user_folder) if i.endswith(".pdf")]
+#     names = [os.path.join(user_folder, i) for i in os.listdir(user_folder) if i.endswith(".pdf")]
 
-    fp = Filetb()
-    fp.files_processor_tb(names)
+#     fp = Filetb()
+#     fp.files_processor_tb(names)
 
-    with open(os.path.join(user_folder, "fp"), "wb") as handle:
-        pickle.dump(fp, handle)
-    return
-
-
-def load_fp(collection=None):
-    if collection:
-        user_folder = os.path.join(UPLOAD_FOLDER, collection)
-    else:
-        user_folder = os.path.join(UPLOAD_FOLDER, get_user_name())
-
-    with open(os.path.join(user_folder, "fp"), 'rb') as handle:
-        return pickle.load(handle)
+#     with open(os.path.join(user_folder, "fp"), "wb") as handle:
+#         pickle.dump(fp, handle)
+#     return
 
 
-def get_final_responses(qna, question, collection=None):
-    fp = load_fp(collection=collection)
-    response_sents = fp.get_response_cosine(question)
-    #responses = qna.get_top_n(question=search_data, response_sents=response_sents, top=10)
-    result=qna.extract_answer_blobs(question, response_sents[:50])
-    return result
+# def load_fp(collection=None):
+#     if collection:
+#         user_folder = os.path.join(UPLOAD_FOLDER, collection)
+#     else:
+#         user_folder = os.path.join(UPLOAD_FOLDER, get_user_name())
 
-def upload_fp(file):
-    user_folder = os.path.join(UPLOAD_FOLDER, get_user_name())
-    file_location = f"{user_folder}/{file.filename}"
-    with open(file_location, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-    return file_location
+#     with open(os.path.join(user_folder, "fp"), 'rb') as handle:
+#         return pickle.load(handle)
+
+
+# def get_final_responses(qna, question, collection=None):
+#     fp = load_fp(collection=collection)
+#     response_sents = fp.get_response_cosine(question)
+#     #responses = qna.get_top_n(question=search_data, response_sents=response_sents, top=10)
+#     result=qna.extract_answer_blobs(question, response_sents[:50])
+#     return result
+
+# def upload_fp(file):
+#     user_folder = os.path.join(UPLOAD_FOLDER, get_user_name())
+#     file_location = f"{user_folder}/{file.filename}"
+#     with open(file_location, "wb") as buffer:
+#         shutil.copyfileobj(file.file, buffer)
+#     return file_location
 
 
 
@@ -499,15 +501,15 @@ def upload_fp(file):
 # 
 # =============================================================================
 
-import glob
+# import glob
 
-files= glob.glob(r"C:\Users\ELECTROBOT\Desktop\data\*.pdf")
+# files= glob.glob(r"C:\Users\ELECTROBOT\Desktop\data\*.pdf")
 
-fp= Filetb()
-fp.files_processor_tb(files)
+# fp= Filetb()
+# fp.files_processor_tb(files)
 
 
-question= "who married federer"
-responses= fp.get_response_cosine(question)
-qna= Qnatb(r"C:\Users\ELECTROBOT\Desktop\model_dump\minilm-uncased-squad2")
-final=qna.extract_answer_blobs(question, responses)
+# question= "who married federer"
+# responses= fp.get_response_cosine(question)
+# qna= Qnatb(r"C:\Users\ELECTROBOT\Desktop\model_dump\minilm-uncased-squad2")
+# final=qna.extract_answer_blobs(question, responses)
