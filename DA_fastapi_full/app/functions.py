@@ -412,7 +412,10 @@ def transfer_fp(collection, user_id):
         return [str(e)]
         
 
-
+#import io
+def get_file(filename):
+    obj= cache.read_from_cache_user(filename)
+    return obj
 
 
 
