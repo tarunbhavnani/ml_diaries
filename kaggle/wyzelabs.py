@@ -115,7 +115,7 @@ ids= set([i for i in test.user_id])
 
 ss_= pd.DataFrame(columns= ["user_id", "rule", "rank"])
 
-#user_id= "test_19"
+#user_id= 19
 #tt= test[test.user_id==user_id]
 
 
@@ -137,7 +137,20 @@ for user_id in ids:
     listed_devices=list(set(list(listed_devices.trigger_device)+list(listed_devices.action_device)))
     
     recommended_items=recommended_items[[True if i.split("_")[0] in listed_devices and i.split("_")[3] in listed_devices  else False for i in recommended_items]]
-    recommended_item=pd.DataFrame(recommended_items[0:50]).reset_index()
+    
+    
+    
+    #recommended_item=pd.DataFrame(recommended_items[0:50]).reset_index()
+    recommended_item=pd.DataFrame(recommended_items).reset_index()
+    
+# =============================================================================
+#     #take top trigger action
+     
+    recommended_item["trigger"]=[i.split('_')[1] for i in recommended_item.iloc[:,1]]
+    recommended_item=recommended_item.groupby("trigger").head(1)
+    recommended_item.drop("trigger", axis=1, inplace=True)
+#     
+# =============================================================================
     recommended_item.columns= ["rank", "rule"]
     recommended_item["user_id"]=user_id
     recommended_item=recommended_item[["user_id", "rule", "rank"]]
@@ -184,13 +197,13 @@ for user_id in ids:
     
 
 #ss_['rank']=[i+1 for i in ss_['rank']]
-ss_.to_csv(r"C:\Users\tarun\Desktop\wyzelabs\submisssion.csv", index=False)
+ss_.to_csv(r"C:\Users\tarun\Desktop\wyzelabs\submisssion_2.csv", index=False)
 
 
 
 
 
-sub_10=  ss_.groupby('user_id').head(10)
-sub_10.to_csv(r"C:\Users\tarun\Desktop\wyzelabs\sub_10.csv", index=False)
+#sub_10=  ss_.groupby('user_id').head(10)
+#sub_10.to_csv(r"C:\Users\tarun\Desktop\wyzelabs\sub_10.csv", index=False)
 
 
