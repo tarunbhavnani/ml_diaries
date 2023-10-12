@@ -4,7 +4,7 @@ import os
 from . import app
 from .endpoints.functions import Qnatb, get_file_names, process_uploaded_files, delete_files, load_fp, send_file, get_final_responses
 
-qna = Qnatb(model_path=r'C:\Users\ELECTROBOT\Desktop\model_dump\minilm-uncased-squad2')
+qna = Qnatb(model_path=r'D:\model_dump\minilm-uncased-squad2')
 
 UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
 

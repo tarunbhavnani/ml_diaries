@@ -40,7 +40,7 @@ async def upload_folder(folder: UploadFile = File(...)):
     return {"message": "Folder uploaded successfully"}
 
 
-@app.post("/uploadfiles_collection/<collection_var>")
+@app.post("/uploadfiles_collection/{collection_var}")
 async def upload_files(collection_var,files: List[UploadFile] = File(...)):
     try:
         process_uploaded_files(files, collection=collection_var)
