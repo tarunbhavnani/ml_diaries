@@ -23,13 +23,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="487646ed-d5f0-4af0-92b9-7c4b7ba4c4ea" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/../Document_Analyzer_Nov_2022/DA_final/run-flask.bat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Document_Analyzer_Nov_2022/DA_final/.idea/DA_final.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../Document_Analyzer_Nov_2022/DA_final/.idea/DA_final.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Document_Analyzer_Nov_2022/DA_final/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Document_Analyzer_Nov_2022/DA_final/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Document_Analyzer_Nov_2022/DA_final/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Document_Analyzer_Nov_2022/DA_final/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Document_Analyzer_Nov_2022/DA_final/app/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../Document_Analyzer_Nov_2022/DA_final/app/src/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/functions.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

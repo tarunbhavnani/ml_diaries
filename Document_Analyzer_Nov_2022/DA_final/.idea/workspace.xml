@@ -23,13 +23,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="929aac5e-a631-4661-9aed-237af9e525f0" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/run-flask.bat" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../DA_fastapi/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../../DA_fastapi/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../DA_fastapi/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../DA_fastapi/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/DA_final.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/DA_final.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../DA_fastapi/functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../DA_fastapi/functions.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

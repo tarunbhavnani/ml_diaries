@@ -18,7 +18,7 @@ from gensim import parsing
 from fastapi.responses import FileResponse
 
 
-UPLOAD_FOLDER=r'C:\Users\ELECTROBOT\Desktop\git\ml_diaries\DA_fastapi\uploads'
+UPLOAD_FOLDER=r'C:\Users\tarun\Desktop\check'
 
 
 class Filetb(object):
