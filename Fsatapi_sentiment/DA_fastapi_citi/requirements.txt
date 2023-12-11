@@ -1,0 +1,7 @@
+pip install uvicorn==0.16.0
+pip install fastapi==0.90.0
+
+pandas
+Flask
+spacy
+nltk
