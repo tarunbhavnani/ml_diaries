@@ -27,6 +27,12 @@ test= pd.read_csv(r"D:\kaggle\obesity\test.csv")
 ss= pd.read_csv(r"D:\kaggle\obesity\sample_submission.csv")
 
 
+list(train)
+train.NObeyesdad.value_counts()
+
+
+
+
 train.head()
 train.describe()
 
@@ -77,6 +83,7 @@ test= update_vars(test)
 
 def create_new(train):
     train['senior']= [1 if i>40 else 0 for i in train['Age']]
+    train['bmi']=[i/j**2 for i,j in zip(train.Weight, train.Height)]
     return train
 
 
