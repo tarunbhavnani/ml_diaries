@@ -40,10 +40,11 @@ print(f'Observed Probability of Heads: {observed_probability:.2f}')
 # =============================================================================
 import numpy as np
 from scipy.stats import bernoulli
-
+import random
 # Observed data (coin flips)
-observed_data = np.array([1, 0, 1, 1, 0, 1, 0, 0, 1, 1])
-observed_data = list(coin_flips)
+#observed_data = np.array([1, 0, 1, 1, 0, 1, 0, 0, 1, 1])
+observed_data = np.array([random.randint(0,1) for i in range(100)])
+#observed_data = coin_flips
 
 # Likelihood function for a Bernoulli distribution
 def likelihood(p):
@@ -65,11 +66,13 @@ plt.show()
 
 # =============================================================================
 # if we take 1000 coin flips the liklihood comes to zero.
-#The likelihood function can become very small, especially for a large number of observations, due to the nature of the product of probabilities. 
-#When you multiply many probabilities between 0 and 1, the result can become extremely small. This is often an issue with numerical precision.
+#The likelihood function can become very small, especially for a large number of observations, due to the nature of 
+#the product of probabilities. 
+#When you multiply many probabilities between 0 and 1, the result can become extremely small. 
+#This is often an issue with numerical precision.
 # =============================================================================
 
-observed_data = list(coin_flips)
+observed_data = coin_flips
 
 def log_likelihood(p):
     return np.sum(np.log(bernoulli.pmf(observed_data, p)))
@@ -89,14 +92,17 @@ plt.ylabel('Likelihood')
 plt.legend()
 plt.show()
 
+from scipy.optimize import minimize
 
+result = minimize(log_likelihood, x0=0.5, bounds=[(0, 1)])
 
 
 # =============================================================================
 
 # find the maximum likelihood for 10 and all , notice how big data gives .5 and not .6
 
-#This MLE for p is the point around which the likelihood function tends to concentrate, indicating the most likely value 
+#This MLE for p is the point around which the likelihood function tends to concentrate, indicating the 
+#most likely value 
 #for the probability of getting heads based on the observed data.
 
 

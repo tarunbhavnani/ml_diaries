@@ -159,7 +159,7 @@ n_est=3500
 cat_features = np.where(X.dtypes != np.float64)[0]
 
 for n_fold, (train_idx, valid_idx) in enumerate(folds.split(X, y)):
-    break
+    
     
     X_train, y_train = X.iloc[train_idx], y.iloc[train_idx]
     X_val, y_val = X.iloc[valid_idx], y.iloc[valid_idx]

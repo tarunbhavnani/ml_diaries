@@ -17,9 +17,12 @@ data_normal= np.random.normal(0,1,1000)
 data_ex=np.random.exponential(1,1000)
 
 
-import seaborn as sns
-sns.kdeplot(data)
 
+
+import seaborn as sns
+sns.kdeplot(data_ln)
+sns.kdeplot(data_normal)
+sns.kdeplot(data_ex)
 
 
 import matplotlib.pyplot as plt

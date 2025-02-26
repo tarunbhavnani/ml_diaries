@@ -114,11 +114,13 @@ study = optuna.create_study(study_name="lightgbm", direction="maximize", sampler
 study.optimize(objective, n_trials=100)
 
 print('Best parameters:', study.best_params)
-#Best parameters: {'lambda_l1': 4.3036730871501596e-07, 'lambda_l2': 0.36498251380586694, 'num_leaves': 15, 
-#'feature_fraction': 0.45498380010997064, 'bagging_fraction': 0.8396614832772512, 'bagging_freq': 6, 'min_child_samples': 84}
+# best_params= {'lambda_l1': 4.3036730871501596e-07, 'lambda_l2': 0.36498251380586694, 'num_leaves': 15, 
+# 'feature_fraction': 0.45498380010997064, 'bagging_fraction': 0.8396614832772512, 'bagging_freq': 6, 'min_child_samples': 84}
 
 
-
+# model = lgb.LGBMClassifier(lambda_l1= 4.3036730871501596e-07, lambda_l2= 0.36498251380586694, num_leaves= 15,
+#                            feature_fraction= 0.45498380010997064, bagging_fraction= 0.8396614832772512,
+#                            bagging_freq= 6, min_child_samples= 84)
 model = lgb.LGBMClassifier(**study.best_params)
 model.fit(X_train, y_train)
 
@@ -153,8 +155,10 @@ for n_fold, (train_idx, valid_idx) in enumerate(folds.split(X_train, y_train)):
     X_val, y_val = X_train.iloc[valid_idx], y_train.iloc[valid_idx]
     
     
-    model = lgb.LGBMClassifier(**study.best_params)
-    
+    #model = lgb.LGBMClassifier(**study.best_params)
+    model = lgb.LGBMClassifier(lambda_l1= 4.3036730871501596e-07, lambda_l2= 0.36498251380586694, num_leaves= 15,
+                                feature_fraction= 0.45498380010997064, bagging_fraction= 0.8396614832772512,
+                                bagging_freq= 6, min_child_samples= 84)
     
     model.fit(X_tr, y_tr, eval_set=(X_val, y_val),verbose=300)
     

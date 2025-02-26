@@ -84,6 +84,7 @@ test= update_vars(test)
 def create_new(train):
     train['senior']= [1 if i>40 else 0 for i in train['Age']]
     train['bmi']=[i/j**2 for i,j in zip(train.Weight, train.Height)]
+    train=train.drop(['Weight', 'Height'], axis=1)
     return train
 
 
@@ -155,12 +156,11 @@ sub= test[['id','NObeyesdad' ]]
 sub.to_csv("submission.csv",index=False)
 
 # #f1 values :
-#     [0.9040666961345803,
-#      0.8982184954091234,
-#      0.9048216526949133,
-#      0.8974882067579881,
-#      0.8987990723827118]
-
+# [0.8843247598762479,
+#  0.8702894508120396,
+#  0.8868796219671842,
+#  0.8744573806519481,
+#  0.882991370461638]
 # =============================================================================
 # lets improve catboost model above, get better metric than f1
 
@@ -187,13 +187,64 @@ for feat in cat_features:
     
     
 # =============================================================================
-# lets see what we are predicting
+# lets use the catboost parameters optuina tuend values from obesity 2
 # =============================================================================
+# iterations: 326
+# learning_rate: 0.06211003994893942
+# depth: 5
+# l2_leaf_reg: 0.028070723716320668
+# bootstrap_type: Bayesian
+# random_strength: 2.6110735398324655e-08
+# bagging_temperature: 0.20366464111245872
+# od_type: Iter
+# od_wait: 27
 
+folds = StratifiedKFold(n_splits=5,random_state=42,shuffle=True)
+#test_preds = np.empty((num_folds, len(test)))
+f1_vals=[]
+y_pred_final=0
 
-train['NObeyesdad'].value_counts(normalize=True)
-#distribution is not bad
+for n_fold, (train_idx, valid_idx) in enumerate(folds.split(X, y)):
+    
+    X_train, y_train = X.iloc[train_idx], y.iloc[train_idx]
+    X_val, y_val = X.iloc[valid_idx], y.iloc[valid_idx]
+    
+    train_pool = Pool(X_train, y_train,cat_features=cat_features)
+    val_pool = Pool(X_val, y_val,cat_features=cat_features)
+    
+    clf = CatBoostClassifier(
+    eval_metric='AUC',
+    learning_rate=0.06211003994893942,
+    depth= 5,
+    l2_leaf_reg= 0.028070723716320668,
+    bootstrap_type= "Bayesian",
+    random_strength= 2.6110735398324655e-08,
+    bagging_temperature= 0.20366464111245872,
+    od_type= "Iter",
+    
+    
+    iterations=326,
+    task_type='GPU' )
+    clf.fit(train_pool, eval_set=val_pool,verbose=300)
+    
+    y_pred_val = clf.predict_proba(X_val[list(X)])
+    y_pred_max=np.argmax(y_pred_val, axis=1) 
+    y_pred_proba= [i[j] for i,j in zip(y_pred_val,y_pred_max)]
+    
+    classes={i:num for num,i in enumerate(clf.classes_)}
+    #y_val.map(classes)
+    f1_val = f1_score(y_val.map(classes), y_pred_max, average="weighted")
+    print("f1 for fold ",n_fold,": ",f1_val)
+    f1_vals.append(f1_val)
+    
+    y_pred_test = clf.predict_proba(test[features])
+    y_pred_final+=y_pred_test
+    #y_pred_max=np.argmax(y_pred_test, axis=1) 
+    #test_preds[n_fold, :] = y_pred_max
+    print("----------------")
 
-
-
-
+# [0.882731373703394,
+#  0.8672964470982043,
+#  0.8845536726613739,
+#  0.877618127035842,
+#  0.8819418560917923]

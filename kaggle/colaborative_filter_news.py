@@ -47,6 +47,9 @@ event_type_strength = {
 
 interactions_df['eventStrength'] = interactions_df["eventType"].apply(lambda x: event_type_strength[x])
 
+kl=interactions_df.groupby(['personId', 'contentId'])['eventStrength'].apply(lambda x: sum(x)).reset_index()
+jk=interactions_df.groupby(['contentId'])['eventStrength'].apply(lambda x: sum(x)).reset_index()
+
 list(interactions_df)
 
 #collaborative filtering
@@ -98,7 +101,6 @@ cont= cont.merge(articles_df, left_on="contentId", right_on="contentId", how="le
 cont.text
 
 
-
 #3) Matrix Factorization
 
 ui=pd.pivot_table(data=interactions_df, values="eventStrength", index="personId",columns="contentId")
@@ -126,15 +128,5 @@ cont=cont[~cont.contentId.isin(related_content)]
 cont= cont.sort_values(by="score", ascending=False)[0:1000]
 cont= cont.merge(articles_df, left_on="contentId", right_on="contentId", how="left")
 cont.text
-
-
-
-
-
-
-
-
-
-
 
 

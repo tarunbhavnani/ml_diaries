@@ -47,6 +47,8 @@ event_type_strength = {
 
 interactions_df['eventStrength'] = interactions_df["eventType"].apply(lambda x: event_type_strength[x])
 
+#jk=interactions_df.groupby(['contentId', 'personId'])['eventStrength'].apply(lambda x: sum(x)).reset_index()
+#jk['eventStrength']=[smooth_user_preference(i) for i in jk['eventStrength']]
 list(interactions_df)
 
 #get personid connects, and remove less then 5
@@ -83,6 +85,9 @@ interactions_full_df.head(10)
 
 interactions_full_df["content_strength"]=interactions_full_df.groupby("contentId").transform("sum").values[:,1]
 
+
+#interactions_full_df["person_content_strength"]=interactions_full_df.groupby("personId").transform("sum").values[:,2]
+
 popularity_data= interactions_full_df[["contentId", "content_strength"]].drop_duplicates().sort_values(["content_strength"], ascending=False)
 
 #suggest to some personId
@@ -90,6 +95,8 @@ pid=-9223121837663643404
 
 person_interacted_items= list(set(interactions_full_df[interactions_full_df["personId"]==pid]["contentId"]))
 
+
+#suggestions=popularity_data[[True if i not in person_interacted_items else False for i in popularity_data.contentId ]][0:10]
 #suggest the top rated which are not in already interacted
 
 suggestions= popularity_data[~popularity_data["contentId"].isin(person_interacted_items)][0:10]
@@ -101,8 +108,17 @@ suggestions= articles_df.merge(suggestions,right_on="contentId",left_on="content
 
 
 # =============================================================================
-# #item based, here we have movies so we will get the item similarity on text providede using tfidf
+# #item based, here we have movies so we will get the item similarity on text provided using tfidf
 # =============================================================================
+
+#take all movies for the user
+#create vectorozer
+#take all the rest of the movies
+#now calculate the score for each of the related movies with each of the new moviw and add them to the bnew movi score
+#sort teh score
+#give top 1000
+
+
 
 
 list(articles_df)
@@ -119,7 +135,6 @@ vectorizer.fit(articles_df.text.values)
 
 X= vectorizer.transform(articles_df.text.values)
 
-
 #lets check for pid pid=-9223121837663643404
 
 related_content=list(set(interactions_full_df[interactions_full_df["personId"]==-1479311724257856983]["contentId"]))
@@ -132,6 +147,7 @@ related_text=articles_df[articles_df["contentId"].isin(related_content)]["text"]
 rated_text=articles_df.copy()
 rated_text["score"]=0
 for num in range(len(related_text)):
+    #break
     text=related_text.text.iloc[num]
     text_vec= vectorizer.transform([text])
     scores= cosine_similarity(X,text_vec)
@@ -149,6 +165,8 @@ rated_text["text"]
 # =============================================================================
 
 ui= interactions_full_df.pivot(index="personId", columns="contentId", values="eventStrength").fillna(0)
+
+#singular decompose
 matrix= ui.values
 u, s, v = svds(matrix)
 u.shape, v.shape, s.shape
@@ -196,7 +214,9 @@ hybrid= hybrid.sort_values(by="final_score", ascending=False)
 #next is model based.
 
 
-#svd surprise to predict!!
+# =============================================================================
+# #svd surprise to predict!!
+# =============================================================================
 
 from surprise import Reader, Dataset, SVD
 from surprise.model_selection import cross_validate
