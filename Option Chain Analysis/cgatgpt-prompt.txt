@@ -1,0 +1,15 @@
+Analyze this option chain with a spot price of [XXX]. The data includes change in OI, volume, IV, LTP, and bid/ask prices for both calls and puts across strike prices. I want a detailed analysis structured like this:
+
+Call Options Analysis – highlight open interest trends (buildup/unwinding), key strike levels with volume and OI change, and overall sentiment.
+
+Put Options Analysis – same as above but for puts.
+
+Overall Interpretation – include max pain area, support/resistance zones, and sentiment direction (bullish/bearish/neutral).
+
+Trading Sentiment Summary – concise table of key insights.
+
+Present the analysis in clean sections and explain the market's positioning based on the data
+
+or
+
+Use the saved options chain analysis prompt with this new data

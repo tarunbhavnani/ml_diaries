@@ -65,5 +65,36 @@ linr.fit(x_train, y_train)
 print(linr.intercept_, linr.coef_[0])
 
 
+# =============================================================================
+# use matrix multiplication for the same 
+# =============================================================================
+# Add a column of ones to x_train to account for the intercept term
+X = np.hstack((np.ones((x_train.shape[0], 1)), x_train))  # Shape (n, 2)
 
+# Initialize parameters (a and b) as a single vector
+theta = np.zeros((2, 1))  # Shape (2,1) for [a, b]
 
+# np.random.seed(42)
+# a = np.random.randn(1)
+# b = np.random.randn(1)
+# theta=np.asarray([a,b])
+# Hyperparameters
+n_epochs = 1000
+lr = 0.1
+
+for epoch in range(n_epochs):
+    # Compute predictions using matrix multiplication
+    yhat = X @ theta  # Shape (n,1) = (n,2) @ (2,1)
+
+    # Compute error
+    error = y_train - yhat
+
+    # Compute gradient using matrix multiplication
+    gradient = (-2 / len(x_train)) * (X.T @ error)  # Shape (2,1) = (2,n) @ (n,1)
+
+    # Update parameters
+    theta = theta - lr * gradient
+
+    # Print updated parameters
+    if epoch % 100 == 0:  # Print every 100 epochs
+        print(f"Epoch {epoch}: a = {theta[0][0]}, b = {theta[1][0]}")

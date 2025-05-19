@@ -17,7 +17,7 @@ from transformers import AutoModel, BertTokenizerFast
 from sklearn.model_selection import train_test_split 
 
 
-data= pd.read_csv(r"C:\Users\ELECTROBOT\Desktop\kaggle\datasets\imdb\IMDB Dataset.csv")
+data= pd.read_csv(r"D:\kaggle\datasets\imdb\IMDB Dataset.csv")
 
 data['sentiment']=[1 if i=="positive" else 0 for i in data['sentiment']]
 
@@ -36,11 +36,11 @@ val_text, test_text, val_labels, test_labels = train_test_split(temp_text, temp_
 
 
 # import BERT-base pretrained model
-model_name=r"C:\Users\ELECTROBOT\Desktop\model_dump\bert_base_uncased"
+model_name=r"D:\model_dump\bert-base-uncased"
 bert = AutoModel.from_pretrained(model_name)
 
 # Load the BERT tokenizer
-tokenizer = BertTokenizerFast.from_pretrained('bert-base-uncased')
+tokenizer = BertTokenizerFast.from_pretrained(model_name)
 
 
 
@@ -190,6 +190,7 @@ class BERT_Arch(nn.Module):
 # pass the pre-trained BERT to our define architecture
 model = BERT_Arch(bert)
 
+device='cuda'
 # push the model to GPU
 model = model.to(device)
 
