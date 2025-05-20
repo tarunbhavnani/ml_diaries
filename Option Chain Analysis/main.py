@@ -206,50 +206,128 @@ import numpy as np
     
 #     return summ
 
-def quadrant_oi_price(df, spot_price, percent_range=5):
+# def quadrant_oi_price(df, spot_price, percent_range=5):
+#     df = get_relevant_strikes(df, spot_price, percent_range)
+#     df_call, df_put = call_put_demerge(df)
+
+#     def format_pct(value):
+#         return f"{round(value, 2)}%"
+
+#     summ = {}
+    
+#     # ITM Put
+#     data = df_put[df_put['STRIKE'] >= spot_price]
+#     oi_pct = 100 * sum(data['CHNG IN OI']) / sum(data['OI'])
+#     price_pct = 100 * np.mean(data['CHNG'] / (data['LTP'] - data['CHNG']))
+#     summ['itm_put_delta_%'] = {
+#         "OI": format_pct(oi_pct),
+#         "Price": format_pct(price_pct)
+#     }
+
+#     # OTM Put
+#     data = df_put[df_put['STRIKE'] < spot_price]
+#     oi_pct = 100 * sum(data['CHNG IN OI']) / sum(data['OI'])
+#     price_pct = 100 * np.mean(data['CHNG'] / (data['LTP'] - data['CHNG']))
+#     summ['otm_put_delta_%'] = {
+#         "OI": format_pct(oi_pct),
+#         "Price": format_pct(price_pct)
+#     }
+
+#     # ITM Call
+#     data = df_call[df_call['STRIKE'] < spot_price]
+#     oi_pct = 100 * sum(data['CHNG IN OI']) / sum(data['OI'])
+#     price_pct = 100 * np.mean(data['CHNG'] / (data['LTP'] - data['CHNG']))
+#     summ['itm_call_delta_%'] = {
+#         "OI": format_pct(oi_pct),
+#         "Price": format_pct(price_pct)
+#     }
+
+#     # OTM Call
+#     data = df_call[df_call['STRIKE'] >= spot_price]
+#     oi_pct = 100 * sum(data['CHNG IN OI']) / sum(data['OI'])
+#     price_pct = 100 * np.mean(data['CHNG'] / (data['LTP'] - data['CHNG']))
+#     summ['otm_call_delta_%'] = {
+#         "OI": format_pct(oi_pct),
+#         "Price": format_pct(price_pct)
+#     }
+
+#     return summ
+
+
+def quadrant_oi_price(df, spot_price, percent_range=10, ntm_range=2):
     df = get_relevant_strikes(df, spot_price, percent_range)
     df_call, df_put = call_put_demerge(df)
 
     def format_pct(value):
         return f"{round(value, 2)}%"
-
+    
+    closest_strike= [(i,abs(spot_price-i)) for i in df.STRIKE]
+    closest_strike=sorted(closest_strike, key= lambda x: x[1])[0][0]
+    
+    strike_diff= sorted([i for i in df.STRIKE])[0:2]
+    strike_diff=abs(strike_diff[0]-strike_diff[1])
+    
+    
+    #ntm call
+    
+    ntm_call_strikes= [closest_strike+i*strike_diff for i in range(ntm_range+1)]
+    ntm_put_strikes= [closest_strike-i*strike_diff for i in range(ntm_range+1)]
+    
+    
+    ntm_call_df= df_call[df_call.STRIKE.isin(ntm_call_strikes)]
+    ntm_put_df= df_put[df_put.STRIKE.isin(ntm_put_strikes)]
+    
+    
+       
+    
     summ = {}
     
-    # ITM Put
-    data = df_put[df_put['STRIKE'] >= spot_price]
-    oi_pct = 100 * sum(data['CHNG IN OI']) / sum(data['OI'])
-    price_pct = 100 * np.mean(data['CHNG'] / (data['LTP'] - data['CHNG']))
-    summ['itm_put_delta_%'] = {
+    # ntm call
+    
+    oi_pct = 100 * sum(ntm_call_df['CHNG IN OI']) / sum(ntm_call_df['OI'])
+    price_pct = 100 * np.mean(ntm_call_df['CHNG'] / (ntm_call_df['LTP'] - ntm_call_df['CHNG']))
+    summ['ntm_call_delta_%'] = {
         "OI": format_pct(oi_pct),
         "Price": format_pct(price_pct)
     }
 
-    # OTM Put
-    data = df_put[df_put['STRIKE'] < spot_price]
-    oi_pct = 100 * sum(data['CHNG IN OI']) / sum(data['OI'])
-    price_pct = 100 * np.mean(data['CHNG'] / (data['LTP'] - data['CHNG']))
+    # ntm Put
+    
+    oi_pct = 100 * sum(ntm_put_df['CHNG IN OI']) / sum(ntm_put_df['OI'])
+    price_pct = 100 * np.mean(ntm_put_df['CHNG'] / (ntm_put_df['LTP'] - ntm_put_df['CHNG']))
+    summ['ntm_put_delta_%'] = {
+        "OI": format_pct(oi_pct),
+        "Price": format_pct(price_pct)
+    }
+
+
+
+    otm_call_df= df_call[~df_call.STRIKE.isin(ntm_call_strikes)]
+    otm_call_df=otm_call_df[otm_call_df.STRIKE<min(ntm_call_strikes)]
+    
+    otm_put_df= df_put[~df_put.STRIKE.isin(ntm_put_strikes)]
+    otm_put_df=otm_put_df[otm_put_df.STRIKE>max(ntm_put_strikes)]
+
+
+    # otm call
+    
+    oi_pct = 100 * sum(otm_call_df['CHNG IN OI']) / sum(otm_call_df['OI'])
+    price_pct = 100 * np.mean(otm_call_df['CHNG'] / (otm_call_df['LTP'] - otm_call_df['CHNG']))
+    summ['otm_call_delta_%'] = {
+        "OI": format_pct(oi_pct),
+        "Price": format_pct(price_pct)
+    }
+
+    # otm Put
+    
+    oi_pct = 100 * sum(otm_put_df['CHNG IN OI']) / sum(otm_put_df['OI'])
+    price_pct = 100 * np.mean(otm_put_df['CHNG'] / (otm_put_df['LTP'] - otm_put_df['CHNG']))
     summ['otm_put_delta_%'] = {
         "OI": format_pct(oi_pct),
         "Price": format_pct(price_pct)
     }
 
-    # ITM Call
-    data = df_call[df_call['STRIKE'] < spot_price]
-    oi_pct = 100 * sum(data['CHNG IN OI']) / sum(data['OI'])
-    price_pct = 100 * np.mean(data['CHNG'] / (data['LTP'] - data['CHNG']))
-    summ['itm_call_delta_%'] = {
-        "OI": format_pct(oi_pct),
-        "Price": format_pct(price_pct)
-    }
 
-    # OTM Call
-    data = df_call[df_call['STRIKE'] >= spot_price]
-    oi_pct = 100 * sum(data['CHNG IN OI']) / sum(data['OI'])
-    price_pct = 100 * np.mean(data['CHNG'] / (data['LTP'] - data['CHNG']))
-    summ['otm_call_delta_%'] = {
-        "OI": format_pct(oi_pct),
-        "Price": format_pct(price_pct)
-    }
 
     return summ
 # =============================================================================
