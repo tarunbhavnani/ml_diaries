@@ -84,6 +84,85 @@ def get_relevant_data(df, spot_price, percent_range=10,threshold_percentile=50):
 # =============================================================================
 # IV change analysis
 # =============================================================================
+#sentiment for comapring
+# Function to assign sentiment score
+# def get_sentiment_price_oi(row):
+#     # Extract values
+#     call_ltp = row["ltp_change_call"]
+#     call_oi = row["oi_change_call"]
+#     put_ltp = row["ltp_change_put"]
+#     put_oi = row["oi_change_put"]
+
+#     # Signal mapping
+#     def interpret_signal(ltp, oi):
+#         if ltp > 0 and oi > 0:
+#             return 2  # Long build-up
+#         elif ltp > 0 and oi < 0:
+#             return 2  # Short covering
+#         elif ltp < 0 and oi > 0:
+#             return -2  # Short build-up
+#         elif ltp < 0 and oi < 0:
+#             return -2  # Long unwinding
+#         else:
+#             return 0  # Neutral / unclear
+
+#     call_score = interpret_signal(call_ltp, call_oi)
+#     put_score = -interpret_signal(put_ltp, put_oi)  # reverse logic for puts
+
+#     total_score = call_score + put_score
+
+#     # Final sentiment verdict
+#     if total_score >= 4:
+#         return "🔥 Strong Bullish"
+#     elif total_score > 0:
+#         return "🟢 Bullish"
+#     elif total_score == 0:
+#         return "⚪ Neutral"
+#     elif total_score < -3:
+#         return "🔻 Strong Bearish"
+#     else:
+#         return "🔻 Bearish"
+
+
+def get_sentiment_price_oi(row):
+    # Extract values
+    call_ltp = row["ltp_change_call"]
+    call_oi = row["oi_change_call"]
+    put_ltp = row["ltp_change_put"]
+    put_oi = row["oi_change_put"]
+
+    #call side
+    call_analysis=""
+    if call_ltp>0 and call_oi >0:
+        call_analysis= "Bullish,call buying"
+
+    if call_ltp>0 and call_oi <0:
+        call_analysis= "Neutral,Profit Booking"
+    
+    if call_ltp<0 and call_oi >0:
+        call_analysis= "Bearish,call writing"
+    
+    if call_ltp<0 and call_oi <0:
+        call_analysis= "Unclear,call unwinding"
+    
+    #put side
+    put_analysis=""
+    
+    if put_ltp>0 and put_oi>0:
+        put_analysis= "Bearish,put buying"
+
+    if put_ltp>0 and put_oi<0:
+        put_analysis= "Neutral,profit booking"
+
+    if put_ltp<0 and put_oi>0:
+        put_analysis= "Bullish,put writing"
+
+    if put_ltp<0 and put_oi<0:
+        put_analysis= "Unclear,put unwinding"
+    
+    
+    return call_analysis, put_analysis
+
 
 def compare_previous_oi(df, df_prev, spot_price):
     
@@ -115,7 +194,10 @@ def compare_previous_oi(df, df_prev, spot_price):
     analysis= call_analysis.merge(put_analysis, on='STRIKE')
     analysis=analysis[['oi_change_call','iv_change_call','ltp_change_call','STRIKE','ltp_change_put','iv_change_put','oi_change_put']]
                    
-     
+    sentiment=analysis.apply(get_sentiment_price_oi, axis=1)
+    analysis["Call-Sentiment"]= [i[0] for i in sentiment]
+    analysis["Put-Sentiment"]=  [i[1] for i in sentiment]
+    analysis=analysis[['Call-Sentiment', 'oi_change_call','iv_change_call','ltp_change_call','STRIKE','ltp_change_put','iv_change_put','oi_change_put','Put-Sentiment']]
     return analysis
     
 
@@ -370,6 +452,7 @@ def savefile(df, UPLOAD_FOLDER,file_format="csv"):
     return filepath
 
 
+
 # =============================================================================
 # final calculations
 # =============================================================================
@@ -377,18 +460,20 @@ def savefile(df, UPLOAD_FOLDER,file_format="csv"):
 # import pandas as pd
 
 
-# path=r"C:\Users\tarun\Desktop\Option chin app\option-chain-ED-NIFTY-22-May-2025 (1).csv"
-# spot_price= 25000
+# path=r"C:\Users\tarun\Desktop\Option chin app\option-chain-ED-INDUSINDBK-29-May-2025 (2).csv"
+# spot_price= 793
 
-# path=r"C:\Users\tarun\Desktop\Option chin app\option-chain-ED-BAJFINANCE-29-May-2025.csv"
-# spot_price=8641
-
+# path_prev= r"C:\Users\tarun\Desktop\Option chin app\option-chain-ED-INDUSINDBK-29-May-2025 (1).csv"
 
 # df= read_nes_option_chain_csv(path)
+# df_prev= read_nes_option_chain_csv(path_prev)
 
 # df= get_relevant_strikes(df, spot_price, percent_range=10)
 
 # df_call, df_put=call_put_demerge(df)
+
+
+#delta=compare_previous_oi(df, df_prev, spot_price)
 
 
 # summary= quadrant_oi_price(df, spot_price)
