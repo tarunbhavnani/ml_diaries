@@ -18,6 +18,7 @@ if uploaded_file:
     if not os.path.isdir(UPLOAD_FOLDER):
         os.mkdir(UPLOAD_FOLDER)
 
+saved_prices= pd.read_csv("saved_prices.csv")
 
 # Optional: File uploader for previous option chain
 previous_uploaded_file = st.file_uploader("📂 (Optional) Upload PREVIOUS Option Chain CSV", type=["csv"])
@@ -47,13 +48,15 @@ if uploaded_file is not None:
 
         if spot_price:
             
-            df["Spot Price"] = spot_price
+            #df["Spot Price"] = spot_price
 
             # Save the modified DataFrame to a temporary directory using original file name
             
             #output_path = os.path.join(directory, uploaded_file.name)
             
             #df.to_csv(output_path, index=False)
+            saved_prices.loc[len(saved_prices)] = [uploaded_file.name, spot_price]
+            saved_prices.to_csv('saved_prices.csv', index=False)
             
             
             
