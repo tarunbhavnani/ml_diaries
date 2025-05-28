@@ -4,12 +4,49 @@ Created on Fri May  9 16:23:07 2025
 
 @author: tarun
 """
-
+import requests
+from bs4 import BeautifulSoup
 import pandas as pd
 import numpy as np
 from datetime import datetime
 
 import os
+from scipy.stats import norm
+from scipy.optimize import brentq
+import numpy as np
+
+# =============================================================================
+# get price latest
+# =============================================================================
+def get_price(url):
+    response=requests.get(url)
+    
+    soup=BeautifulSoup(response.text, 'html.parser')
+    class1="YMlKec fxKbKc"
+    
+    price=soup.find(class_=class1).text
+    
+    price= float(price[1:])
+    
+    return price
+    
+
+# =============================================================================
+# Blacj scholes option pricing 
+# =============================================================================
+
+# Black-Scholes formula
+def bs_call_price(S, K, T, sigma,r=0):
+    d1 = (np.log(S/K) + (r + 0.5*sigma**2)*T) / (sigma*np.sqrt(T))
+    d2 = d1 - sigma*np.sqrt(T)
+    return S*norm.cdf(d1) - K*np.exp(-r*T)*norm.cdf(d2)
+
+# Find IV given option price
+def implied_volatility(target_price, S, K, T, r=0):
+    f = lambda sigma: bs_call_price(S, K, T, r, sigma) - target_price
+    return brentq(f, 0.0001, 3)
+
+
 # =============================================================================
 # read csv
 # =============================================================================

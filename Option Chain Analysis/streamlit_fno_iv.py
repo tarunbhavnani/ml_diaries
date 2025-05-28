@@ -3,6 +3,9 @@ import pandas as pd
 from main import *
 import os
 from datetime import datetime
+import tempfile
+
+directory=r"C:\Users\tarun\Desktop\Option chin app"
 
 st.set_page_config(page_title="CSV Metadata Explorer", layout="wide")
 st.title("📊 CSV Metadata & Options Chain Analyzer")
@@ -43,6 +46,17 @@ if uploaded_file is not None:
         )
 
         if spot_price:
+            
+            df["Spot Price"] = spot_price
+
+            # Save the modified DataFrame to a temporary directory using original file name
+            
+            #output_path = os.path.join(directory, uploaded_file.name)
+            
+            #df.to_csv(output_path, index=False)
+            
+            
+            
             df = get_relevant_strikes(df, spot_price, percent_range=10)
             df_call, df_put = call_put_demerge(df)
 
@@ -72,12 +86,15 @@ if uploaded_file is not None:
             save_path = os.path.join(UPLOAD_FOLDER, filename)
             df_up.to_csv(save_path, index=False)
             st.success(f"✅ Reformatted Option Chain saved to `{save_path}`")
-
+            
+            if df_prev is None:
+                df_prev=no_df_prev(df.copy())
             if df_prev is not None:
                 analysis = compare_previous_oi(df, df_prev, spot_price)
                 st.subheader("📉 IV/OI Comparative Analysis")
                 st.dataframe(analysis, use_container_width=True)
                 #savefile(analysis, UPLOAD_FOLDER,file_format="csv")
+            
 
     except Exception as e:
         st.error(f"❌ Error reading or processing the CSV: {e}")
