@@ -15,6 +15,16 @@ from scipy.stats import norm
 from scipy.optimize import brentq
 import numpy as np
 
+
+# =============================================================================
+# # Function to add or update the file
+# =============================================================================
+def add_or_update(df, file, price):
+    dic = {i: j for i, j in zip(df.file, df.price)}
+    dic[file] = price  # Corrected this line
+    df = pd.DataFrame(dic.items(), columns=['file', 'price'])
+    return df
+
 # =============================================================================
 # get price latest
 # =============================================================================
@@ -309,7 +319,11 @@ def get_sentiment_price_oi(row):
     return call_analysis, put_analysis
 
 
-def compare_previous_oi(df, df_prev, spot_price):
+def compare_previous_oi(df, df_prev, spot_price, spot_price_prev=None):
+    if spot_price_prev:
+        price_update= spot_price- spot_price_prev
+    else:
+        price_update= 0
     
     df=get_relevant_strikes(df, spot_price, percent_range=10)
     df_prev=get_relevant_strikes(df_prev, spot_price, percent_range=10)
@@ -342,7 +356,9 @@ def compare_previous_oi(df, df_prev, spot_price):
     sentiment=analysis.apply(get_sentiment_price_oi, axis=1)
     analysis["Call-Sentiment"]= [i[0] for i in sentiment]
     analysis["Put-Sentiment"]=  [i[1] for i in sentiment]
-    analysis=analysis[['Call-Sentiment', 'oi_change_call','iv_change_call','ltp_change_call','STRIKE','ltp_change_put','iv_change_put','oi_change_put','Put-Sentiment']]
+    
+    analysis['price_update']=price_update
+    analysis=analysis[['Call-Sentiment', 'oi_change_call','iv_change_call','ltp_change_call','price_update','STRIKE','ltp_change_put','iv_change_put','oi_change_put','Put-Sentiment']]
     return analysis
     
 
@@ -613,10 +629,11 @@ def savefile(df, UPLOAD_FOLDER,file_format="csv"):
 # import pandas as pd
 
 
-# path=r"C:\Users\tarun\Desktop\Option chin app\option-chain-ED-INDUSINDBK-29-May-2025 (2).csv"
-# spot_price= 793
+# path=r"C:\Users\tarun\Desktop\Option chin app\option-chain-ED-JIOFIN-29-May-2025 (34).csv"
+# spot_price= 293
 
-# path_prev= r"C:\Users\tarun\Desktop\Option chin app\option-chain-ED-INDUSINDBK-29-May-2025 (1).csv"
+# path_prev= r"C:\Users\tarun\Desktop\Option chin app\option-chain-ED-JIOFIN-29-May-2025 (33).csv"
+# spot_price_prev= 285
 
 # df= read_nes_option_chain_csv(path)
 # df_prev= read_nes_option_chain_csv(path_prev)
