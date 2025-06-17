@@ -18,8 +18,8 @@ UPLOAD_FOLDER = None
 if uploaded_file:
     original_name = uploaded_file.name
     UPLOAD_FOLDER = original_name.split('-')[3]
-    if not os.path.isdir(UPLOAD_FOLDER):
-        os.mkdir(UPLOAD_FOLDER)
+    # if not os.path.isdir(UPLOAD_FOLDER):
+    #     os.mkdir(UPLOAD_FOLDER)
     try:
         df = read_nes_option_chain_csv(uploaded_file)
     except Exception as e:
@@ -62,46 +62,41 @@ if df is not None:
             df = get_relevant_strikes(df, spot_price, percent_range=10)
             df_call, df_put = call_put_demerge(df)
 
-            summary = quadrant_oi_price(df, spot_price)
-            summary["PCR_OI"], summary["PCR_Volume"] = PCR(df, spot_price, percent_range=5)
-            summary["max_pain_strike"], summary["max_pain_strike_call"], summary["max_pain_strike_put"] = max_pain(df_call, df_put, spot_price)
-            summary["iv_atm_ce"], summary["iv_atm_pe"] = iv_skew(df_call, df_put, spot_price)
-
-            st.subheader("🧾 CSV Metadata")
-            st.markdown(f"**Shape:** `{df.shape[0]}` rows × `{df.shape[1]}` columns")
-            st.markdown("**Columns:** " + ", ".join(f"`{col}`" for col in df.columns))
-
-            st.subheader("📈 Analysis Summary")
-            st.json(summary)
+            
 
             df_up = re_df(df_call, df_put)
-            st.subheader("📊 Reformatted Option Chain")
+            st.subheader("📊 Option Chain")
             st.dataframe(df_up, use_container_width=True)
 
-            if not os.path.isdir(UPLOAD_FOLDER):
-                os.mkdir(UPLOAD_FOLDER)
-            filename = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_reformatted.csv"
-            save_path = os.path.join(UPLOAD_FOLDER, filename)
-            df_up.to_csv(save_path, index=False)
-            st.success(f"✅ Reformatted Option Chain saved to `{save_path}`")
+            # if not os.path.isdir(UPLOAD_FOLDER):
+            #     os.mkdir(UPLOAD_FOLDER)
+            # filename = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_reformatted.csv"
+            # save_path = os.path.join(UPLOAD_FOLDER, filename)
+            # df_up.to_csv(save_path, index=False)
+            # st.success(f"✅ Reformatted Option Chain saved to `{save_path}`")
 
+            
             if df_prev is None:
                 df_prev = no_df_prev(df.copy())
-            
-            if df_prev is not None:
+                spot_price_prev = spot_price  # fallback if no prior data available
+            else:
                 # Try to get the previous spot price from saved_prices
                 match = saved_prices[saved_prices['file'] == previous_uploaded_file.name]
-            
                 if not match.empty:
                     spot_price_prev = match['price'].iloc[0]
                 else:
                     spot_price_prev = spot_price  # fallback if no previous price found
+
+
+                summary=quadrant_oi_price_change(df, df_prev, spot_price=spot_price, spot_prev=spot_price_prev, percent_range=10, ntm_range=2)
+                
+                st.subheader("📈 Delta Summary")
+                st.json(summary)
             
-                # Run the analysis using the previous and current data
-                analysis = compare_previous_oi(df, df_prev, spot_price_prev)
-                analysis = compare_previous_oi(df, df_prev, spot_price, spot_price_prev)
-                st.subheader("📉 IV/OI Comparative Analysis")
-                st.dataframe(analysis, use_container_width=True)
+            # Run the analysis using the previous and current data
+            analysis = compare_previous_oi(df, df_prev, spot_price, spot_price_prev)            
+            st.subheader("📉 Delta Analysis")
+            st.dataframe(analysis, use_container_width=True)
 
         except Exception as e:
             st.error(f"❌ Error processing analysis: {e}")

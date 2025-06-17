@@ -75,35 +75,83 @@ def read_nes_option_chain_csv(path):
 
 
 
-def get_relevant_strikes(df, spot_price, percent_range=10):
+# def get_relevant_strikes(df, spot_price, percent_range=10):
+#     """
+#     Returns a list of strike prices within a specified percentage range of the spot price.
+
+#     Parameters:
+#         df (pd.DataFrame): DataFrame containing a 'STRIKE' column.
+#         spot_price (float): Current spot price.
+#         percent_range (float): Percentage range above and below the spot price to filter strikes.
+
+#     Returns:
+#         List[float]: Filtered list of relevant strike prices.
+#     """
+#     upper_bound = spot_price * (1 + percent_range / 100)
+#     lower_bound = spot_price * (1 - percent_range / 100)
+#     strikes = df['STRIKE'].unique()
+#     relevant_strikes = [strike for strike in strikes if lower_bound <= strike <= upper_bound]
+    
+#     # if len(strikes)>40:
+#     #     center_index = relevant_strikes.index(spot_price)
+    
+#     #     # Slice the list to get 20 before and 20 after
+#     #     relevant_strikes = relevant_strikes[center_index - 25 : center_index + 25]
+    
+    
+#     return df[df['STRIKE'].isin(relevant_strikes)]
+#     #return sorted(relevant_strikes)
+
+def get_relevant_strikes(df, spot_price, percent_range=10, min_each_side=4, max_each_side=5):
     """
-    Returns a list of strike prices within a specified percentage range of the spot price.
+    Returns a DataFrame of options with strike prices around the spot price,
+    within ±10%, and between 5 to 8 strikes on each side.
 
     Parameters:
         df (pd.DataFrame): DataFrame containing a 'STRIKE' column.
         spot_price (float): Current spot price.
-        percent_range (float): Percentage range above and below the spot price to filter strikes.
+        percent_range (float): Percentage range above and below the spot.
+        min_each_side (int): Minimum number of strikes below/above spot.
+        max_each_side (int): Maximum number of strikes below/above spot.
 
     Returns:
-        List[float]: Filtered list of relevant strike prices.
+        pd.DataFrame: Filtered DataFrame with relevant strikes.
     """
-    upper_bound = spot_price * (1 + percent_range / 100)
+    strikes = sorted(df['STRIKE'].unique())
+    if not strikes:
+        return df.iloc[0:0]
+
     lower_bound = spot_price * (1 - percent_range / 100)
-    strikes = df['STRIKE'].unique()
-    relevant_strikes = [strike for strike in strikes if lower_bound <= strike <= upper_bound]
-    
-    # if len(strikes)>40:
-    #     center_index = relevant_strikes.index(spot_price)
-    
-    #     # Slice the list to get 20 before and 20 after
-    #     relevant_strikes = relevant_strikes[center_index - 25 : center_index + 25]
-    
-    
-    return df[df['STRIKE'].isin(relevant_strikes)]
-    #return sorted(relevant_strikes)
+    upper_bound = spot_price * (1 + percent_range / 100)
 
+    # Filter strikes within ±10% range
+    in_range_strikes = [s for s in strikes if lower_bound <= s <= upper_bound]
 
+    below = sorted([s for s in in_range_strikes if s < spot_price])
+    above = sorted([s for s in in_range_strikes if s > spot_price])
 
+    # Adjust below and above to meet min/max requirements
+    def adjust_strikes(strike_list, direction='below'):
+        count = len(strike_list)
+        if count < min_each_side:
+            # Pad from outside the range if needed
+            all_candidates = [s for s in strikes if s < spot_price] if direction == 'below' else [s for s in strikes if s > spot_price]
+            additional_needed = min_each_side - count
+            extra = [s for s in all_candidates if s not in strike_list]
+            extra_sorted = sorted(extra, reverse=True) if direction == 'below' else sorted(extra)
+            strike_list += extra_sorted[:additional_needed]
+        elif count > max_each_side:
+            strike_list = strike_list[-max_each_side:] if direction == 'below' else strike_list[:max_each_side]
+        return sorted(strike_list)
+
+    below = adjust_strikes(below, direction='below')
+    above = adjust_strikes(above, direction='above')
+
+    # Include the ATM strike if it exists
+    atm = [min(strikes, key=lambda x: abs(x - spot_price))]
+
+    final_strikes = sorted(set(below + atm + above))
+    return df[df['STRIKE'].isin(final_strikes)]
 
 # =============================================================================
 # us OI threshold of 50 percentile as well
@@ -131,153 +179,142 @@ def get_relevant_data(df, spot_price, percent_range=10,threshold_percentile=50):
 # =============================================================================
 # IV change analysis
 # =============================================================================
-#sentiment for comapring
-# Function to assign sentiment score
-# def get_sentiment_price_oi(row):
-#     # Extract values
-#     call_ltp = row["ltp_change_call"]
-#     call_oi = row["oi_change_call"]
-#     put_ltp = row["ltp_change_put"]
-#     put_oi = row["oi_change_put"]
-
-#     # Signal mapping
-#     def interpret_signal(ltp, oi):
-#         if ltp > 0 and oi > 0:
-#             return 2  # Long build-up
-#         elif ltp > 0 and oi < 0:
-#             return 2  # Short covering
-#         elif ltp < 0 and oi > 0:
-#             return -2  # Short build-up
-#         elif ltp < 0 and oi < 0:
-#             return -2  # Long unwinding
-#         else:
-#             return 0  # Neutral / unclear
-
-#     call_score = interpret_signal(call_ltp, call_oi)
-#     put_score = -interpret_signal(put_ltp, put_oi)  # reverse logic for puts
-
-#     total_score = call_score + put_score
-
-#     # Final sentiment verdict
-#     if total_score >= 4:
-#         return "🔥 Strong Bullish"
-#     elif total_score > 0:
-#         return "🟢 Bullish"
-#     elif total_score == 0:
-#         return "⚪ Neutral"
-#     elif total_score < -3:
-#         return "🔻 Strong Bearish"
-#     else:
-#         return "🔻 Bearish"
-
-
-# def get_sentiment_price_oi(row):
-#     # Extract values
-#     call_ltp = row["ltp_change_call"]
-#     call_oi = row["oi_change_call"]
-#     put_ltp = row["ltp_change_put"]
-#     put_oi = row["oi_change_put"]
-
-#     #call side
-#     call_analysis=""
-#     if call_ltp>0 and call_oi >0:
-#         call_analysis= "Bullish,call buying"
-
-#     if call_ltp>0 and call_oi <0:
-#         call_analysis= "Neutral,Profit Booking"
-    
-#     if call_ltp<0 and call_oi >0:
-#         call_analysis= "Bearish,call writing"
-    
-#     if call_ltp<0 and call_oi <0:
-#         call_analysis= "Unclear,call unwinding"
-    
-#     #put side
-#     put_analysis=""
-    
-#     if put_ltp>0 and put_oi>0:
-#         put_analysis= "Bearish,put buying"
-
-#     if put_ltp>0 and put_oi<0:
-#         put_analysis= "Neutral,profit booking"
-
-#     if put_ltp<0 and put_oi>0:
-#         put_analysis= "Bullish,put writing"
-
-#     if put_ltp<0 and put_oi<0:
-#         put_analysis= "Unclear,put unwinding"
-    
-    
-#     return call_analysis, put_analysis
 
 # def analyze_call_side(call_ltp, call_oi, call_iv):
+#     IV_RISE = 3
+#     IV_FALL = -3
+
 #     if call_ltp > 0:
 #         if call_oi > 0:
-#             return "🔥 Bullish: Call Buying with rising IV" if call_iv > 1 else "⚪ Bullish: Call Buying with steady IV"
+#             if call_iv > IV_RISE:
+#                 return "🔥 Bullish: Call Buying with Rising IV"
+#             elif call_iv < IV_FALL:
+#                 return "🟢 Bullish: Demand-driven (IV falling)"
+#             else:
+#                 return "⚪ Bullish: Call Buying with Steady IV"
 #         elif call_oi < 0:
-#             return "⚪ Neutral: Profit Booking in Calls" if call_iv > 1 else "🟡 Neutral: Call Unwinding"
+#             if call_iv > IV_RISE:
+#                 return "🟠 Neutral: Profit Booking in Calls (IV rising)"
+#             elif call_iv < IV_FALL:
+#                 return "🟡 Neutral: Call Unwinding with IV Drop"
+#             else:
+#                 return "⚪ Neutral: Call Unwinding"
 #     elif call_ltp < 0:
 #         if call_oi > 0:
-#             return "⚪ Bearish: Call Writing (rising IV)" if call_iv > 1 else "🔴 Bearish: Call Writing (aggressive)"
+#             if call_iv > IV_RISE:
+#                 return "🔴 Bearish: Call Writing with IV Spike"
+#             elif call_iv < IV_FALL:
+#                 return "🟡 Neutral: IV-led Price Drop, Mild Writing"
+#             else:
+#                 return "⚪ Bearish: Call Writing"
 #         elif call_oi < 0:
-#             return "📉 Bearish: Call Unwinding"
+#             if call_iv < IV_FALL:
+#                 return "📉 Bearish: Call Unwinding with IV Crush"
+#             else:
+#                 return "📉 Bearish: Call Unwinding"
 #     return "⏸️ Neutral or Inconclusive"
 
 # def analyze_put_side(put_ltp, put_oi, put_iv):
+#     IV_RISE = 3
+#     IV_FALL = -3
+
 #     if put_ltp > 0:
 #         if put_oi > 0:
-#             return "🔴 Bearish: Put Buying with rising IV" if put_iv > 1 else "⚪ Bearish: Put Buying with steady IV"
+#             if put_iv > IV_RISE:
+#                 return "🔴 Bearish: Put Buying with IV Spike"
+#             elif put_iv < IV_FALL:
+#                 return "🟠 Bearish: Demand-led Put Buying (IV down)"
+#             else:
+#                 return "⚪ Bearish: Put Buying with Steady IV"
 #         elif put_oi < 0:
-#             return "⚪ Neutral: Profit Booking in Puts" if put_iv > -1 else "🟡 Neutral: Put Unwinding"
+#             if put_iv > IV_RISE:
+#                 return "🟡 Neutral: Profit Booking in Puts (IV up)"
+#             elif put_iv < IV_FALL:
+#                 return "🟢 Neutral: Put Unwinding with IV Drop"
+#             else:
+#                 return "⚪ Neutral: Put Unwinding"
 #     elif put_ltp < 0:
 #         if put_oi > 0:
-#             return "⚪ Bullish: Put Writing (rising IV)" if put_iv > 1 else "🔥 Bullish: Put Writing (aggressive)"
+#             if put_iv > IV_RISE:
+#                 return "🔥 Bullish: Put Writing with IV Spike"
+#             elif put_iv < IV_FALL:
+#                 return "🟢 Bullish: IV-led Drop, Strong Put Writing"
+#             else:
+#                 return "⚪ Bullish: Put Writing"
 #         elif put_oi < 0:
-#             return "📈 Bullish: Put Unwinding"
+#             if put_iv < IV_FALL:
+#                 return "📈 Mildly Bullish: Put Unwinding with IV Crush"
+#             else:
+#                 return "⚪ Neutral: Put Unwinding (OI ↓, LTP ↓)"
 #     return "⏸️ Neutral or Inconclusive"
-
-def analyze_call_side(call_ltp, call_oi, call_iv):
-    IV_RISE = 5
-    IV_FALL = -5
+# def get_sentiment_price_oi(row):
+#     # Extract values
+#     call_ltp = row["ltp_change_call"]
+#     call_oi = row["oi_change_call"]
+#     call_iv = row["iv_change_call"]
+    
+#     put_ltp = row["ltp_change_put"]
+#     put_oi = row["oi_change_put"]
+#     put_iv= row["iv_change_put"]    
+    
+#     call_analysis=analyze_call_side(call_ltp, call_oi, call_iv)
+#     put_analysis=analyze_put_side(put_ltp, put_oi, put_iv)
+    
+#     return call_analysis, put_analysis
+def analyze_call_side(call_ltp, call_oi, call_iv, spot_change):
+    IV_RISE = 3
+    IV_FALL = -3
 
     if call_ltp > 0:
         if call_oi > 0:
             if call_iv > IV_RISE:
-                return "🔥 Bullish: Call Buying with Rising IV"
+                if spot_change > 0:
+                    return "🔥 Strong Bullish: Call Buying + Rising IV + Spot Up"
+                else:
+                    return "🟠 Cautious Bullish: Call Buying + Rising IV, but Spot Flat/Down"
             elif call_iv < IV_FALL:
-                return "🟢 Bullish: Demand-driven (IV falling)"
+                if spot_change > 0:
+                    return "🟢 Bullish: Demand-driven Call Buying (IV down) + Spot Up"
+                else:
+                    return "⚪ Bullish: Call Buying (IV down), but Spot Flat/Down"
             else:
                 return "⚪ Bullish: Call Buying with Steady IV"
         elif call_oi < 0:
             if call_iv > IV_RISE:
-                return "🟠 Neutral: Profit Booking in Calls (IV rising)"
+                return "🟠 Neutral: Profit Booking in Calls (IV up)"
             elif call_iv < IV_FALL:
-                return "🟡 Neutral: Call Unwinding with IV Drop"
+                return "🟡 Neutral: Call Unwinding + IV Drop"
             else:
                 return "⚪ Neutral: Call Unwinding"
     elif call_ltp < 0:
         if call_oi > 0:
             if call_iv > IV_RISE:
-                return "🔴 Bearish: Call Writing with IV Spike"
+                if spot_change < 0:
+                    return "🔴 Bearish: Call Writing + IV Spike + Spot Down"
+                else:
+                    return "🟠 Neutral: Call Writing + IV Up, but Spot Not Falling"
             elif call_iv < IV_FALL:
                 return "🟡 Neutral: IV-led Price Drop, Mild Writing"
             else:
                 return "⚪ Bearish: Call Writing"
         elif call_oi < 0:
             if call_iv < IV_FALL:
-                return "📉 Bearish: Call Unwinding with IV Crush"
+                return "📉 Bearish: Call Unwinding + IV Crush"
             else:
                 return "📉 Bearish: Call Unwinding"
     return "⏸️ Neutral or Inconclusive"
 
-def analyze_put_side(put_ltp, put_oi, put_iv):
-    IV_RISE = 2
-    IV_FALL = -2
+def analyze_put_side(put_ltp, put_oi, put_iv, spot_change):
+    IV_RISE = 3
+    IV_FALL = -3
 
     if put_ltp > 0:
         if put_oi > 0:
             if put_iv > IV_RISE:
-                return "🔴 Bearish: Put Buying with IV Spike"
+                if spot_change < 0:
+                    return "🔴 Strong Bearish: Put Buying + IV Spike + Spot Down"
+                else:
+                    return "🟠 Bearish: Put Buying + IV Up, but Spot Flat/Up"
             elif put_iv < IV_FALL:
                 return "🟠 Bearish: Demand-led Put Buying (IV down)"
             else:
@@ -292,7 +329,10 @@ def analyze_put_side(put_ltp, put_oi, put_iv):
     elif put_ltp < 0:
         if put_oi > 0:
             if put_iv > IV_RISE:
-                return "🔥 Bullish: Put Writing with IV Spike"
+                if spot_change > 0:
+                    return "🔥 Bullish: Put Writing + IV Spike + Spot Up"
+                else:
+                    return "🟠 Cautious Bullish: Put Writing + IV Up, but Spot Not Rising"
             elif put_iv < IV_FALL:
                 return "🟢 Bullish: IV-led Drop, Strong Put Writing"
             else:
@@ -303,22 +343,70 @@ def analyze_put_side(put_ltp, put_oi, put_iv):
             else:
                 return "⚪ Neutral: Put Unwinding (OI ↓, LTP ↓)"
     return "⏸️ Neutral or Inconclusive"
+
 def get_sentiment_price_oi(row):
-    # Extract values
     call_ltp = row["ltp_change_call"]
     call_oi = row["oi_change_call"]
     call_iv = row["iv_change_call"]
     
     put_ltp = row["ltp_change_put"]
     put_oi = row["oi_change_put"]
-    put_iv= row["iv_change_put"]    
-    
-    call_analysis=analyze_call_side(call_ltp, call_oi, call_iv)
-    put_analysis=analyze_put_side(put_ltp, put_oi, put_iv)
-    
+    put_iv = row["iv_change_put"]
+
+    spot_change = row["price_update"]
+
+    call_analysis = analyze_call_side(call_ltp, call_oi, call_iv, spot_change)
+    put_analysis = analyze_put_side(put_ltp, put_oi, put_iv, spot_change)
+
     return call_analysis, put_analysis
 
 
+# =============================================================================
+# compare previous oi
+# =============================================================================
+# def compare_previous_oi(df, df_prev, spot_price, spot_price_prev=None):
+#     if spot_price_prev:
+#         price_update= spot_price- spot_price_prev
+#     else:
+#         price_update= 0
+    
+#     df=get_relevant_strikes(df, spot_price, percent_range=10)
+#     df_prev=get_relevant_strikes(df_prev, spot_price, percent_range=10)
+    
+#     list(df)
+#     df_call, df_put=call_put_demerge(df)
+    
+#     df_call_prev, df_put_prev=call_put_demerge(df_prev)
+    
+#     #call analysis
+    
+#     oi_change= df_call['OI']-df_call_prev['OI']
+#     ltp_change= df_call['LTP']-df_call_prev['LTP']
+#     iv_change= df_call['IV']-df_call_prev['IV']
+    
+#     call_analysis=pd.DataFrame({'STRIKE':df_call.STRIKE, 'ltp_change_call':ltp_change, 'oi_change_call':oi_change, 'iv_change_call':iv_change})
+    
+    
+#     #put analysis
+    
+#     oi_change= df_put['OI']-df_put_prev['OI']
+#     ltp_change= df_put['LTP']-df_put_prev['LTP']
+#     iv_change= df_put['IV']-df_put_prev['IV']
+    
+#     put_analysis=pd.DataFrame({'STRIKE':df_put.STRIKE, 'ltp_change_put':ltp_change, 'oi_change_put':oi_change, 'iv_change_put':iv_change})
+    
+#     analysis= call_analysis.merge(put_analysis, on='STRIKE')
+#     analysis=analysis[['oi_change_call','iv_change_call','ltp_change_call','STRIKE','ltp_change_put','iv_change_put','oi_change_put']]
+                   
+#     analysis['price_update']=price_update
+#     sentiment=analysis.apply(get_sentiment_price_oi, axis=1)
+#     analysis["Call-Sentiment"]= [i[0] for i in sentiment]
+#     analysis["Put-Sentiment"]=  [i[1] for i in sentiment]
+    
+    
+#     analysis=analysis[['Call-Sentiment', 'oi_change_call','iv_change_call','ltp_change_call','price_update','STRIKE','ltp_change_put','iv_change_put','oi_change_put','Put-Sentiment']]
+#     return analysis
+    
 def compare_previous_oi(df, df_prev, spot_price, spot_price_prev=None):
     if spot_price_prev:
         price_update= spot_price- spot_price_prev
@@ -338,8 +426,9 @@ def compare_previous_oi(df, df_prev, spot_price, spot_price_prev=None):
     oi_change= df_call['OI']-df_call_prev['OI']
     ltp_change= df_call['LTP']-df_call_prev['LTP']
     iv_change= df_call['IV']-df_call_prev['IV']
-    
-    call_analysis=pd.DataFrame({'STRIKE':df_call.STRIKE, 'ltp_change_call':ltp_change, 'oi_change_call':oi_change, 'iv_change_call':iv_change})
+    vol_change= df_call['VOLUME']-df_call_prev['VOLUME']
+    delta_oi_pc=round((oi_change/vol_change)*100,2)
+    call_analysis=pd.DataFrame({'STRIKE':df_call.STRIKE, 'ltp_change_call':ltp_change, 'vol_change_call':vol_change,'oi_change_call':oi_change,'delta_oi_pc_call':delta_oi_pc, 'iv_change_call':iv_change})
     
     
     #put analysis
@@ -347,22 +436,34 @@ def compare_previous_oi(df, df_prev, spot_price, spot_price_prev=None):
     oi_change= df_put['OI']-df_put_prev['OI']
     ltp_change= df_put['LTP']-df_put_prev['LTP']
     iv_change= df_put['IV']-df_put_prev['IV']
+    vol_change= df_put['VOLUME']-df_put_prev['VOLUME']
+    delta_oi_pc=round((oi_change/vol_change)*100,2)
     
-    put_analysis=pd.DataFrame({'STRIKE':df_put.STRIKE, 'ltp_change_put':ltp_change, 'oi_change_put':oi_change, 'iv_change_put':iv_change})
+    put_analysis=pd.DataFrame({'STRIKE':df_put.STRIKE, 'ltp_change_put':ltp_change, 'vol_change_put':vol_change,'oi_change_put':oi_change,'delta_oi_pc_put':delta_oi_pc, 'iv_change_put':iv_change})
     
     analysis= call_analysis.merge(put_analysis, on='STRIKE')
-    analysis=analysis[['oi_change_call','iv_change_call','ltp_change_call','STRIKE','ltp_change_put','iv_change_put','oi_change_put']]
+    analysis=analysis[['vol_change_call','oi_change_call','delta_oi_pc_call','iv_change_call','ltp_change_call','STRIKE','ltp_change_put','iv_change_put','delta_oi_pc_put','oi_change_put','vol_change_put']]
                    
+    analysis['price_update']=price_update
     sentiment=analysis.apply(get_sentiment_price_oi, axis=1)
     analysis["Call-Sentiment"]= [i[0] for i in sentiment]
     analysis["Put-Sentiment"]=  [i[1] for i in sentiment]
     
-    analysis['price_update']=price_update
-    analysis=analysis[['Call-Sentiment', 'oi_change_call','iv_change_call','ltp_change_call','price_update','STRIKE','ltp_change_put','iv_change_put','oi_change_put','Put-Sentiment']]
+    
+    analysis=analysis[['Call-Sentiment', 'vol_change_call','oi_change_call','delta_oi_pc_call','iv_change_call','ltp_change_call','price_update','STRIKE','ltp_change_put','iv_change_put','delta_oi_pc_put','oi_change_put','vol_change_put','Put-Sentiment']]
+    
+    #add total
+    analysis.iloc[-1]=['total', sum(analysis['vol_change_call']),sum(analysis['oi_change_call']),  
+     round((sum(analysis['oi_change_call'])/sum(analysis['vol_change_call']))*100,2),
+     0, 0, 0,0,0,0,
+     round((sum(analysis['oi_change_put'])/sum(analysis['vol_change_put']))*100,2),
+     sum(analysis['oi_change_put']), sum(analysis['vol_change_put']),'total'  ]
+     
     return analysis
     
-
 def no_df_prev(df):
+    df['VOLUME']=0#df['VOLUME']-df['OI']
+    df['VOLUME.1']=0#df['VOLUME.1']-df['OI.1']
     df['OI']=df['OI']-df['CHNG IN OI']
     df['OI.1']=df['OI.1']-df['CHNG IN OI.1']
     df['LTP']=df['LTP']-df['CHNG']
@@ -505,82 +606,211 @@ import numpy as np
 #     return summ
 
 
-def quadrant_oi_price(df, spot_price, percent_range=10, ntm_range=2):
-    df = get_relevant_strikes(df, spot_price, percent_range)
-    df_call, df_put = call_put_demerge(df)
+# def quadrant_oi_price(df, spot_price, percent_range=10, ntm_range=2):
+#     df = get_relevant_strikes(df, spot_price, percent_range)
+#     df_call, df_put = call_put_demerge(df)
 
-    def format_pct(value):
-        return f"{round(value, 2)}%"
+#     def format_pct(value):
+#         return f"{round(value, 2)}%"
     
-    closest_strike= [(i,abs(spot_price-i)) for i in df.STRIKE]
-    closest_strike=sorted(closest_strike, key= lambda x: x[1])[0][0]
+#     closest_strike= [(i,abs(spot_price-i)) for i in df.STRIKE]
+#     closest_strike=sorted(closest_strike, key= lambda x: x[1])[0][0]
     
-    strike_diff= sorted([i for i in df.STRIKE])[0:2]
-    strike_diff=abs(strike_diff[0]-strike_diff[1])
-    
-    
-    #ntm call
-    
-    ntm_call_strikes= [closest_strike+i*strike_diff for i in range(ntm_range+1)]
-    ntm_put_strikes= [closest_strike-i*strike_diff for i in range(ntm_range+1)]
+#     strike_diff= sorted([i for i in df.STRIKE])[0:2]
+#     strike_diff=abs(strike_diff[0]-strike_diff[1])
     
     
-    ntm_call_df= df_call[df_call.STRIKE.isin(ntm_call_strikes)]
-    ntm_put_df= df_put[df_put.STRIKE.isin(ntm_put_strikes)]
+#     #ntm call
+    
+#     ntm_call_strikes= [closest_strike+i*strike_diff for i in range(ntm_range+1)]
+#     ntm_put_strikes= [closest_strike-i*strike_diff for i in range(ntm_range+1)]
+    
+    
+#     ntm_call_df= df_call[df_call.STRIKE.isin(ntm_call_strikes)]
+#     ntm_put_df= df_put[df_put.STRIKE.isin(ntm_put_strikes)]
     
     
        
     
-    summ = {}
+#     summ = {}
     
-    # ntm call
+#     # ntm call
     
-    oi_pct = 100 * sum(ntm_call_df['CHNG IN OI']) / sum(ntm_call_df['OI'])
-    price_pct = 100 * np.mean(ntm_call_df['CHNG'] / (ntm_call_df['LTP'] - ntm_call_df['CHNG']))
-    summ['ntm_call_delta_%'] = {
-        "OI": format_pct(oi_pct),
-        "Price": format_pct(price_pct)
+#     oi_pct = 100 * sum(ntm_call_df['CHNG IN OI']) / sum(ntm_call_df['OI'])
+#     price_pct = 100 * np.mean(ntm_call_df['CHNG'] / (ntm_call_df['LTP'] - ntm_call_df['CHNG']))
+#     summ['ntm_call_delta_%'] = {
+#         "OI": format_pct(oi_pct),
+#         "Price": format_pct(price_pct)
+#     }
+
+#     # ntm Put
+    
+#     oi_pct = 100 * sum(ntm_put_df['CHNG IN OI']) / sum(ntm_put_df['OI'])
+#     price_pct = 100 * np.mean(ntm_put_df['CHNG'] / (ntm_put_df['LTP'] - ntm_put_df['CHNG']))
+#     summ['ntm_put_delta_%'] = {
+#         "OI": format_pct(oi_pct),
+#         "Price": format_pct(price_pct)
+#     }
+
+
+
+#     otm_call_df= df_call[~df_call.STRIKE.isin(ntm_call_strikes)]
+#     otm_call_df=otm_call_df[otm_call_df.STRIKE<min(ntm_call_strikes)]
+    
+#     otm_put_df= df_put[~df_put.STRIKE.isin(ntm_put_strikes)]
+#     otm_put_df=otm_put_df[otm_put_df.STRIKE>max(ntm_put_strikes)]
+
+
+#     # otm call
+    
+#     oi_pct = 100 * sum(otm_call_df['CHNG IN OI']) / sum(otm_call_df['OI'])
+#     price_pct = 100 * np.mean(otm_call_df['CHNG'] / (otm_call_df['LTP'] - otm_call_df['CHNG']))
+#     summ['otm_call_delta_%'] = {
+#         "OI": format_pct(oi_pct),
+#         "Price": format_pct(price_pct)
+#     }
+
+#     # otm Put
+    
+#     oi_pct = 100 * sum(otm_put_df['CHNG IN OI']) / sum(otm_put_df['OI'])
+#     price_pct = 100 * np.mean(otm_put_df['CHNG'] / (otm_put_df['LTP'] - otm_put_df['CHNG']))
+#     summ['otm_put_delta_%'] = {
+#         "OI": format_pct(oi_pct),
+#         "Price": format_pct(price_pct)
+#     }
+
+
+
+#     return summ
+
+
+# def quadrant_oi_price_change(df, df_prev, spot_price, spot_prev, percent_range=10, ntm_range=2):
+#     df = get_relevant_strikes(df, spot_price, percent_range)
+#     df_prev = get_relevant_strikes(df_prev, spot_prev, percent_range)
+    
+#     df_call, df_put = call_put_demerge(df)
+#     df_prev_call, df_prev_put = call_put_demerge(df_prev)
+
+#     def format_pct(value):
+#         return f"{round(value, 2)}%"
+
+#     def calc_metrics(df_curr, df_prev):
+#         # Align on STRIKE
+#         df_merged = df_curr.merge(df_prev, on='STRIKE', suffixes=('', '_prev'))
+#         if df_merged.empty:
+#             return 0.0, 0.0, 0.0
+        
+#         vol_change = df_merged['VOLUME'].sum() - df_merged['VOLUME_prev'].sum()
+#         oi_change_pct = 100 * (df_merged['OI'].sum() - df_merged['OI_prev'].sum()) / max(df_merged['OI_prev'].sum(), 1)
+#         price_change_pct = 100 * np.mean(
+#             (df_merged['LTP'] - df_merged['LTP_prev']) / df_merged['LTP_prev'].replace(0, np.nan)
+#         )
+#         return vol_change, oi_change_pct, price_change_pct
+
+#     # Closest strike detection
+#     closest_strike = df.loc[(df['STRIKE'] - spot_price).abs().idxmin(), 'STRIKE']
+#     sorted_strikes = sorted(df['STRIKE'].unique())
+#     strike_diff = abs(sorted_strikes[1] - sorted_strikes[0]) if len(sorted_strikes) > 1 else 50
+
+#     # Define NTM and OTM strike sets
+#     ntm_call_strikes = [closest_strike + i * strike_diff for i in range(ntm_range + 1)]
+#     ntm_put_strikes = [closest_strike - i * strike_diff for i in range(ntm_range + 1)]
+
+#     def filter_strikes(df_sub, strike_list, direction='in', bound=None):
+#         if direction == 'in':
+#             return df_sub[df_sub['STRIKE'].isin(strike_list)]
+#         elif direction == 'below':
+#             return df_sub[~df_sub['STRIKE'].isin(strike_list) & (df_sub['STRIKE'] < bound)]
+#         elif direction == 'above':
+#             return df_sub[~df_sub['STRIKE'].isin(strike_list) & (df_sub['STRIKE'] > bound)]
+#         return df_sub
+
+#     result = {}
+#     # (label, df_now, df_prev, strikes, filter_dir, bound)
+#     configs = [
+#         ('ntm_call', df_call, df_prev_call, ntm_call_strikes, 'in', None),
+#         ('ntm_put', df_put, df_prev_put, ntm_put_strikes, 'in', None),
+#         ('otm_call', df_call, df_prev_call, ntm_call_strikes, 'below', min(ntm_call_strikes)),
+#         ('otm_put', df_put, df_prev_put, ntm_put_strikes, 'above', max(ntm_put_strikes)),
+#     ]
+
+#     for label, curr_df, prev_df, strikes, direction, bound in configs:
+#         curr_filtered = filter_strikes(curr_df, strikes, direction, bound)
+#         prev_filtered = filter_strikes(prev_df, strikes, direction, bound)
+
+#         vol_change, oi_pct, price_pct = calc_metrics(curr_filtered, prev_filtered)
+#         result[f'{label}_delta'] = {
+#             'Volume Δ': f"{int(vol_change)}",
+#             'OI Δ %': format_pct(oi_pct),
+#             'Price Δ %': format_pct(price_pct)
+#         }
+
+#     return result
+
+def quadrant_oi_price_change(df, df_prev, spot_price, spot_prev, percent_range=10, ntm_range=2):
+    df = get_relevant_strikes(df, spot_price, percent_range)
+    df_prev = get_relevant_strikes(df_prev, spot_prev, percent_range)
+    
+    df_call, df_put = call_put_demerge(df)
+    df_prev_call, df_prev_put = call_put_demerge(df_prev)
+
+    def format_pct(value):
+        return f"{round(value, 2)}%"
+
+    def calc_metrics(df_curr, df_prev):
+        df_merged = df_curr.merge(df_prev, on='STRIKE', suffixes=('', '_prev'))
+        if df_merged.empty:
+            return 0.0, 0.0, 0.0
+        
+        vol_change = df_merged['VOLUME'].sum() - df_merged['VOLUME_prev'].sum()
+        oi_change_pct = 100 * (df_merged['OI'].sum() - df_merged['OI_prev'].sum()) / max(df_merged['OI_prev'].sum(), 1)
+        price_change_pct = 100 * np.mean(
+            (df_merged['LTP'] - df_merged['LTP_prev']) / df_merged['LTP_prev'].replace(0, np.nan)
+        )
+        return vol_change, oi_change_pct, price_change_pct
+
+    # Closest strike detection
+    closest_strike = df.loc[(df['STRIKE'] - spot_price).abs().idxmin(), 'STRIKE']
+    sorted_strikes = sorted(df['STRIKE'].unique())
+    strike_diff = abs(sorted_strikes[1] - sorted_strikes[0]) if len(sorted_strikes) > 1 else 50
+
+    # Define NTM and OTM strike sets
+    ntm_call_strikes = [closest_strike + i * strike_diff for i in range(ntm_range + 1)]
+    ntm_put_strikes = [closest_strike - i * strike_diff for i in range(ntm_range + 1)]
+
+    def filter_strikes(df_sub, strike_list, direction='in', bound=None):
+        if direction == 'in':
+            return df_sub[df_sub['STRIKE'].isin(strike_list)]
+        elif direction == 'below':
+            return df_sub[~df_sub['STRIKE'].isin(strike_list) & (df_sub['STRIKE'] < bound)]
+        elif direction == 'above':
+            return df_sub[~df_sub['STRIKE'].isin(strike_list) & (df_sub['STRIKE'] > bound)]
+        return df_sub
+
+    result = {
+        'Spot': spot_price,
+        'Spot Δ': round(spot_price - spot_prev, 2)
     }
 
-    # ntm Put
-    
-    oi_pct = 100 * sum(ntm_put_df['CHNG IN OI']) / sum(ntm_put_df['OI'])
-    price_pct = 100 * np.mean(ntm_put_df['CHNG'] / (ntm_put_df['LTP'] - ntm_put_df['CHNG']))
-    summ['ntm_put_delta_%'] = {
-        "OI": format_pct(oi_pct),
-        "Price": format_pct(price_pct)
-    }
+    configs = [
+        ('ntm_call', df_call, df_prev_call, ntm_call_strikes, 'in', None),
+        ('ntm_put', df_put, df_prev_put, ntm_put_strikes, 'in', None),
+        ('otm_call', df_call, df_prev_call, ntm_call_strikes, 'below', min(ntm_call_strikes)),
+        ('otm_put', df_put, df_prev_put, ntm_put_strikes, 'above', max(ntm_put_strikes)),
+    ]
 
+    for label, curr_df, prev_df, strikes, direction, bound in configs:
+        curr_filtered = filter_strikes(curr_df, strikes, direction, bound)
+        prev_filtered = filter_strikes(prev_df, strikes, direction, bound)
 
+        vol_change, oi_pct, price_pct = calc_metrics(curr_filtered, prev_filtered)
+        result[f'{label}_delta'] = {
+            'Volume Δ': f"{int(vol_change)}",
+            'OI Δ %': format_pct(oi_pct),
+            'Price Δ %': format_pct(price_pct)
+        }
 
-    otm_call_df= df_call[~df_call.STRIKE.isin(ntm_call_strikes)]
-    otm_call_df=otm_call_df[otm_call_df.STRIKE<min(ntm_call_strikes)]
-    
-    otm_put_df= df_put[~df_put.STRIKE.isin(ntm_put_strikes)]
-    otm_put_df=otm_put_df[otm_put_df.STRIKE>max(ntm_put_strikes)]
-
-
-    # otm call
-    
-    oi_pct = 100 * sum(otm_call_df['CHNG IN OI']) / sum(otm_call_df['OI'])
-    price_pct = 100 * np.mean(otm_call_df['CHNG'] / (otm_call_df['LTP'] - otm_call_df['CHNG']))
-    summ['otm_call_delta_%'] = {
-        "OI": format_pct(oi_pct),
-        "Price": format_pct(price_pct)
-    }
-
-    # otm Put
-    
-    oi_pct = 100 * sum(otm_put_df['CHNG IN OI']) / sum(otm_put_df['OI'])
-    price_pct = 100 * np.mean(otm_put_df['CHNG'] / (otm_put_df['LTP'] - otm_put_df['CHNG']))
-    summ['otm_put_delta_%'] = {
-        "OI": format_pct(oi_pct),
-        "Price": format_pct(price_pct)
-    }
-
-
-
-    return summ
+    return result
 # =============================================================================
 # iv skew
 # =============================================================================
@@ -628,32 +858,44 @@ def savefile(df, UPLOAD_FOLDER,file_format="csv"):
 
 # import pandas as pd
 
+def check__():
+    path=r"C:\Users\tarun\Desktop\Option chin app\app\option-chain-ED-NIFTY-19-Jun-2025.csv"
+    spot_price= 24838
 
-# path=r"C:\Users\tarun\Desktop\Option chin app\option-chain-ED-JIOFIN-29-May-2025 (34).csv"
-# spot_price= 293
+    path_prev= r"C:\Users\tarun\Desktop\Option chin app\app\option-chain-ED-NIFTY-19-Jun-2025 (1).csv"
+    spot_price_prev= 24850
 
-# path_prev= r"C:\Users\tarun\Desktop\Option chin app\option-chain-ED-JIOFIN-29-May-2025 (33).csv"
-# spot_price_prev= 285
+    df= read_nes_option_chain_csv(path)
+    df_prev= read_nes_option_chain_csv(path_prev)
+    df_prev=no_df_prev(df.copy())
 
-# df= read_nes_option_chain_csv(path)
-# df_prev= read_nes_option_chain_csv(path_prev)
-# df_prev=no_df_prev(df.copy())
+    df= get_relevant_strikes(df, spot_price, percent_range=10)
 
-# df= get_relevant_strikes(df, spot_price, percent_range=10)
-
-# df_call, df_put=call_put_demerge(df)
-
-
-# delta=compare_previous_oi(df, df_prev, spot_price)
+    df_call, df_put=call_put_demerge(df)
 
 
-# summary= quadrant_oi_price(df, spot_price)
-
-# summary['PCR_OI'], summary['PCR_Volume']=PCR(df, spot_price, percent_range=5)
+    delta=compare_previous_oi(df, df_prev, spot_price)
 
 
+    summary= quadrant_oi_price(df, spot_price)
 
-# summary['max_pain_strike'], summary['max_pain_strike_call'], summary['max_pain_strike_put'] =max_pain(df_call, df_put, spot_price)
+    summary['PCR_OI'], summary['PCR_Volume']=PCR(df, spot_price, percent_range=5)
 
 
-# summary['iv_atm_ce'], summary['iv_atm_pe']= iv_skew(df_call, df_put, spot_price)
+
+    summary['max_pain_strike'], summary['max_pain_strike_call'], summary['max_pain_strike_put'] =max_pain(df_call, df_put, spot_price)
+
+
+    summary['iv_atm_ce'], summary['iv_atm_pe']= iv_skew(df_call, df_put, spot_price)
+    
+    
+    return delta
+    
+    
+# =============================================================================
+# analysis= check__() 
+# =============================================================================
+
+
+
+
